@@ -178,16 +178,23 @@ async def aml_chat(req: ChatReq):
 
     messages = build_messages(req)
 
+    # temperature=1 is the only value newer reasoning-class models (e.g. gpt-5.x)
+    # accept. Lower-tier models accept any value, so 1 is a safe universal default.
     try:
         resp = await client.chat.completions.create(
             model=LLM_MODEL,
             messages=messages,
+            temperature=1,
             response_format={"type": "json_object"},
         )
     except Exception as e:
-        logger.warning("response_format json_object rejected (%s), retrying without it", e)
+        logger.warning("first call failed (%s), retrying without response_format", e)
         try:
-            resp = await client.chat.completions.create(model=LLM_MODEL, messages=messages)
+            resp = await client.chat.completions.create(
+                model=LLM_MODEL,
+                messages=messages,
+                temperature=1,
+            )
         except Exception as e2:
             logger.exception("LLM call failed")
             raise HTTPException(status_code=502, detail=f"LLM error: {type(e2).__name__}: {e2}")
