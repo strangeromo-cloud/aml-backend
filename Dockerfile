@@ -9,4 +9,6 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# main.py reads PORT from env (defaults to 8080), so the container honors
+# whatever port the platform (Zeabur, Fly, Cloud Run, ...) injects.
+CMD ["python", "main.py"]
