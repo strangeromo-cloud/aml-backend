@@ -307,6 +307,206 @@ async def aml_chat_stream(req: ChatReq):
     return EventSourceResponse(gen())
 
 
+# ══════════════════════════════════════════════════════════════════════
+#  Investigation Agent (Hermes-style)
+#  Gathers multi-source evidence for a flagged payment, then an LLM
+#  synthesizes an investigation package + recommendation for Legal.
+#
+#  Data-source lookups are MOCK (derived from the payment's own risk
+#  signals). They are structured so real Tianyancha / Qichacha / Dow Jones
+#  / internal APIs can drop in later without changing the agent flow.
+# ══════════════════════════════════════════════════════════════════════
+
+class InvestigateReq(BaseModel):
+    payment: Payment
+    vendorCountry: str = ""
+    vendorSignals: List[str] = Field(default_factory=list)
+    lang: Literal["en", "zh"] = "en"
+
+
+# riskType / precisionHit → concrete mock finding text (bilingual)
+_FINDINGS = {
+    "geographic": {
+        "en": "Bank country differs from invoice/registration country; entity registered in a high-risk or offshore jurisdiction.",
+        "zh": "银行所在国与发票/注册国不一致；主体注册于高风险或离岸司法辖区。",
+    },
+    "pep": {
+        "en": "A shareholder / legal representative is a probable Politically Exposed Person (PEP) or PEP associate.",
+        "zh": "股东/法定代表人疑似政治公众人物（PEP）或 PEP 关联人。",
+    },
+    "adverseMedia": {
+        "en": "Negative media found in the last 12 months referencing corruption or fraud allegations.",
+        "zh": "近 12 个月检索到与腐败或欺诈指控相关的负面媒体报道。",
+    },
+    "docMissing": {
+        "en": "No PO/contract linked to this payment; vendor business scope does not match the procurement category.",
+        "zh": "本次付款未关联 PO/合同；供应商经营范围与采购品类不符。",
+    },
+    "timeAnomaly": {
+        "en": "Payment timing is anomalous — weekend/holiday execution or a recent surge in payment frequency to this vendor.",
+        "zh": "付款时点异常 —— 周末/节假日执行，或近期对该供应商付款频率突增。",
+    },
+    "behavior": {
+        "en": "Receiving account shows no clear link to the vendor entity; invoice authenticity is questionable.",
+        "zh": "收款账户与供应商主体无明显关联；发票真实性存疑。",
+    },
+}
+
+_VENDOR_SIGNAL_FINDINGS = {
+    "structuring": {"en": "Multiple sub-threshold payments cluster in a short window (structuring pattern).",
+                    "zh": "短期内多笔低于阈值的付款聚集（拆分/化整为零特征）。"},
+    "surge": {"en": "Payment frequency to this (relatively new) vendor surged versus its baseline.",
+              "zh": "对该（较新）供应商的付款频率较基线突增。"},
+    "cumulativeAlerts": {"en": "This vendor has repeatedly tripped high-precision rules across multiple payments.",
+                         "zh": "该供应商在多笔付款中反复命中高精度规则。"},
+}
+
+
+def gather_evidence(req: InvestigateReq):
+    """Deterministic mock evidence gathering. Returns (steps, evidence_lines)."""
+    lang = req.lang
+    p = req.payment
+    is_cn = (req.vendorCountry or "").upper() == "CN"
+    steps = []
+    evidence = []
+
+    if is_cn:
+        steps.append("天眼查 / 企查查：股东、经营范围、注册资本、涉诉" if lang == "zh"
+                     else "Tianyancha / Qichacha: shareholders, business scope, registered capital, litigation")
+        src = "天眼查" if lang == "zh" else "Tianyancha"
+    else:
+        steps.append("Dow Jones：制裁/观察名单、PEP、不利媒体" if lang == "zh"
+                     else "Dow Jones: sanctions/watchlist, PEP, adverse media")
+        src = "Dow Jones"
+
+    for rt in p.riskTypes:
+        f = _FINDINGS.get(rt)
+        if f:
+            evidence.append({"source": src, "text": f[lang]})
+
+    steps.append("内部：历史付款时间线与收款账户" if lang == "zh"
+                 else "Internal: payment-history timeline and receiving accounts")
+    steps.append("内部：关联账户 / 受益人图谱" if lang == "zh"
+                 else "Internal: linked-account / beneficiary graph")
+
+    for s in req.vendorSignals:
+        vf = _VENDOR_SIGNAL_FINDINGS.get(s)
+        if vf:
+            evidence.append({"source": ("内部" if lang == "zh" else "Internal"), "text": vf[lang]})
+
+    if not evidence:
+        evidence.append({"source": src, "text": ("未发现额外外部风险信号。" if lang == "zh"
+                                                  else "No additional external risk signals found.")})
+    return steps, evidence
+
+
+REC_MARKER = "__REC__:"
+
+INVESTIGATE_PROMPT_EN = f"""You are an AML investigation agent supporting the Legal team. You are given a flagged payment and the evidence already gathered from external data sources (Tianyancha/Qichacha or Dow Jones) and internal systems. Synthesize a concise investigation package.
+
+Write in English. Output format — analysis text first, then a recommendation line:
+
+<2-4 short sentences. Use <strong>...</strong> on key entities/numbers. Optionally a short <ul><li>...</li></ul>.>
+{REC_MARKER}escalate | investigate | clear
+
+Where:
+- escalate  = strong evidence, send to enhanced review / consider holding payment
+- investigate = needs more evidence before a conclusion
+- clear = evidence suggests a likely-benign business explanation
+Base everything strictly on the provided evidence. Do not invent facts."""
+
+INVESTIGATE_PROMPT_ZH = f"""你是支持法务团队的 AML 调查 Agent。系统会给你一笔被标记的付款，以及已从外部数据源（天眼查/企查查 或 Dow Jones）和内部系统收集到的证据。请综合给出一份简洁的调查结论包。
+
+用中文回答。输出格式 —— 先分析文字，再一行建议：
+
+<2-4 句短句。关键主体/数字用 <strong>...</strong>。可选简短 <ul><li>...</li></ul>。>
+{REC_MARKER}escalate | investigate | clear
+
+其中：
+- escalate   = 证据较强，升级强化复核/考虑暂停付款
+- investigate = 需补充更多证据才能定性
+- clear      = 证据显示很可能有合规的业务解释
+所有结论严格基于所给证据，不得编造。"""
+
+
+@app.post("/api/aml/investigate/stream")
+async def aml_investigate_stream(req: InvestigateReq):
+    p = req.payment
+    steps, evidence = gather_evidence(req)
+    base_prompt = INVESTIGATE_PROMPT_ZH if req.lang == "zh" else INVESTIGATE_PROMPT_EN
+    ev_text = "\n".join(f"- [{e['source']}] {e['text']}" for e in evidence)
+    context = (
+        f"Payment: {p.id} | vendor: {p.vendor} ({req.vendorCountry}) | amount: {p.amount} | "
+        f"category: {p.category} | total score: {p.total} | risk types: {', '.join(p.riskTypes)} | "
+        f"vendor signals: {', '.join(req.vendorSignals) or 'none'}\n\nGathered evidence:\n{ev_text}"
+    )
+
+    async def gen():
+        # 1) emit the evidence-gathering steps
+        for s in steps:
+            yield json.dumps({"type": "step", "text": s})
+        for e in evidence:
+            yield json.dumps({"type": "evidence", "source": e["source"], "text": e["text"]})
+
+        # 2) LLM synthesizes the package
+        input_messages = [{"role": "user", "content": context}]
+        answer = ""
+        try:
+            stream = await client.responses.create(
+                model=LLM_MODEL,
+                instructions=base_prompt,
+                input=input_messages,
+                reasoning={"effort": REASONING_EFFORT, "summary": "auto"},
+                stream=True,
+            )
+            async for event in stream:
+                etype = getattr(event, "type", "") or ""
+                if "reasoning" in etype and "delta" in etype:
+                    delta = getattr(event, "delta", None) or getattr(event, "text", "") or ""
+                    if delta:
+                        yield json.dumps({"type": "reasoning", "text": delta})
+                elif "output_text" in etype and "delta" in etype:
+                    delta = getattr(event, "delta", "") or ""
+                    if delta:
+                        answer += delta
+                        yield json.dumps({"type": "delta", "text": delta})
+                elif etype.endswith(".completed"):
+                    break
+                elif etype.endswith(".failed") or etype.endswith(".error"):
+                    yield json.dumps({"type": "error", "message": "stream failed"})
+                    return
+        except Exception as e:
+            logger.warning("Investigate Responses API failed (%s), falling back", e)
+            try:
+                resp = await client.chat.completions.create(
+                    model=LLM_MODEL,
+                    messages=[{"role": "system", "content": base_prompt}, {"role": "user", "content": context}],
+                    temperature=1,
+                    stream=True,
+                )
+                async for chunk in resp:
+                    if not chunk.choices:
+                        continue
+                    delta = chunk.choices[0].delta.content or ""
+                    if delta:
+                        answer += delta
+                        yield json.dumps({"type": "delta", "text": delta})
+            except Exception as e2:
+                logger.exception("Investigate fallback failed")
+                yield json.dumps({"type": "error", "message": f"{type(e2).__name__}: {e2}"})
+                return
+
+        rec = ""
+        text = answer
+        if REC_MARKER in answer:
+            head, tail = answer.rsplit(REC_MARKER, 1)
+            text = head.strip()
+            rec = tail.strip().split()[0] if tail.strip() else ""
+        yield json.dumps({"type": "done", "text": text, "recommendation": rec})
+
+    return EventSourceResponse(gen())
+
+
 if __name__ == "__main__":
     import uvicorn
 
