@@ -14,11 +14,11 @@
 
 | 部分 | 路径 | 性质 |
 |---|---|---|
-| **前端**（单文件 HTML，所有 UI + 逻辑）| `frontend/AML Identifier Flow Demo.html` | **唯一真源，直接编辑这份** |
+| **前端**（单文件 HTML，所有 UI + 逻辑）| `frontend/AML Identifier Flow Demo-v2.html` | **唯一真源，直接编辑这份**（文件名带 -v2）|
 | **后端**（LLM 代理）| `main.py` 等（仓库根）| FastAPI |
 | **说明文档** | `docs/AML系统说明文档.md` | 完整业务+技术说明，面向团队/Legal |
 
-- **前端工作流**：直接改 `frontend/` 这份并提交。`~/Downloads/AML Identifier Flow Demo.html` 只是给用户双击预览的副本 —— 改完仓库版后如需预览，`cp frontend/"AML Identifier Flow Demo.html" ~/Downloads/`。不要反过来以 Downloads 为准。
+- **前端工作流**：直接改 `frontend/AML Identifier Flow Demo-v2.html` 并提交。Downloads 里的同名文件只是双击预览副本 —— 改完仓库版后如需预览再 `cp` 过去。不要反过来以 Downloads 为准。
 - 前端是**纯静态单 HTML**，双击即可打开；所有数据、逻辑、i18n 都内联在里面。
 - 后端部署在 Zeabur：`https://aml-p.zeabur.app`，推送到 GitHub main 自动重建。
 - 前端里硬编码 `const BACKEND_URL = 'https://aml-p.zeabur.app';`
@@ -87,7 +87,7 @@
 
 ```bash
 cd ~/Documents/aml-chat-server && node -e "
-const fs=require('fs');const html=fs.readFileSync('frontend/AML Identifier Flow Demo.html','utf8');
+const fs=require('fs');const html=fs.readFileSync('frontend/AML Identifier Flow Demo-v2.html','utf8');
 const s=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1])[0];
 try{new Function('async function _(){'+s+'}');console.log('JS OK');}catch(e){console.error('SYNTAX',e.message);process.exit(1);}
 "
