@@ -571,7 +571,7 @@
         signalRollupShort: 'Roll-up', signalRollupNote: 'Roll-up = aggregates Entry A hits to the vendor level (not a new signal); native signals (structuring, surge) are only visible across multiple payments.',
         signalNote: 'PPV is computed live from structured Legal review records — each "Review Now" decision updates the numbers here. A signal needs at least 3 reviewed payments before its PPV is trusted (Validated); below that it stays a Candidate. Validated signals with high PPV are promoted; low-PPV ones are demoted to scoring factors.',
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
-        paymentHeaders: ['Tier', 'Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
+        paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
         paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geographic: 'Geographic Risk', pep: 'PEP Exposure', adverseMedia: 'Adverse Media', docMissing: 'Document Missing', timeAnomaly: 'Time Anomaly', behavior: 'Behavior Indicator' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
@@ -631,7 +631,7 @@
         signalRollupShort: '汇总', signalRollupNote: '汇总 = 把入口 A 的命中累加到供应商层（非新信号）；原生信号（拆分、突增）只有跨多笔付款才看得到。',
         signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次"立即复核"提交都会更新这里的数字。一个信号至少需 3 笔已复核付款，其 PPV 才被信任（已验证）；不足则保持候选。已验证且 PPV 高的信号被提升，PPV 低的降级为评分因子。',
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
-        paymentHeaders: ['告警等级', '付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
+        paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
         paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geographic: '地理风险', pep: 'PEP 人物', adverseMedia: '不利媒体', docMissing: '文件缺失', timeAnomaly: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
@@ -751,7 +751,7 @@
       level: 'payment',
       predicate: p => p.amountNum >= 200000 && (p.riskTypes.includes('geographic') || p.riskTypes.includes('behavior'))
     };
-    const SORTABLE_COLUMNS = { tier: { idx: 0, field: '_tierRank' }, date: { idx: 2, field: 'date' }, amount: { idx: 5, field: 'amountNum' }, vendorScore: { idx: 9, field: 'vendorScore' }, paymentScore: { idx: 10, field: 'paymentScore' }, total: { idx: 12, field: 'total' } };
+    const SORTABLE_COLUMNS = { date: { idx: 1, field: 'date' }, amount: { idx: 4, field: 'amountNum' }, vendorScore: { idx: 8, field: 'vendorScore' }, paymentScore: { idx: 9, field: 'paymentScore' }, total: { idx: 11, field: 'total' } };
     // Single source of truth for reviews. Each carries `conclusion` (drives signal-ledger PPV)
     // plus the rich display fields for the audit table — so dashboard count, the reviewed list,
     // and the PPV calc all agree.
@@ -1281,7 +1281,7 @@
       document.getElementById('paymentListRows').innerHTML = visible.map(p => {
         const i = payments.indexOf(p);
         const sc = html => paymentTier(p) === 'T3' ? html : '<span class="small-muted">—</span>';
-        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td>${tierBadge(p)}${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td><strong>${p.id}</strong></td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(p.riskTypes)}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${p.vendorScore}</strong>`)}</td><td>${sc(`<strong>${p.paymentScore}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(p.status)}">${p.total}</span>`)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
+        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(p.riskTypes)}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${p.vendorScore}</strong>`)}</td><td>${sc(`<strong>${p.paymentScore}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(p.status)}">${p.total}</span>`)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
       }).join('');
       const empty = document.getElementById('paymentListEmpty');
       empty.textContent = t('noPaymentsMatch');
