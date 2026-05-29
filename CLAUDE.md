@@ -10,12 +10,15 @@
 
 ## 仓库与文件分布（重要 — 分散在两处）
 
-| 部分 | 位置 | 性质 |
-|---|---|---|
-| **前端**（单文件 HTML，所有 UI + 逻辑）| `~/Downloads/AML Identifier Flow Demo.html` | 孤立文件，**不在任何 git repo** |
-| **后端**（LLM 代理）| `~/Documents/aml-chat-server/`（本目录）| git repo → `github.com/strangeromo-cloud/aml-backend` |
-| **说明文档** | `~/Downloads/AML系统说明文档.md` | 完整业务+技术说明，面向团队/Legal |
+整个系统在**一个仓库**里：`~/Documents/aml-chat-server/` → `github.com/strangeromo-cloud/aml-backend`
 
+| 部分 | 路径 | 性质 |
+|---|---|---|
+| **前端**（单文件 HTML，所有 UI + 逻辑）| `frontend/AML Identifier Flow Demo.html` | **唯一真源，直接编辑这份** |
+| **后端**（LLM 代理）| `main.py` 等（仓库根）| FastAPI |
+| **说明文档** | `docs/AML系统说明文档.md` | 完整业务+技术说明，面向团队/Legal |
+
+- **前端工作流**：直接改 `frontend/` 这份并提交。`~/Downloads/AML Identifier Flow Demo.html` 只是给用户双击预览的副本 —— 改完仓库版后如需预览，`cp frontend/"AML Identifier Flow Demo.html" ~/Downloads/`。不要反过来以 Downloads 为准。
 - 前端是**纯静态单 HTML**，双击即可打开；所有数据、逻辑、i18n 都内联在里面。
 - 后端部署在 Zeabur：`https://aml-p.zeabur.app`，推送到 GitHub main 自动重建。
 - 前端里硬编码 `const BACKEND_URL = 'https://aml-p.zeabur.app';`
@@ -83,8 +86,8 @@
 ## 验证前端改动（每次必做）
 
 ```bash
-cd ~/Downloads && node -e "
-const fs=require('fs');const html=fs.readFileSync('AML Identifier Flow Demo.html','utf8');
+cd ~/Documents/aml-chat-server && node -e "
+const fs=require('fs');const html=fs.readFileSync('frontend/AML Identifier Flow Demo.html','utf8');
 const s=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1])[0];
 try{new Function('async function _(){'+s+'}');console.log('JS OK');}catch(e){console.error('SYNTAX',e.message);process.exit(1);}
 "
