@@ -96,7 +96,42 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s.addText("强信号「跳出」平均池，命中即定级、直接置顶。", { x: 7.53, y: 5.7, w: 5.05, h: 0.65, fontFace: FONT, fontSize: 12.5, italic: true, color: TEAL2, lineSpacingMultiple: 1.1 });
   pageNum(s, 3);
 
-  // ===== S4 双入口 + 闭环 =====
+  // ===== S4 分级逻辑 =====
+  s = pres.addSlide(); s.background = { color: WHITE };
+  kicker(s, "分级规则");
+  title(s, "分级逻辑：看命中几条高精度规则");
+  // 左：付款级高精度规则
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 2.0, w: 5.55, h: 3.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
+  s.addText("付款级高精度规则（入口 A）", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 16, bold: true, color: INK });
+  s.addText("每条约 30% PPV —— 命中后约三成确实是洗钱", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11.5, color: MUTED });
+  s.addText([
+    { text: "银行 / 营业地国家不一致", options: { bullet: true, breakLine: true } },
+    { text: "付款方 / 发票来源国不一致", options: { bullet: true, breakLine: true } },
+    { text: "主营业务 ≠ 采购品类", options: { bullet: true, breakLine: true } },
+    { text: "虚假发票特征", options: { bullet: true } },
+  ], { x: 1.0, y: 3.2, w: 5.0, h: 2.4, fontFace: FONT, fontSize: 14, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 12 });
+  // 右：Tier 映射三行
+  const trows = [
+    ["T1", RED, "命中 ≥ 2 条高精度规则", "紧急 · 24 小时内复核"],
+    ["T2", AMBER, "命中 1 条高精度规则", "告警 · 3 天内复核"],
+    ["T3", SLATE, "未命中高精度规则", "评分 · 批量排序（复用原有逻辑）"],
+  ];
+  trows.forEach((r, i) => {
+    const y = 2.0 + i * 1.3;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.55, y, w: 6.18, h: 1.1, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
+    s.addText(r[0], { x: 6.8, y: y + 0.25, w: 1.0, h: 0.6, fontFace: FONTH, fontSize: 20, bold: true, color: WHITE, align: "center", valign: "middle", fill: { color: r[1] }, rectRadius: 0.08 });
+    s.addText(r[2], { x: 8.05, y: y + 0.16, w: 4.5, h: 0.42, fontFace: FONTH, fontSize: 15, bold: true, color: INK, valign: "middle" });
+    s.addText(r[3], { x: 8.05, y: y + 0.58, w: 4.5, h: 0.38, fontFace: FONT, fontSize: 12, color: MUTED, valign: "middle" });
+  });
+  // 底部：供应商级并入说明
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.05, w: 12.13, h: 0.7, fill: { color: NAVY }, rectRadius: 0.12 });
+  s.addText([
+    { text: "供应商级信号（入口 B）同样并入：", options: { bold: true, color: TEAL2 } },
+    { text: "拆分 + 旗下高精度命中 → T1；单一行为信号（拆分 / 突增 / 多次命中）→ T2。", options: { color: "DDEBEF" } },
+  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 13, valign: "middle" });
+  pageNum(s, 4);
+
+  // ===== S5 双入口 + 闭环 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "怎么发现 · 怎么运转");
   title(s, "两个入口，一个越用越准的闭环");
@@ -127,9 +162,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "回流校准：", options: { bold: true, color: TEAL } },
     { text: "法务每一次复核都被结构化沉淀，反过来校准「该看谁、多急」—— 系统越用越准。", options: { color: INK } },
   ], { x: 1.55, y: 5.5, w: 11, h: 0.85, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.1 });
-  pageNum(s, 4);
+  pageNum(s, 5);
 
-  // ===== S5 端到端流程图（白底，菱形 + 箭头）=====
+  // ===== S6 端到端流程图（白底，菱形 + 箭头）=====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "端到端流程");
   title(s, "一笔付款在系统中的流转");
@@ -183,9 +218,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "新信号转正 / 调整分层  ", options: { bold: true, color: TEAL } },
     { text: "—— 受统计校准 + 人工审批把关。", options: { color: INK } },
   ], { x: 3.7, y: 6.12, w: 8.8, h: 0.4, fontFace: FONT, fontSize: 11.5, valign: "middle" });
-  pageNum(s, 5);
+  pageNum(s, 6);
 
-  // ===== S6 三大创新 =====
+  // ===== S7 三大创新 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "三个核心创新");
   title(s, "从「静态规则」走向「会进化的助手」");
@@ -203,9 +238,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     s.addText(b[2], { x: x + 0.35, y: 3.85, w: 3.25, h: 0.55, fontFace: FONTH, fontSize: 18, bold: true, color: INK });
     s.addText(b[3], { x: x + 0.37, y: 4.45, w: 3.25, h: 1.5, fontFace: FONT, fontSize: 12.5, color: MUTED, lineSpacingMultiple: 1.25 });
   });
-  pageNum(s, 6);
+  pageNum(s, 7);
 
-  // ===== S7 自我进化 + 合规闸门 =====
+  // ===== S8 自我进化 + 合规闸门 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "重点创新 · 自我进化（Hermes Agent）");
   title(s, "系统自己「发现」新风险，但分级仍需把关");
@@ -231,9 +266,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "合规底线：", options: { bold: true, color: AMBER } },
     { text: "自我进化只能「发现假设」，绝不能黑盒改告警等级。任何影响分级的变更，都必须经过可审计的统计校准 + 人工审批。", options: { color: INK } },
   ], { x: 1.65, y: 5.05, w: 10.85, h: 1.1, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.2 });
-  pageNum(s, 7);
+  pageNum(s, 8);
 
-  // ===== S8 总结 + 路线图 =====
+  // ===== S9 总结 + 路线图 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   s.addShape(pres.shapes.OVAL, { x: -2.2, y: 4.6, w: 6, h: 6, fill: { color: TEAL, transparency: 94 }, line: { type: "none" } });
   kicker(s, "一句话总结");
@@ -252,5 +287,5 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s.addText("原型演示 · 公司付款数据为合成数据，外部数据源 / Hermes 框架 / 付款冻结为待对接项。", { x: 0.6, y: 6.85, w: 12, h: 0.35, fontFace: FONT, fontSize: 10, italic: true, color: MUTED });
 
   await pres.writeFile({ fileName: "AML-System-Walkthrough-Legal-CN.pptx" });
-  console.log("WROTE CN deck (8 slides)");
+  console.log("WROTE CN deck (9 slides)");
 })();

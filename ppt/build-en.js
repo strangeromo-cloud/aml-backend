@@ -96,7 +96,39 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s.addText("Strong signals jump out of the averaging pool — a hit sets the tier and goes straight to the top.", { x: 7.53, y: 5.7, w: 5.05, h: 0.65, fontFace: FONT, fontSize: 12.5, italic: true, color: TEAL2, lineSpacingMultiple: 1.1 });
   pageNum(s, 3);
 
-  // ===== S4 Dual entry + loop =====
+  // ===== S4 Tiering logic =====
+  s = pres.addSlide(); s.background = { color: WHITE };
+  kicker(s, "TIERING RULES");
+  title(s, "How a tier is assigned: how many hard rules it hits");
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 2.0, w: 5.55, h: 3.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
+  s.addText("Payment-level high-precision rules (Entry A)", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 15.5, bold: true, color: INK });
+  s.addText("~30% PPV each — about a third of hits are real laundering", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11, color: MUTED });
+  s.addText([
+    { text: "Bank / business country mismatch", options: { bullet: true, breakLine: true } },
+    { text: "Payer / invoice-origin country mismatch", options: { bullet: true, breakLine: true } },
+    { text: "Business scope ≠ procurement category", options: { bullet: true, breakLine: true } },
+    { text: "Fake-invoice indicators", options: { bullet: true } },
+  ], { x: 1.0, y: 3.2, w: 5.0, h: 2.4, fontFace: FONT, fontSize: 13.5, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 12 });
+  const trows = [
+    ["T1", RED, "Hits ≥ 2 high-precision rules", "Critical · review within 24h"],
+    ["T2", AMBER, "Hits 1 high-precision rule", "Alert · review within 3 days"],
+    ["T3", SLATE, "No high-precision hit", "Scored · batch ranking (existing logic)"],
+  ];
+  trows.forEach((r, i) => {
+    const y = 2.0 + i * 1.3;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.55, y, w: 6.18, h: 1.1, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
+    s.addText(r[0], { x: 6.8, y: y + 0.25, w: 1.0, h: 0.6, fontFace: FONTH, fontSize: 20, bold: true, color: WHITE, align: "center", valign: "middle", fill: { color: r[1] }, rectRadius: 0.08 });
+    s.addText(r[2], { x: 8.05, y: y + 0.16, w: 4.55, h: 0.42, fontFace: FONTH, fontSize: 14.5, bold: true, color: INK, valign: "middle" });
+    s.addText(r[3], { x: 8.05, y: y + 0.58, w: 4.55, h: 0.38, fontFace: FONT, fontSize: 12, color: MUTED, valign: "middle" });
+  });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.05, w: 12.13, h: 0.7, fill: { color: NAVY }, rectRadius: 0.12 });
+  s.addText([
+    { text: "Vendor-level signals (Entry B) feed in too: ", options: { bold: true, color: TEAL2 } },
+    { text: "structuring + a high-precision hit → T1; any single behavioral signal (structuring / surge / repeated hits) → T2.", options: { color: "DDEBEF" } },
+  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 12.5, valign: "middle" });
+  pageNum(s, 4);
+
+  // ===== S5 Dual entry + loop =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "HOW IT DETECTS · HOW IT RUNS");
   title(s, "Two entry points, one loop that keeps improving");
@@ -127,9 +159,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "Feedback loop: ", options: { bold: true, color: TEAL } },
     { text: "every Legal review is captured to recalibrate who to look at and how urgently — the system keeps getting sharper.", options: { color: INK } },
   ], { x: 1.55, y: 5.5, w: 11, h: 0.85, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.1 });
-  pageNum(s, 4);
+  pageNum(s, 5);
 
-  // ===== S5 End-to-end flowchart (white, diamonds + arrows) =====
+  // ===== S6 End-to-end flowchart (white, diamonds + arrows) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "END-TO-END FLOW");
   title(s, "How a payment flows through the system");
@@ -189,9 +221,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "Promote new signal / adjust tier  ", options: { bold: true, color: TEAL } },
     { text: "— gated by statistical calibration + human approval.", options: { color: INK } },
   ], { x: 3.7, y: 6.12, w: 8.6, h: 0.4, fontFace: FONT, fontSize: 11.5, valign: "middle" });
-  pageNum(s, 5);
+  pageNum(s, 6);
 
-  // ===== S6 Three innovations (white) =====
+  // ===== S7 Three innovations (white) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "THREE CORE INNOVATIONS");
   title(s, "From static rules to an evolving assistant");
@@ -209,9 +241,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     s.addText(b[2], { x: x + 0.35, y: 3.85, w: 3.25, h: 0.85, fontFace: FONTH, fontSize: 17, bold: true, color: INK, lineSpacingMultiple: 1.0 });
     s.addText(b[3], { x: x + 0.37, y: 4.7, w: 3.25, h: 1.3, fontFace: FONT, fontSize: 12.5, color: MUTED, lineSpacingMultiple: 1.22 });
   });
-  pageNum(s, 6);
+  pageNum(s, 7);
 
-  // ===== S7 Self-evolution + gate =====
+  // ===== S8 Self-evolution + gate =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "SPOTLIGHT · SELF-EVOLUTION (HERMES AGENT)");
   title(s, "The system discovers new risks — but tiering stays gated");
@@ -237,9 +269,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "Compliance bottom line: ", options: { bold: true, color: AMBER } },
     { text: "self-evolution may only propose hypotheses — never silently change alert tiers. Any change affecting tiering must pass auditable statistical calibration + human approval.", options: { color: INK } },
   ], { x: 1.65, y: 5.05, w: 10.85, h: 1.1, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.2 });
-  pageNum(s, 7);
+  pageNum(s, 8);
 
-  // ===== S8 Summary + roadmap (white) =====
+  // ===== S9 Summary + roadmap (white) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   s.addShape(pres.shapes.OVAL, { x: -2.2, y: 4.6, w: 6, h: 6, fill: { color: TEAL, transparency: 94 }, line: { type: "none" } });
   kicker(s, "IN ONE SENTENCE");
@@ -258,5 +290,5 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s.addText("Prototype demo · company payment data is synthetic; external data sources / Hermes framework / payment hold are pending integration.", { x: 0.6, y: 6.85, w: 12, h: 0.35, fontFace: FONT, fontSize: 10, italic: true, color: MUTED });
 
   await pres.writeFile({ fileName: "AML-System-Walkthrough-Legal-EN.pptx" });
-  console.log("WROTE EN deck (8 slides)");
+  console.log("WROTE EN deck (9 slides)");
 })();
