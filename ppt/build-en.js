@@ -133,55 +133,62 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "END-TO-END FLOW");
   title(s, "How a payment flows through the system");
-  const MID = 2.85;              // main-row vertical midline
+  const MID = 2.5;              // main-row vertical midline
   const conn = (x1, y1, x2, y2, end) => s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: "9FB6C0", width: 1.75, endArrowType: end === false ? "none" : "triangle" } });
-  const proc = (x, w, t, sub, fill) => {
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: MID - 0.5, w, h: 1.0, fill: { color: fill || PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1, shadow: sh() });
-    s.addText([{ text: t, options: { bold: true, color: INK, breakLine: true, fontSize: 13.5 } }, { text: sub, options: { color: MUTED, fontSize: 10.5 } }],
-      { x: x + 0.06, y: MID - 0.5, w: w - 0.12, h: 1.0, fontFace: FONTH, align: "center", valign: "middle", lineSpacingMultiple: 1.05 });
+  const proc = (x, y, w, h, t, sub) => {
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1, shadow: sh() });
+    s.addText([{ text: t, options: { bold: true, color: INK, breakLine: true, fontSize: 13 } }].concat(sub ? [{ text: sub, options: { color: MUTED, fontSize: 10.5 } }] : []),
+      { x: x + 0.05, y, w: w - 0.1, h, fontFace: FONTH, align: "center", valign: "middle", lineSpacingMultiple: 1.05 });
   };
-  const diamond = (cx, t) => {
-    const dw = 1.55, dh = 1.35;
-    s.addShape(pres.shapes.DIAMOND, { x: cx - dw / 2, y: MID - dh / 2, w: dw, h: dh, fill: { color: "FFF6E8" }, line: { color: AMBER, width: 1.5 } });
-    s.addText(t, { x: cx - dw / 2, y: MID - dh / 2, w: dw, h: dh, fontFace: FONTH, fontSize: 11.5, bold: true, color: "8A6115", align: "center", valign: "middle" });
+  const diamond = (cx, cy, t) => {
+    const dw = 1.6, dh = 1.32;
+    s.addShape(pres.shapes.DIAMOND, { x: cx - dw / 2, y: cy - dh / 2, w: dw, h: dh, fill: { color: "FFF6E8" }, line: { color: AMBER, width: 1.5 } });
+    s.addText(t, { x: cx - dw / 2, y: cy - dh / 2, w: dw, h: dh, fontFace: FONTH, fontSize: 11, bold: true, color: "8A6115", align: "center", valign: "middle" });
   };
+  const PH = 1.0;                                          // process box height
+  const py = MID - PH / 2;
   // main spine
-  proc(0.5, 1.7, "Payments In", "~10K / day");          // 0.5–2.20
+  proc(0.5, py, 1.7, PH, "Payments In", "~10K / day");     // 0.5–2.20
   conn(2.20, MID, 2.50, MID);
-  proc(2.50, 1.85, "Detect + Tier", "dual entry");       // 2.50–4.35
+  proc(2.50, py, 1.85, PH, "Detect + Tier", "dual entry"); // 2.50–4.35
   conn(4.35, MID, 4.62, MID);
-  diamond(5.45, "Tier\nlevel?");                          // 4.675–6.225
-  conn(6.23, MID, 6.55, MID);
-  s.addText("T1 / T2", { x: 5.95, y: 2.0, w: 0.9, h: 0.28, fontFace: FONT, fontSize: 9.5, bold: true, color: RED, align: "center" });
-  proc(6.55, 1.85, "AI Investigation", "evidence pack"); // 6.55–8.40
+  diamond(5.45, MID, "Tier\nlevel?");                       // 4.65–6.25
+  conn(6.25, MID, 6.55, MID);
+  s.addText("T1 / T2", { x: 5.95, y: 1.62, w: 0.9, h: 0.28, fontFace: FONT, fontSize: 9.5, bold: true, color: RED, align: "center" });
+  proc(6.55, py, 1.85, PH, "AI Investigation", "evidence pack"); // 6.55–8.40
   conn(8.40, MID, 8.67, MID);
-  diamond(9.55, "Money\nlaundering?");                    // 8.775–10.325
-  conn(10.33, MID, 10.62, MID);
-  proc(10.62, 1.95, "Evolve & Learn", "calibrate · discover"); // 10.62–12.57
+  diamond(9.55, MID, "Money\nlaundering?");                 // 8.75–10.35
+  conn(10.35, MID, 10.62, MID);
+  proc(10.62, py, 1.95, PH, "Evolve & Learn", "calibrate · discover"); // 10.62–12.57
 
-  // branch DOWN from Tier? (T3)
-  const BY = 4.6;
-  conn(5.45, MID + 0.68, 5.45, BY);
-  s.addText("T3", { x: 5.55, y: 3.55, w: 0.6, h: 0.3, fontFace: FONT, fontSize: 9.5, bold: true, color: SLATE });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.4, y: BY, w: 2.1, h: 0.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText("Batch score & rank", { x: 4.45, y: BY, w: 2.0, h: 0.85, fontFace: FONT, fontSize: 11, color: INK, align: "center", valign: "middle" });
+  // branch DOWN from Tier? (T3) → batch
+  const BY = 3.75, BH = 0.75;
+  conn(5.45, MID + 0.66, 5.45, BY);
+  s.addText("T3", { x: 5.55, y: 3.18, w: 0.6, h: 0.28, fontFace: FONT, fontSize: 9.5, bold: true, color: SLATE });
+  proc(4.45, BY, 2.0, BH, "Batch score & rank", "");
+  // branch DOWN from laundering? (Yes/No → recorded)
+  conn(9.55, MID + 0.66, 9.55, BY);
+  s.addText("Yes / No", { x: 9.65, y: 3.18, w: 1.0, h: 0.28, fontFace: FONT, fontSize: 9.5, bold: true, color: GREEN });
+  proc(8.5, BY, 2.1, BH, "Decision recorded → learning", "");
 
-  // branch DOWN from laundering? (Yes / No → recorded)
-  conn(9.55, MID + 0.68, 9.55, BY);
-  s.addText("Yes / No", { x: 9.65, y: 3.55, w: 1.0, h: 0.3, fontFace: FONT, fontSize: 9.5, bold: true, color: GREEN });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.5, y: BY, w: 2.1, h: 0.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText("Decision recorded\n→ feeds learning", { x: 8.55, y: BY, w: 2.0, h: 0.85, fontFace: FONT, fontSize: 10.5, color: INK, align: "center", valign: "middle", lineSpacingMultiple: 1.0 });
-
-  // feedback loop: Evolve → (down, left, up) → Detect+Tier  (dashed)
-  const FYb = 6.6;
-  const fbLine = () => ({ color: TEAL, width: 1.6, dashType: "dash" });
-  s.addShape(pres.shapes.LINE, { x: 11.595, y: MID + 0.5, w: 0, h: FYb - (MID + 0.5), line: fbLine() });
-  s.addShape(pres.shapes.LINE, { x: 3.425, y: FYb, w: 11.595 - 3.425, h: 0, line: fbLine() });
-  s.addShape(pres.shapes.LINE, { x: 3.425, y: MID + 0.5, w: 0, h: FYb - (MID + 0.5), line: { color: TEAL, width: 1.6, dashType: "dash", beginArrowType: "triangle" } });
+  // 3rd decision: under Evolve → Sample/PPV gate
+  const D3y = 5.4;
+  conn(11.595, MID + 0.5, 11.595, D3y - 0.66);             // Evolve down to D3
+  diamond(11.595, D3y, "Sample ≥ N\n& PPV ok?");           // 10.795–12.395
+  // No → keep observing (to the left, same band)
+  conn(11.595 - 0.8, D3y, 10.5, D3y);
+  s.addText("No", { x: 10.55, y: D3y - 0.42, w: 0.5, h: 0.26, fontFace: FONT, fontSize: 9.5, bold: true, color: MUTED, align: "center" });
+  proc(8.4, D3y - 0.35, 2.1, 0.7, "Keep observing", "");
+  // Yes → promote → feedback loop back to Detect+Tier (dashed)
+  const FYb = 6.55, fb = () => ({ color: TEAL, width: 1.7, dashType: "dash" });
+  s.addText("Yes", { x: 11.7, y: D3y + 0.5, w: 0.7, h: 0.26, fontFace: FONT, fontSize: 9.5, bold: true, color: GREEN });
+  s.addShape(pres.shapes.LINE, { x: 11.595, y: D3y + 0.66, w: 0, h: FYb - (D3y + 0.66), line: fb() });
+  s.addShape(pres.shapes.LINE, { x: 3.425, y: FYb, w: 11.595 - 3.425, h: 0, line: fb() });
+  s.addShape(pres.shapes.LINE, { x: 3.425, y: MID + 0.5, w: 0, h: FYb - (MID + 0.5), line: { color: TEAL, width: 1.7, dashType: "dash", beginArrowType: "triangle" } });
   s.addText([
-    { text: "Feedback loop  ", options: { bold: true, color: TEAL } },
-    { text: "— validated signals & recalibrated PPV adjust tiering, gated by calibration + human approval.", options: { color: INK } },
-  ], { x: 3.7, y: 5.95, w: 8.4, h: 0.5, fontFace: FONT, fontSize: 11.5, valign: "middle", lineSpacingMultiple: 1.05 });
+    { text: "Promote new signal / adjust tier  ", options: { bold: true, color: TEAL } },
+    { text: "— gated by statistical calibration + human approval.", options: { color: INK } },
+  ], { x: 3.7, y: 6.12, w: 8.6, h: 0.4, fontFace: FONT, fontSize: 11.5, valign: "middle" });
   pageNum(s, 5);
 
   // ===== S6 Three innovations (white) =====
