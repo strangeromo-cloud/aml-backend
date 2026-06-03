@@ -30,7 +30,7 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
 
 (async () => {
   const ic = {};
-  const need = { bolt: Fa.FaBolt, layer: Fa.FaLayerGroup, search: Fa.FaSearch, robot: Fa.FaRobot, chart: Fa.FaChartLine, sync: Fa.FaSyncAlt, gavel: Fa.FaGavel, brain: Fa.FaBrain, scale: Fa.FaBalanceScale, eye: Fa.FaEye, arrow: Fa.FaArrowRight, check: Fa.FaCheckCircle };
+  const need = { bolt: Fa.FaBolt, layer: Fa.FaLayerGroup, search: Fa.FaSearch, robot: Fa.FaRobot, chart: Fa.FaChartLine, sync: Fa.FaSyncAlt, gavel: Fa.FaGavel, brain: Fa.FaBrain, scale: Fa.FaBalanceScale, eye: Fa.FaEye, arrow: Fa.FaArrowRight, check: Fa.FaCheckCircle, db: Fa.FaFileInvoiceDollar };
   for (const k in need) ic[k] = await icon(need[k], "#FFFFFF");
   const icTeal = {};
   for (const k of ["bolt", "layer", "search", "chart", "gavel", "sync", "check"]) icTeal[k] = await icon(need[k], "#1BA39C");
@@ -129,7 +129,38 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ], { x: 1.55, y: 5.5, w: 11, h: 0.85, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.1 });
   pageNum(s, 4);
 
-  // ===== S5 Three innovations (white) =====
+  // ===== S5 End-to-end flow diagram (white) =====
+  s = pres.addSlide(); s.background = { color: WHITE };
+  kicker(s, "END-TO-END FLOW");
+  title(s, "How a payment flows through the system");
+  const flow = [
+    ["db", "Payments In", "~10K/day\nAriba · LGAP · S4", TEAL],
+    ["layer", "Detect + Tier", "Dual entry →\nT1 / T2 / T3", TEAL],
+    ["search", "Investigate", "AI multi-source\nevidence pack", TEAL],
+    ["gavel", "Confirm", "Legal reviews\n& decides", TEAL],
+    ["brain", "Evolve", "Calibrate PPV ·\ndiscover new signals", TEAL],
+  ];
+  const fw = 2.15, fstep = 2.495, fy = 2.5, fh = 2.55;
+  flow.forEach((b, i) => {
+    const x = 0.6 + i * fstep;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: fy, w: fw, h: fh, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
+    s.addShape(pres.shapes.OVAL, { x: x + (fw - 0.85) / 2, y: fy + 0.28, w: 0.85, h: 0.85, fill: { color: b[3] } });
+    s.addImage({ data: ic[b[0]], x: x + (fw - 0.85) / 2 + 0.21, y: fy + 0.49, w: 0.43, h: 0.43 });
+    s.addText((i + 1) + ". " + b[1], { x: x + 0.1, y: fy + 1.28, w: fw - 0.2, h: 0.4, fontFace: FONTH, fontSize: 14, bold: true, color: INK, align: "center" });
+    s.addText(b[2], { x: x + 0.1, y: fy + 1.72, w: fw - 0.2, h: 0.7, fontFace: FONT, fontSize: 10.5, color: MUTED, align: "center", lineSpacingMultiple: 1.05 });
+    if (i < flow.length - 1) s.addImage({ data: ic.arrow, x: x + fw + 0.04, y: fy + fh / 2 - 0.14, w: 0.28, h: 0.28 });
+  });
+  // feedback loop bar
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.55, w: 12.13, h: 0.95, fill: { color: PANEL }, line: { color: TEAL, width: 1.2, dashType: "dash" }, rectRadius: 0.12 });
+  s.addImage({ data: ic.arrow, x: 0.92, y: 5.86, w: 0.34, h: 0.34, flipH: true });
+  s.addImage({ data: icTeal.sync, x: 1.42, y: 5.85, w: 0.36, h: 0.36 });
+  s.addText([
+    { text: "Continuous loop: ", options: { bold: true, color: TEAL } },
+    { text: "every confirmation recalibrates tiering and promotes validated new signals — all gated by statistical calibration + human approval.", options: { color: INK } },
+  ], { x: 1.95, y: 5.6, w: 10.6, h: 0.85, fontFace: FONT, fontSize: 13, valign: "middle", lineSpacingMultiple: 1.1 });
+  pageNum(s, 5);
+
+  // ===== S6 Three innovations (white) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "THREE CORE INNOVATIONS");
   title(s, "From static rules to an evolving assistant");
@@ -147,9 +178,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     s.addText(b[2], { x: x + 0.35, y: 3.85, w: 3.25, h: 0.85, fontFace: FONTH, fontSize: 17, bold: true, color: INK, lineSpacingMultiple: 1.0 });
     s.addText(b[3], { x: x + 0.37, y: 4.7, w: 3.25, h: 1.3, fontFace: FONT, fontSize: 12.5, color: MUTED, lineSpacingMultiple: 1.22 });
   });
-  pageNum(s, 5);
+  pageNum(s, 6);
 
-  // ===== S6 Self-evolution + gate =====
+  // ===== S7 Self-evolution + gate =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "SPOTLIGHT · SELF-EVOLUTION (HERMES AGENT)");
   title(s, "The system discovers new risks — but tiering stays gated");
@@ -175,9 +206,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "Compliance bottom line: ", options: { bold: true, color: AMBER } },
     { text: "self-evolution may only propose hypotheses — never silently change alert tiers. Any change affecting tiering must pass auditable statistical calibration + human approval.", options: { color: INK } },
   ], { x: 1.65, y: 5.05, w: 10.85, h: 1.1, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.2 });
-  pageNum(s, 6);
+  pageNum(s, 7);
 
-  // ===== S7 Summary + roadmap (white) =====
+  // ===== S8 Summary + roadmap (white) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   s.addShape(pres.shapes.OVAL, { x: -2.2, y: 4.6, w: 6, h: 6, fill: { color: TEAL, transparency: 94 }, line: { type: "none" } });
   kicker(s, "IN ONE SENTENCE");
@@ -196,5 +227,5 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   s.addText("Prototype demo · company payment data is synthetic; external data sources / Hermes framework / payment hold are pending integration.", { x: 0.6, y: 6.85, w: 12, h: 0.35, fontFace: FONT, fontSize: 10, italic: true, color: MUTED });
 
   await pres.writeFile({ fileName: "AML-System-Walkthrough-Legal-EN.pptx" });
-  console.log("WROTE EN deck (7 slides)");
+  console.log("WROTE EN deck (8 slides)");
 })();
