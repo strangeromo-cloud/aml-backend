@@ -677,9 +677,29 @@
     // Vendor signals that are a roll-up of Entry A (not a native vendor-level pattern).
     const ROLLUP_SIGNALS = ['cumulativeAlerts'];
 
+    // Tiering: any single high-precision (Accuracy=100%) rule hit → T1;
+    // else if the payment's vendor has a behavioral signal → T2; else T3.
+    let vendorSignalMap = {};
+    function computeVendorSignals() {
+      const byVendor = {};
+      payments.forEach(p => (byVendor[p.vendor] = byVendor[p.vendor] || []).push(p));
+      const sig = {};
+      Object.entries(byVendor).forEach(([v, items]) => {
+        const count = items.length;
+        const small = items.filter(p => p.amountNum < 100000).length;
+        const ph = items.filter(p => (p.precisionHits || []).length > 0).length;
+        const s = [];
+        if (count >= 3 && small >= 3) s.push('structuring');
+        if (count >= 4) s.push('surge');
+        if (ph >= 2) s.push('cumulativeAlerts');
+        sig[v] = s;
+      });
+      return sig;
+    }
     function paymentTier(p) {
-      const n = (p.precisionHits || []).length;
-      return n >= 2 ? 'T1' : n === 1 ? 'T2' : 'T3';
+      if ((p.precisionHits || []).length >= 1) return 'T1';
+      if ((vendorSignalMap[p.vendor] || []).length) return 'T2';
+      return 'T3';
     }
     function assignPrecisionHits() {
       payments.forEach(p => {
@@ -689,8 +709,9 @@
         if (p.riskTypes.includes('docMissing')) hits.push('businessScopeMismatch');
         if (p.riskTypes.includes('behavior') && p.reasonableScore >= 60) hits.push('fakeInvoice');
         p.precisionHits = hits;
-        p._tierRank = TIER_RANK[paymentTier(p)];
       });
+      vendorSignalMap = computeVendorSignals();
+      payments.forEach(p => { p._tierRank = TIER_RANK[paymentTier(p)]; });
     }
 
     const vendors = [
@@ -970,13 +991,9 @@
         const count = items.length;
         const smallCount = items.filter(p => p.amountNum < 100000).length;
         const precisionHitCount = items.filter(p => (p.precisionHits || []).length > 0).length;
-        const signals = [];
-        if (count >= 3 && smallCount >= 3) signals.push('structuring');
-        if (count >= 4) signals.push('surge');
-        if (precisionHitCount >= 2) signals.push('cumulativeAlerts');
-        let tier = null;
-        if (signals.includes('structuring') && precisionHitCount >= 1) tier = 'T1';
-        else if (signals.length) tier = 'T2';
+        const signals = vendorSignalMap[prof.vendor] || [];
+        // Vendor-level behavioral signals (no hard hit needed) → T2.
+        const tier = signals.length ? 'T2' : null;
         return { ...prof, count, smallCount, precisionHitCount, signals, tier, totalAmount: items.reduce((a, p) => a + p.amountNum, 0) };
       });
     }
@@ -984,9 +1001,10 @@
     function buildUnifiedQueue() {
       const items = [];
       payments.forEach(p => {
-        const tier = paymentTier(p);
-        if ((tier === 'T1' || tier === 'T2') && !isReviewed(p)) {
-          items.push({ tier, kind: 'payment', name: p.id, sub: p.vendor, reason: (p.precisionHits || []).map(h => t('hpRules')[h]).join(' · '), idx: payments.indexOf(p), overdue: isOverdue(p) });
+        // Payment-level entries = T1 (hard-rule hit). Vendor-level T2 is added below;
+        // T2 payments are represented by their vendor entry (avoid double-listing).
+        if (paymentTier(p) === 'T1' && !isReviewed(p)) {
+          items.push({ tier: 'T1', kind: 'payment', name: p.id, sub: p.vendor, reason: (p.precisionHits || []).map(h => t('hpRules')[h]).join(' · '), idx: payments.indexOf(p), overdue: isOverdue(p) });
         }
       });
       computeVendorProfiles().forEach(v => {
