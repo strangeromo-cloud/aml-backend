@@ -81,7 +81,7 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "→ 算一个 0–100 总分，按高/中/低排序", options: { color: MUTED } },
   ], { x: 0.95, y: 3.2, w: 4.95, h: 0.9, fontFace: FONT, fontSize: 12.5, lineSpacingMultiple: 1.25 });
   s.addText("痛点", { x: 0.95, y: 4.3, w: 4.5, h: 0.3, fontFace: FONT, fontSize: 12, bold: true, color: RED, charSpacing: 1 });
-  s.addText("强信号被「平均」稀释：一笔命中 2 条 30% 命中率硬规则的付款，被其它正常维度一平均就沉底、可能没人看。", { x: 0.97, y: 4.62, w: 5.0, h: 1.65, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.3 });
+  s.addText("强信号被「平均」稀释：一笔哪怕只命中 1 条 30% 命中率硬规则的付款，被其它正常维度一平均就沉底、可能没人看。", { x: 0.97, y: 4.62, w: 5.0, h: 1.65, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.3 });
   s.addImage({ data: ic.arrow, x: 6.35, y: 3.95, w: 0.62, h: 0.62 });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.18, y: 2.0, w: 5.55, h: 4.4, fill: { color: NAVY }, rectRadius: 0.12, shadow: sh() });
   s.addText("新形态", { x: 7.53, y: 2.2, w: 4.5, h: 0.4, fontFace: FONT, fontSize: 13, bold: true, color: TEAL2, charSpacing: 1 });
@@ -99,11 +99,11 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   // ===== S4 分级逻辑 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "分级规则");
-  title(s, "分级逻辑：看命中几条高精度规则");
+  title(s, "分级逻辑：命中任意一条高精度规则即 T1");
   // 左：付款级高精度规则
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 2.0, w: 5.55, h: 3.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
-  s.addText("付款级高精度规则（入口 A）", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 16, bold: true, color: INK });
-  s.addText("每条约 30% PPV —— 命中后约三成确实是洗钱", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11.5, color: MUTED });
+  s.addText("付款级硬规则（入口 A）", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 16, bold: true, color: INK });
+  s.addText("准确率 100% 的确定性校验 —— 单条命中即高置信", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11.5, color: MUTED });
   s.addText([
     { text: "银行 / 营业地国家不一致", options: { bullet: true, breakLine: true } },
     { text: "付款方 / 发票来源国不一致", options: { bullet: true, breakLine: true } },
@@ -112,9 +112,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ], { x: 1.0, y: 3.2, w: 5.0, h: 2.4, fontFace: FONT, fontSize: 14, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 12 });
   // 右：Tier 映射三行
   const trows = [
-    ["T1", RED, "命中 ≥ 2 条高精度规则", "紧急 · 24 小时内复核"],
-    ["T2", AMBER, "命中 1 条高精度规则", "告警 · 3 天内复核"],
-    ["T3", SLATE, "未命中高精度规则", "评分 · 批量排序（复用原有逻辑）"],
+    ["T1", RED, "命中任意 1 条高精度规则", "紧急 · 24 小时内复核"],
+    ["T2", AMBER, "仅命中供应商级信号", "告警 · 3 天内复核"],
+    ["T3", SLATE, "高精度 / 行为均未命中", "评分 · 批量排序（复用原有逻辑）"],
   ];
   trows.forEach((r, i) => {
     const y = 2.0 + i * 1.3;
@@ -126,9 +126,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   // 底部：供应商级并入说明
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.05, w: 12.13, h: 0.7, fill: { color: NAVY }, rectRadius: 0.12 });
   s.addText([
-    { text: "供应商级信号（入口 B）同样并入：", options: { bold: true, color: TEAL2 } },
-    { text: "拆分 + 旗下高精度命中 → T1；单一行为信号（拆分 / 突增 / 多次命中）→ T2。", options: { color: "DDEBEF" } },
-  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 13, valign: "middle" });
+    { text: "为何如此从严：", options: { bold: true, color: TEAL2 } },
+    { text: "这四条是准确率 100% 的确定性校验，单条命中即高置信 → 直接 T1。仅命中供应商级行为信号（拆分 / 突增 / 多次命中）→ T2。", options: { color: "DDEBEF" } },
+  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 12.5, valign: "middle" });
   pageNum(s, 4);
 
   // ===== S5 双入口 + 闭环 =====

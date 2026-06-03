@@ -81,7 +81,7 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "→ one 0–100 score, ranked High / Medium / Low", options: { color: MUTED } },
   ], { x: 0.95, y: 3.2, w: 4.95, h: 0.9, fontFace: FONT, fontSize: 12.5, lineSpacingMultiple: 1.25 });
   s.addText("THE PROBLEM", { x: 0.95, y: 4.3, w: 4.5, h: 0.3, fontFace: FONT, fontSize: 12, bold: true, color: RED, charSpacing: 1 });
-  s.addText("Strong signals get diluted by averaging: a payment hitting 2 hard rules (30% PPV each) is averaged down by normal dimensions — it sinks in the queue and may never be seen.", { x: 0.97, y: 4.62, w: 5.0, h: 1.65, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.25 });
+  s.addText("Strong signals get diluted by averaging: a payment that hits even one 30%-PPV hard rule is averaged down by normal dimensions — it sinks in the queue and may never be seen.", { x: 0.97, y: 4.62, w: 5.0, h: 1.65, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.25 });
   s.addImage({ data: ic.arrow, x: 6.35, y: 3.95, w: 0.62, h: 0.62 });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.18, y: 2.0, w: 5.55, h: 4.4, fill: { color: NAVY }, rectRadius: 0.12, shadow: sh() });
   s.addText("NEW FORM", { x: 7.53, y: 2.2, w: 4.5, h: 0.4, fontFace: FONT, fontSize: 13, bold: true, color: TEAL2, charSpacing: 1 });
@@ -99,10 +99,10 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   // ===== S4 Tiering logic =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "TIERING RULES");
-  title(s, "How a tier is assigned: how many hard rules it hits");
+  title(s, "How a tier is assigned: any hard-rule hit → T1");
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 2.0, w: 5.55, h: 3.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
-  s.addText("Payment-level high-precision rules (Entry A)", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 15.5, bold: true, color: INK });
-  s.addText("~30% PPV each — about a third of hits are real laundering", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11, color: MUTED });
+  s.addText("Payment-level hard rules (Entry A)", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 15.5, bold: true, color: INK });
+  s.addText("Accuracy 100% — deterministic checks; a single hit is high-confidence", { x: 0.9, y: 2.66, w: 5.0, h: 0.5, fontFace: FONT, fontSize: 11, color: MUTED, lineSpacingMultiple: 1.05 });
   s.addText([
     { text: "Bank / business country mismatch", options: { bullet: true, breakLine: true } },
     { text: "Payer / invoice-origin country mismatch", options: { bullet: true, breakLine: true } },
@@ -110,9 +110,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
     { text: "Fake-invoice indicators", options: { bullet: true } },
   ], { x: 1.0, y: 3.2, w: 5.0, h: 2.4, fontFace: FONT, fontSize: 13.5, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 12 });
   const trows = [
-    ["T1", RED, "Hits ≥ 2 high-precision rules", "Critical · review within 24h"],
-    ["T2", AMBER, "Hits 1 high-precision rule", "Alert · review within 3 days"],
-    ["T3", SLATE, "No high-precision hit", "Scored · batch ranking (existing logic)"],
+    ["T1", RED, "Hits ANY 1 hard rule", "Critical · review within 24h"],
+    ["T2", AMBER, "Vendor-level signal only", "Alert · review within 3 days"],
+    ["T3", SLATE, "No hard or behavioral hit", "Scored · batch ranking (existing logic)"],
   ];
   trows.forEach((r, i) => {
     const y = 2.0 + i * 1.3;
@@ -123,9 +123,9 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.05, w: 12.13, h: 0.7, fill: { color: NAVY }, rectRadius: 0.12 });
   s.addText([
-    { text: "Vendor-level signals (Entry B) feed in too: ", options: { bold: true, color: TEAL2 } },
-    { text: "structuring + a high-precision hit → T1; any single behavioral signal (structuring / surge / repeated hits) → T2.", options: { color: "DDEBEF" } },
-  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 12.5, valign: "middle" });
+    { text: "Why so strict: ", options: { bold: true, color: TEAL2 } },
+    { text: "these four are deterministic 100%-accuracy checks — even one confirmed hit goes straight to T1. Vendor-level behavioral signals alone (structuring / surge / repeated hits) → T2.", options: { color: "DDEBEF" } },
+  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 12, valign: "middle" });
   pageNum(s, 4);
 
   // ===== S5 Dual entry + loop =====
