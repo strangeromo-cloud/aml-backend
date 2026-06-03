@@ -129,35 +129,59 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ], { x: 1.55, y: 5.5, w: 11, h: 0.85, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.1 });
   pageNum(s, 4);
 
-  // ===== S5 End-to-end flow diagram (white) =====
+  // ===== S5 End-to-end flowchart (white, diamonds + arrows) =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "END-TO-END FLOW");
   title(s, "How a payment flows through the system");
-  const flow = [
-    ["db", "Payments In", "~10K/day\nAriba · LGAP · S4", TEAL],
-    ["layer", "Detect + Tier", "Dual entry →\nT1 / T2 / T3", TEAL],
-    ["search", "Investigate", "AI multi-source\nevidence pack", TEAL],
-    ["gavel", "Confirm", "Legal reviews\n& decides", TEAL],
-    ["brain", "Evolve", "Calibrate PPV ·\ndiscover new signals", TEAL],
-  ];
-  const fw = 2.15, fstep = 2.495, fy = 2.5, fh = 2.55;
-  flow.forEach((b, i) => {
-    const x = 0.6 + i * fstep;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: fy, w: fw, h: fh, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
-    s.addShape(pres.shapes.OVAL, { x: x + (fw - 0.85) / 2, y: fy + 0.28, w: 0.85, h: 0.85, fill: { color: b[3] } });
-    s.addImage({ data: ic[b[0]], x: x + (fw - 0.85) / 2 + 0.21, y: fy + 0.49, w: 0.43, h: 0.43 });
-    s.addText((i + 1) + ". " + b[1], { x: x + 0.1, y: fy + 1.28, w: fw - 0.2, h: 0.4, fontFace: FONTH, fontSize: 14, bold: true, color: INK, align: "center" });
-    s.addText(b[2], { x: x + 0.1, y: fy + 1.72, w: fw - 0.2, h: 0.7, fontFace: FONT, fontSize: 10.5, color: MUTED, align: "center", lineSpacingMultiple: 1.05 });
-    if (i < flow.length - 1) s.addImage({ data: ic.arrow, x: x + fw + 0.04, y: fy + fh / 2 - 0.14, w: 0.28, h: 0.28 });
-  });
-  // feedback loop bar
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.55, w: 12.13, h: 0.95, fill: { color: PANEL }, line: { color: TEAL, width: 1.2, dashType: "dash" }, rectRadius: 0.12 });
-  s.addImage({ data: ic.arrow, x: 0.92, y: 5.86, w: 0.34, h: 0.34, flipH: true });
-  s.addImage({ data: icTeal.sync, x: 1.42, y: 5.85, w: 0.36, h: 0.36 });
+  const MID = 2.85;              // main-row vertical midline
+  const conn = (x1, y1, x2, y2, end) => s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: "9FB6C0", width: 1.75, endArrowType: end === false ? "none" : "triangle" } });
+  const proc = (x, w, t, sub, fill) => {
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: MID - 0.5, w, h: 1.0, fill: { color: fill || PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1, shadow: sh() });
+    s.addText([{ text: t, options: { bold: true, color: INK, breakLine: true, fontSize: 13.5 } }, { text: sub, options: { color: MUTED, fontSize: 10.5 } }],
+      { x: x + 0.06, y: MID - 0.5, w: w - 0.12, h: 1.0, fontFace: FONTH, align: "center", valign: "middle", lineSpacingMultiple: 1.05 });
+  };
+  const diamond = (cx, t) => {
+    const dw = 1.55, dh = 1.35;
+    s.addShape(pres.shapes.DIAMOND, { x: cx - dw / 2, y: MID - dh / 2, w: dw, h: dh, fill: { color: "FFF6E8" }, line: { color: AMBER, width: 1.5 } });
+    s.addText(t, { x: cx - dw / 2, y: MID - dh / 2, w: dw, h: dh, fontFace: FONTH, fontSize: 11.5, bold: true, color: "8A6115", align: "center", valign: "middle" });
+  };
+  // main spine
+  proc(0.5, 1.7, "Payments In", "~10K / day");          // 0.5–2.20
+  conn(2.20, MID, 2.50, MID);
+  proc(2.50, 1.85, "Detect + Tier", "dual entry");       // 2.50–4.35
+  conn(4.35, MID, 4.62, MID);
+  diamond(5.45, "Tier\nlevel?");                          // 4.675–6.225
+  conn(6.23, MID, 6.55, MID);
+  s.addText("T1 / T2", { x: 5.95, y: 2.0, w: 0.9, h: 0.28, fontFace: FONT, fontSize: 9.5, bold: true, color: RED, align: "center" });
+  proc(6.55, 1.85, "AI Investigation", "evidence pack"); // 6.55–8.40
+  conn(8.40, MID, 8.67, MID);
+  diamond(9.55, "Money\nlaundering?");                    // 8.775–10.325
+  conn(10.33, MID, 10.62, MID);
+  proc(10.62, 1.95, "Evolve & Learn", "calibrate · discover"); // 10.62–12.57
+
+  // branch DOWN from Tier? (T3)
+  const BY = 4.6;
+  conn(5.45, MID + 0.68, 5.45, BY);
+  s.addText("T3", { x: 5.55, y: 3.55, w: 0.6, h: 0.3, fontFace: FONT, fontSize: 9.5, bold: true, color: SLATE });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.4, y: BY, w: 2.1, h: 0.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
+  s.addText("Batch score & rank", { x: 4.45, y: BY, w: 2.0, h: 0.85, fontFace: FONT, fontSize: 11, color: INK, align: "center", valign: "middle" });
+
+  // branch DOWN from laundering? (Yes / No → recorded)
+  conn(9.55, MID + 0.68, 9.55, BY);
+  s.addText("Yes / No", { x: 9.65, y: 3.55, w: 1.0, h: 0.3, fontFace: FONT, fontSize: 9.5, bold: true, color: GREEN });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.5, y: BY, w: 2.1, h: 0.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
+  s.addText("Decision recorded\n→ feeds learning", { x: 8.55, y: BY, w: 2.0, h: 0.85, fontFace: FONT, fontSize: 10.5, color: INK, align: "center", valign: "middle", lineSpacingMultiple: 1.0 });
+
+  // feedback loop: Evolve → (down, left, up) → Detect+Tier  (dashed)
+  const FYb = 6.6;
+  const fbLine = () => ({ color: TEAL, width: 1.6, dashType: "dash" });
+  s.addShape(pres.shapes.LINE, { x: 11.595, y: MID + 0.5, w: 0, h: FYb - (MID + 0.5), line: fbLine() });
+  s.addShape(pres.shapes.LINE, { x: 3.425, y: FYb, w: 11.595 - 3.425, h: 0, line: fbLine() });
+  s.addShape(pres.shapes.LINE, { x: 3.425, y: MID + 0.5, w: 0, h: FYb - (MID + 0.5), line: { color: TEAL, width: 1.6, dashType: "dash", beginArrowType: "triangle" } });
   s.addText([
-    { text: "Continuous loop: ", options: { bold: true, color: TEAL } },
-    { text: "every confirmation recalibrates tiering and promotes validated new signals — all gated by statistical calibration + human approval.", options: { color: INK } },
-  ], { x: 1.95, y: 5.6, w: 10.6, h: 0.85, fontFace: FONT, fontSize: 13, valign: "middle", lineSpacingMultiple: 1.1 });
+    { text: "Feedback loop  ", options: { bold: true, color: TEAL } },
+    { text: "— validated signals & recalibrated PPV adjust tiering, gated by calibration + human approval.", options: { color: INK } },
+  ], { x: 3.7, y: 5.95, w: 8.4, h: 0.5, fontFace: FONT, fontSize: 11.5, valign: "middle", lineSpacingMultiple: 1.05 });
   pageNum(s, 5);
 
   // ===== S6 Three innovations (white) =====
