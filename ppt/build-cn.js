@@ -99,36 +99,42 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   // ===== S4 分级逻辑 =====
   s = pres.addSlide(); s.background = { color: WHITE };
   kicker(s, "分级规则");
-  title(s, "分级逻辑：命中任意一条高精度规则即 T1");
-  // 左：付款级高精度规则
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 2.0, w: 5.55, h: 3.85, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
-  s.addText("付款级硬规则（入口 A）", { x: 0.9, y: 2.22, w: 5.0, h: 0.4, fontFace: FONTH, fontSize: 16, bold: true, color: INK });
-  s.addText("准确率 100% 的确定性校验 —— 单条命中即高置信", { x: 0.9, y: 2.66, w: 5.0, h: 0.35, fontFace: FONT, fontSize: 11.5, color: MUTED });
+  title(s, "三个等级：逐级说明");
+  const TCW = 3.84, TCX = [0.6, 4.745, 8.89], TCY = 2.0, TCH = 4.55;
+  const tcard = (i, color, badge, label, sla, cond) => {
+    const x = TCX[i];
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: TCY, w: TCW, h: TCH, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.14, shadow: sh() });
+    s.addText(badge, { x: x + 0.3, y: TCY + 0.3, w: 0.95, h: 0.62, fontFace: FONTH, fontSize: 20, bold: true, color: WHITE, align: "center", valign: "middle", fill: { color: color }, rectRadius: 0.08 });
+    s.addText(label, { x: x + 1.4, y: TCY + 0.3, w: 2.2, h: 0.4, fontFace: FONTH, fontSize: 17, bold: true, color: INK, valign: "middle" });
+    s.addText(sla, { x: x + 1.4, y: TCY + 0.72, w: 2.2, h: 0.32, fontFace: FONT, fontSize: 11, color: MUTED, valign: "middle" });
+    s.addShape(pres.shapes.LINE, { x: x + 0.3, y: TCY + 1.15, w: TCW - 0.6, h: 0, line: { color: LINE, width: 1 } });
+    s.addText(cond, { x: x + 0.3, y: TCY + 1.26, w: TCW - 0.6, h: 0.6, fontFace: FONTH, fontSize: 14, bold: true, color: INK, lineSpacingMultiple: 1.05 });
+    return x;
+  };
+  // T1
+  let x = tcard(0, RED, "T1", "紧急", "24 小时内复核", "命中任意 1 条高精度规则");
   s.addText([
     { text: "银行 / 营业地国家不一致", options: { bullet: true, breakLine: true } },
     { text: "付款方 / 发票来源国不一致", options: { bullet: true, breakLine: true } },
     { text: "主营业务 ≠ 采购品类", options: { bullet: true, breakLine: true } },
     { text: "虚假发票特征", options: { bullet: true } },
-  ], { x: 1.0, y: 3.2, w: 5.0, h: 2.4, fontFace: FONT, fontSize: 14, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 12 });
-  // 右：Tier 映射三行
-  const trows = [
-    ["T1", RED, "命中任意 1 条高精度规则", "紧急 · 24 小时内复核"],
-    ["T2", AMBER, "仅命中供应商级信号", "告警 · 3 天内复核"],
-    ["T3", SLATE, "高精度 / 行为均未命中", "评分 · 批量排序（复用原有逻辑）"],
-  ];
-  trows.forEach((r, i) => {
-    const y = 2.0 + i * 1.3;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.55, y, w: 6.18, h: 1.1, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.12, shadow: sh() });
-    s.addText(r[0], { x: 6.8, y: y + 0.25, w: 1.0, h: 0.6, fontFace: FONTH, fontSize: 20, bold: true, color: WHITE, align: "center", valign: "middle", fill: { color: r[1] }, rectRadius: 0.08 });
-    s.addText(r[2], { x: 8.05, y: y + 0.16, w: 4.5, h: 0.42, fontFace: FONTH, fontSize: 15, bold: true, color: INK, valign: "middle" });
-    s.addText(r[3], { x: 8.05, y: y + 0.58, w: 4.5, h: 0.38, fontFace: FONT, fontSize: 12, color: MUTED, valign: "middle" });
-  });
-  // 底部：供应商级并入说明
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.05, w: 12.13, h: 0.7, fill: { color: NAVY }, rectRadius: 0.12 });
+  ], { x: x + 0.42, y: TCY + 1.95, w: TCW - 0.72, h: 1.5, fontFace: FONT, fontSize: 12, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 6 });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.3, y: TCY + 3.45, w: TCW - 0.6, h: 0.95, fill: { color: "FBEEEE" }, line: { color: "F0C9C9", width: 1 }, rectRadius: 0.1 });
   s.addText([
-    { text: "为何如此从严：", options: { bold: true, color: TEAL2 } },
-    { text: "这四条是准确率 100% 的确定性校验，单条命中即高置信 → 直接 T1。仅命中供应商级行为信号（拆分 / 突增 / 多次命中）→ T2。", options: { color: "DDEBEF" } },
-  ], { x: 0.9, y: 6.05, w: 11.6, h: 0.7, fontFace: FONT, fontSize: 12.5, valign: "middle" });
+    { text: "为何直接 T1：", options: { bold: true, color: RED } },
+    { text: "准确率 100% 的确定性校验，单条命中即高置信。", options: { color: INK } },
+  ], { x: x + 0.45, y: TCY + 3.5, w: TCW - 0.9, h: 0.85, fontFace: FONT, fontSize: 11, valign: "middle", lineSpacingMultiple: 1.1 });
+  // T2
+  x = tcard(1, AMBER, "T2", "告警", "3 天内复核", "仅命中供应商级信号（无硬规则命中）");
+  s.addText("命中以下任一供应商级行为信号：", { x: x + 0.3, y: TCY + 1.95, w: TCW - 0.6, h: 0.35, fontFace: FONT, fontSize: 11, color: MUTED });
+  s.addText([
+    { text: "拆分付款（化整为零）", options: { bullet: true, breakLine: true } },
+    { text: "付款突增（新供应商）", options: { bullet: true, breakLine: true } },
+    { text: "高精度规则多次命中", options: { bullet: true } },
+  ], { x: x + 0.42, y: TCY + 2.4, w: TCW - 0.72, h: 1.6, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.0, paraSpaceAfter: 8 });
+  // T3
+  x = tcard(2, SLATE, "T3", "评分", "批量排序", "高精度 / 行为均未命中");
+  s.addText("回落到原有加权评分（供应商分 / 付款分 / 合理性），批量排序后取 Top K 复核。", { x: x + 0.3, y: TCY + 1.95, w: TCW - 0.6, h: 2.0, fontFace: FONT, fontSize: 12.5, color: INK, lineSpacingMultiple: 1.3 });
   pageNum(s, 4);
 
   // ===== S5 双入口 + 闭环 =====
