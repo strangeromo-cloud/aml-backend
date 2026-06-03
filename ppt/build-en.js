@@ -33,17 +33,17 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   const need = { bolt: Fa.FaBolt, layer: Fa.FaLayerGroup, search: Fa.FaSearch, robot: Fa.FaRobot, chart: Fa.FaChartLine, sync: Fa.FaSyncAlt, gavel: Fa.FaGavel, brain: Fa.FaBrain, scale: Fa.FaBalanceScale, eye: Fa.FaEye, arrow: Fa.FaArrowRight, check: Fa.FaCheckCircle };
   for (const k in need) ic[k] = await icon(need[k], "#FFFFFF");
   const icTeal = {};
-  for (const k of ["bolt", "layer", "search", "chart", "gavel", "sync"]) icTeal[k] = await icon(need[k], "#1BA39C");
+  for (const k of ["bolt", "layer", "search", "chart", "gavel", "sync", "check"]) icTeal[k] = await icon(need[k], "#1BA39C");
 
-  // ===== S1 Cover =====
-  let s = pres.addSlide(); s.background = { color: NAVY };
-  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: W, h: 0.18, fill: { color: TEAL } });
-  s.addShape(pres.shapes.OVAL, { x: W - 4.2, y: -2.4, w: 6.5, h: 6.5, fill: { color: TEAL2, transparency: 82 }, line: { type: "none" } });
-  s.addShape(pres.shapes.OVAL, { x: W - 2.6, y: 2.6, w: 5, h: 5, fill: { color: TEAL, transparency: 88 }, line: { type: "none" } });
-  s.addText("AML", { x: 0.9, y: 1.5, w: 2.4, h: 1.1, fontFace: FONTH, fontSize: 40, bold: true, color: NAVY, align: "center", valign: "middle", fill: { color: TEAL }, rectRadius: 0.2 });
-  s.addText("Payment Risk Identification System", { x: 0.9, y: 2.8, w: 11.5, h: 1.0, fontFace: FONTH, fontSize: 40, bold: true, color: WHITE });
-  s.addText("From a Single Score to Tiered Alerts + Self-Evolution", { x: 0.92, y: 3.95, w: 11.5, h: 0.6, fontFace: FONT, fontSize: 19, color: "AECDD6" });
-  s.addText("A System Walkthrough for the Legal Team", { x: 0.92, y: 5.5, w: 11, h: 0.5, fontFace: FONT, fontSize: 14, color: "8FB2BD" });
+  // ===== S1 Cover (white) =====
+  let s = pres.addSlide(); s.background = { color: WHITE };
+  s.addShape(pres.shapes.OVAL, { x: W - 4.0, y: -2.6, w: 6.5, h: 6.5, fill: { color: TEAL, transparency: 92 }, line: { type: "none" } });
+  s.addShape(pres.shapes.OVAL, { x: W - 2.4, y: 2.8, w: 5, h: 5, fill: { color: TEAL, transparency: 95 }, line: { type: "none" } });
+  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: 0.28, h: H, fill: { color: TEAL } });
+  s.addText("AML", { x: 0.9, y: 1.5, w: 2.4, h: 1.1, fontFace: FONTH, fontSize: 40, bold: true, color: WHITE, align: "center", valign: "middle", fill: { color: TEAL }, rectRadius: 0.2 });
+  s.addText("Payment Risk Identification System", { x: 0.9, y: 2.8, w: 11.5, h: 1.0, fontFace: FONTH, fontSize: 40, bold: true, color: INK });
+  s.addText("From a Single Score to Tiered Alerts + Self-Evolution", { x: 0.92, y: 3.95, w: 11.5, h: 0.6, fontFace: FONT, fontSize: 19, color: TEAL, bold: true });
+  s.addText("A System Walkthrough for the Legal Team", { x: 0.92, y: 5.5, w: 11, h: 0.5, fontFace: FONT, fontSize: 14, color: MUTED });
 
   // ===== S2 Reality + conclusion =====
   s = pres.addSlide(); s.background = { color: WHITE };
@@ -129,11 +129,10 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ], { x: 1.55, y: 5.5, w: 11, h: 0.85, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.1 });
   pageNum(s, 4);
 
-  // ===== S5 Three innovations =====
-  s = pres.addSlide(); s.background = { color: NAVY };
-  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: W, h: 0.14, fill: { color: TEAL } });
-  s.addText("THREE CORE INNOVATIONS", { x: 0.6, y: 0.55, w: 9, h: 0.4, fontFace: FONT, fontSize: 13, bold: true, color: TEAL2, charSpacing: 2 });
-  s.addText("From static rules to an evolving assistant", { x: 0.6, y: 1.0, w: 12, h: 0.9, fontFace: FONTH, fontSize: 30, bold: true, color: WHITE });
+  // ===== S5 Three innovations (white) =====
+  s = pres.addSlide(); s.background = { color: WHITE };
+  kicker(s, "THREE CORE INNOVATIONS");
+  title(s, "From static rules to an evolving assistant");
   const innov = [
     ["robot", "01", "AI Investigation Agent", "Auto multi-source evidence (Qichacha / Tianyancha / Dow Jones) cuts each case from an hour to minutes; humans make the final call."],
     ["brain", "02", "Self-Evolution", "The agent discovers new signals not yet in the rule set — but they enter only as candidates, taking effect after calibration + approval."],
@@ -141,12 +140,12 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ];
   innov.forEach((b, i) => {
     const x = 0.6 + i * 4.12;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: 3.8, h: 3.7, fill: { color: "16384A" }, line: { color: "29516A", width: 1 }, rectRadius: 0.14 });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: 3.8, h: 3.7, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.14, shadow: sh() });
     s.addShape(pres.shapes.OVAL, { x: x + 0.35, y: 2.7, w: 0.95, h: 0.95, fill: { color: TEAL } });
     s.addImage({ data: ic[b[0]], x: x + 0.57, y: 2.92, w: 0.51, h: 0.51 });
-    s.addText(b[1], { x: x + 2.5, y: 2.65, w: 1.1, h: 0.7, fontFace: FONTH, fontSize: 34, bold: true, color: "29516A", align: "right" });
-    s.addText(b[2], { x: x + 0.35, y: 3.85, w: 3.25, h: 0.85, fontFace: FONTH, fontSize: 17, bold: true, color: WHITE, lineSpacingMultiple: 1.0 });
-    s.addText(b[3], { x: x + 0.37, y: 4.7, w: 3.25, h: 1.3, fontFace: FONT, fontSize: 12.5, color: "AECDD6", lineSpacingMultiple: 1.22 });
+    s.addText(b[1], { x: x + 2.5, y: 2.65, w: 1.1, h: 0.7, fontFace: FONTH, fontSize: 34, bold: true, color: "CFE0E6", align: "right" });
+    s.addText(b[2], { x: x + 0.35, y: 3.85, w: 3.25, h: 0.85, fontFace: FONTH, fontSize: 17, bold: true, color: INK, lineSpacingMultiple: 1.0 });
+    s.addText(b[3], { x: x + 0.37, y: 4.7, w: 3.25, h: 1.3, fontFace: FONT, fontSize: 12.5, color: MUTED, lineSpacingMultiple: 1.22 });
   });
   pageNum(s, 5);
 
@@ -178,23 +177,23 @@ function title(slide, text) { slide.addText(text, { x: 0.6, y: 0.82, w: 12.1, h:
   ], { x: 1.65, y: 5.05, w: 10.85, h: 1.1, fontFace: FONT, fontSize: 13.5, valign: "middle", lineSpacingMultiple: 1.2 });
   pageNum(s, 6);
 
-  // ===== S7 Summary + roadmap =====
-  s = pres.addSlide(); s.background = { color: NAVY };
-  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: W, h: 0.14, fill: { color: TEAL } });
-  s.addShape(pres.shapes.OVAL, { x: -2, y: 4.5, w: 6, h: 6, fill: { color: TEAL, transparency: 88 }, line: { type: "none" } });
-  s.addText("IN ONE SENTENCE", { x: 0.6, y: 0.7, w: 9, h: 0.4, fontFace: FONT, fontSize: 13, bold: true, color: TEAL2, charSpacing: 2 });
-  s.addText("Surface the high-value alerts, and keep getting sharper", { x: 0.6, y: 1.15, w: 12.2, h: 1.0, fontFace: FONTH, fontSize: 29, bold: true, color: WHITE });
-  s.addText("Tiered alerts replace the overall score (strong signals no longer diluted), two entry points cover single- and cross-payment tactics, AI speeds up investigation, and self-evolution surfaces new risks — with every tiering change inside an auditable gate of statistical calibration + human approval.", { x: 0.62, y: 2.5, w: 11.7, h: 1.4, fontFace: FONT, fontSize: 15, color: "DDEBEF", lineSpacingMultiple: 1.32 });
-  s.addText("FOR THE LEGAL TEAM", { x: 0.6, y: 4.0, w: 9, h: 0.35, fontFace: FONT, fontSize: 13, bold: true, color: TEAL2, charSpacing: 1 });
+  // ===== S7 Summary + roadmap (white) =====
+  s = pres.addSlide(); s.background = { color: WHITE };
+  s.addShape(pres.shapes.OVAL, { x: -2.2, y: 4.6, w: 6, h: 6, fill: { color: TEAL, transparency: 94 }, line: { type: "none" } });
+  kicker(s, "IN ONE SENTENCE");
+  s.addText("Surface the high-value alerts, and keep getting sharper", { x: 0.6, y: 0.82, w: 12.2, h: 1.0, fontFace: FONTH, fontSize: 29, bold: true, color: INK });
+  s.addText("Tiered alerts replace the overall score (strong signals no longer diluted), two entry points cover single- and cross-payment tactics, AI speeds up investigation, and self-evolution surfaces new risks — with every tiering change inside an auditable gate of statistical calibration + human approval.", { x: 0.62, y: 2.2, w: 11.9, h: 1.4, fontFace: FONT, fontSize: 15, color: INK, lineSpacingMultiple: 1.32 });
+  s.addText("FOR THE LEGAL TEAM", { x: 0.6, y: 3.9, w: 9, h: 0.35, fontFace: FONT, fontSize: 13, bold: true, color: TEAL, charSpacing: 1 });
   const vals = ["A ranked list — no more needle in a haystack", "Every item comes with a 'why', easy to explain", "Explainable & auditable — stands up to regulators", "Every review you do makes the system sharper"];
   vals.forEach((v, i) => {
     const x = 0.6 + (i % 2) * 6.15;
-    const y = 4.4 + Math.floor(i / 2) * 0.62;
-    s.addImage({ data: ic.check, x, y: y + 0.02, w: 0.3, h: 0.3 });
-    s.addText(v, { x: x + 0.42, y: y - 0.05, w: 5.7, h: 0.45, fontFace: FONT, fontSize: 12.5, color: "DDEBEF", valign: "middle" });
+    const y = 4.35 + Math.floor(i / 2) * 0.66;
+    s.addImage({ data: icTeal.check, x, y: y + 0.02, w: 0.3, h: 0.3 });
+    s.addText(v, { x: x + 0.42, y: y - 0.05, w: 5.7, h: 0.45, fontFace: FONT, fontSize: 12.5, color: INK, valign: "middle" });
   });
-  s.addText("Next: real data sources (Qichacha / Tianyancha / Dow Jones) · deploy the Hermes Agent framework · integrate the payment system", { x: 0.6, y: 6.0, w: 12.2, h: 0.4, fontFace: FONT, fontSize: 12, color: "8FB2BD" });
-  s.addText("Prototype demo · company payment data is synthetic; external data sources / Hermes framework / payment hold are pending integration.", { x: 0.6, y: 6.95, w: 12, h: 0.35, fontFace: FONT, fontSize: 10, italic: true, color: "6E92A0" });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.95, w: 12.13, h: 0.62, fill: { color: PANEL }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
+  s.addText([{ text: "Next: ", options: { bold: true, color: TEAL } }, { text: "real data sources (Qichacha / Tianyancha / Dow Jones) · deploy the Hermes Agent framework · integrate the payment system", options: { color: INK } }], { x: 0.85, y: 5.95, w: 11.7, h: 0.62, fontFace: FONT, fontSize: 12, valign: "middle" });
+  s.addText("Prototype demo · company payment data is synthetic; external data sources / Hermes framework / payment hold are pending integration.", { x: 0.6, y: 6.85, w: 12, h: 0.35, fontFace: FONT, fontSize: 10, italic: true, color: MUTED });
 
   await pres.writeFile({ fileName: "AML-System-Walkthrough-Legal-EN.pptx" });
   console.log("WROTE EN deck (7 slides)");
