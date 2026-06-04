@@ -17,6 +17,7 @@
 | **前端**（单文件 HTML，所有 UI + 逻辑）| `frontend/AML Identifier Flow Demo-v2.html` | **唯一真源，直接编辑这份**（文件名带 -v2）|
 | **后端**（LLM 代理）| `main.py` 等（仓库根）| FastAPI |
 | **说明文档** | `docs/AML系统说明文档.md` | 完整业务+技术说明，面向团队/Legal |
+| **讲解 PPT** | `ppt/`（构建脚本 + 成品 pptx）| 面向 Legal 的中英文讲解材料，详见下方「PPT 讲解材料」|
 
 - **前端工作流**：直接改 `frontend/AML Identifier Flow Demo-v2.html` 并提交。Downloads 里的同名文件只是双击预览副本 —— 改完仓库版后如需预览再 `cp` 过去。不要反过来以 Downloads 为准。
 - 前端是**纯静态单 HTML**，双击即可打开；所有数据、逻辑、i18n 都内联在里面。
@@ -100,6 +101,24 @@ try{new Function('async function _(){'+s+'}');console.log('JS OK');}catch(e){con
 cd ~/Documents/aml-chat-server && python3 -m py_compile main.py && echo OK
 curl -s https://aml-p.zeabur.app/api/health   # 部署后健康检查
 ```
+
+## PPT 讲解材料（`ppt/`）
+
+面向 Legal 的系统讲解 deck，中英文各一版，用 pptxgenjs 脚本生成。
+
+- 构建脚本：`build-en.js`（英文 9 页）、`build-cn.js`（中文 9 页）当前主用；`build-lite.js`（旧 7 页中文）、`build.js`（旧 12 页）保留参考。
+- 脚本生成的成品：`AML-System-Walkthrough-Legal-{EN,CN}.pptx`。
+- **用户手改版**：`AML-System-Walkthrough-Legal-{CN,EN}-0604-v2.pptx` 是用户在 PowerPoint 里直接改过的（改了封面标题/日期、删页、加注等）。**这些改动不在构建脚本里，不能用脚本重新生成覆盖**。要给手改版加/改内容，用 **python-pptx 直接编辑该文件**（参考 `add_goals.py`：插入一页、纯形状+文字避免图片关系链问题、再把新页移到目标位置）。
+- 9 页结构：封面 / 现状 / 核心转变 / 分级逻辑（按 Tier 分栏）/ 双入口+闭环 / 端到端流程图（3 菱形）/ 自我进化 / 总结（注：用户手改版可能增删，如加了「目标与收益」页）。
+- 分级口径须与 demo 一致：命中任意 1 条高精度规则→T1；仅供应商级信号→T2；都没有→T3。改了分级别忘了同步 deck 的 S4 与 demo 的告警队列规则卡（`entryARule`/`entryBRule`）。
+
+依赖与渲染（已装）：`npm i -g pptxgenjs react-icons react react-dom sharp`，python `python-pptx`，渲染用 LibreOffice `soffice` + `pdftoppm`（brew 装）。生成/渲染示例：
+```bash
+cd ~/Documents/aml-chat-server/ppt && export NODE_PATH=$(npm root -g)
+node build-en.js && /opt/homebrew/bin/soffice --headless --convert-to pdf "AML-System-Walkthrough-Legal-EN.pptx" >/dev/null 2>&1
+/opt/homebrew/bin/pdftoppm -jpeg -r 130 "AML-System-Walkthrough-Legal-EN.pdf" en   # 转图做视觉 QA
+```
+脚本里改完文字务必渲染抽查（中文字体 LibreOffice 会回退渲染，不影响成品在 Windows/微软雅黑下的显示）。
 
 ## 待对接（生产化）
 
