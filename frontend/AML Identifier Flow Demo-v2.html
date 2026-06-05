@@ -117,6 +117,8 @@
     .invest-evidence { display: grid; gap: 6px; }
     .invest-evi { font-size: 13px; line-height: 1.5; padding: 8px 10px; background: #fbfdfe; border: 1px solid var(--line); border-radius: 10px; }
     .invest-evi-src { display: inline-block; font-size: 11px; font-weight: 700; color: #1e668d; background: #e8f2fb; padding: 1px 7px; border-radius: 999px; margin-right: 8px; }
+    .invest-playbook { display: grid; gap: 5px; }
+    .invest-pb-item { font-size: 12.5px; line-height: 1.45; padding: 7px 10px; background: #e9f6f4; border: 1px solid #b9e7e2; border-radius: 10px; color: var(--ink); }
     .invest-package { font-size: 14px; line-height: 1.6; }
     .invest-rec { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 13px; }
     .invest-rec-escalate { background: #fde9e9; color: #d84b4b; }
@@ -470,6 +472,7 @@
         <div class="topbar"><div><div class="eyebrow" data-i18n="signalsEyebrow"></div><h2 class="title" data-i18n="signalsTitle"></h2><p class="subtitle" data-i18n="signalsSubtitle"></p></div><div class="actions"><button class="btn btn-review-cta btn-teal" id="runDiscoveryBtn">🤖 <span data-i18n="runDiscovery"></span></button><button class="btn btn-primary btn-review-cta" id="runCalibBtn" data-i18n="runCalib"></button></div></div>
         <div class="metric-grid" id="signalMetrics" style="grid-template-columns:repeat(3,minmax(0,1fr))"></div>
         <div class="card"><div class="section-head"><div><h2 data-i18n="signalLedgerTitle"></h2><p data-i18n="signalLedgerDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="signalHeader"></tr></thead><tbody id="signalRows"></tbody></table></div><div class="notice" data-i18n="signalNote"></div></div>
+        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
       </section>
 
       <section class="screen" id="vendor">
@@ -511,7 +514,7 @@
     </main>
   </div>
 
-  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
+  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section" id="investPlaybookWrap" style="display:none"><div class="invest-label" data-i18n="investPlaybookApplied"></div><div id="investPlaybook" class="invest-playbook"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
   <div class="modal-backdrop" id="discoveryModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="discoveryEyebrow"></div><h3 data-i18n="discoveryTitle"></h3><p class="subtitle" data-i18n="discoverySubtitle"></p></div><button class="btn btn-soft" id="closeDiscovery" data-i18n="close"></button></div><div class="modal-body"><div id="discoveryBody"></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelDiscovery" data-i18n="cancel"></button><button class="btn btn-primary" id="addDiscovery" data-i18n="discoveryAdd"></button></div></div></div>
   <div class="modal-backdrop" id="calibModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="calibEyebrow"></div><h3 data-i18n="calibTitle"></h3><p class="subtitle" data-i18n="calibSubtitle"></p></div><button class="btn btn-soft" id="closeCalib" data-i18n="close"></button></div><div class="modal-body"><div id="calibSummary"></div><div class="table-wrap"><table><thead><tr id="calibHeader"></tr></thead><tbody id="calibRows"></tbody></table></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelCalib" data-i18n="cancel"></button><button class="btn btn-primary" id="applyCalib" data-i18n="calibApply"></button></div></div></div>
   <div class="toast" id="toast"></div>
@@ -571,6 +574,7 @@
         signalRollupShort: 'Roll-up', signalRollupNote: 'Roll-up = aggregates Entry A hits to the vendor level (not a new signal); native signals (structuring, surge) are only visible across multiple payments.',
         signalNote: 'PPV is computed live from structured Legal review records — each "Review Now" decision updates the numbers here. A signal needs at least 3 reviewed payments before its PPV is trusted (Validated); below that it stays a Candidate. Validated signals with high PPV are promoted; low-PPV ones are demoted to scoring factors.',
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
+        investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
         paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geographic: 'Geographic Risk', pep: 'PEP Exposure', adverseMedia: 'Adverse Media', docMissing: 'Document Missing', timeAnomaly: 'Time Anomaly', behavior: 'Behavior Indicator' },
@@ -631,6 +635,7 @@
         signalRollupShort: '汇总', signalRollupNote: '汇总 = 把入口 A 的命中累加到供应商层（非新信号）；原生信号（拆分、突增）只有跨多笔付款才看得到。',
         signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次"立即复核"提交都会更新这里的数字。一个信号至少需 3 笔已复核付款，其 PPV 才被信任（已验证）；不足则保持候选。已验证且 PPV 高的信号被提升，PPV 低的降级为评分因子。',
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
+        investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
         paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geographic: '地理风险', pep: 'PEP 人物', adverseMedia: '不利媒体', docMissing: '文件缺失', timeAnomaly: '时间异常', behavior: '行为指标' },
@@ -712,6 +717,26 @@
       });
       vendorSignalMap = computeVendorSignals();
       payments.forEach(p => { p._tierRank = TIER_RANK[paymentTier(p)]; });
+    }
+
+    // Evolution A — investigation playbook: reusable "how to dig" routines the agent
+    // applies during investigation and that the system reinforces from Legal reviews.
+    const OFFSHORE = ['BVI', 'PA', 'AE', 'KZ'];
+    let investigationPlaybook = [
+      { id: 'offshoreBO', nameEn: 'Offshore / shell entity', nameZh: '离岸 / 壳公司', actEn: 'also pull beneficial owners', actZh: '加查受益人 / 实际控制人', uses: 6, confirmed: 2, match: p => OFFSHORE.includes(vendorCountry(p.vendor)) },
+      { id: 'pepCheck', nameEn: 'PEP link', nameZh: 'PEP 关联', actEn: 'cross-check shareholders vs. public-office lists', actZh: '股东与公职人员名单交叉核对', uses: 4, confirmed: 2, match: p => p.riskTypes.includes('pep') },
+      { id: 'structTimeline', nameEn: 'Structuring pattern', nameZh: '拆分特征', actEn: "pull the vendor's full payment timeline", actZh: '拉取该供应商完整付款时间线', uses: 3, confirmed: 1, match: p => (vendorSignalMap[p.vendor] || []).includes('structuring') },
+    ];
+    function appliedPlaybook(p) { return investigationPlaybook.filter(e => { try { return e.match(p); } catch (_) { return false; } }); }
+    function learnPlaybook(p) {
+      // reinforce routines that applied to this confirmed-fraud payment
+      appliedPlaybook(p).forEach(e => { e.confirmed += 1; });
+      // discover a new routine if a hit pattern isn't covered yet (here: adverse media)
+      if (p.riskTypes.includes('adverseMedia') && !investigationPlaybook.some(e => e.id === 'adverseMedia')) {
+        investigationPlaybook.push({ id: 'adverseMedia', nameEn: 'Adverse-media hit', nameZh: '不利媒体命中', actEn: 'retrieve last-12-month negative coverage and link to the entity', actZh: '检索近 12 月负面报道并关联实体', uses: 1, confirmed: 1, match: q => q.riskTypes.includes('adverseMedia'), isNew: true });
+        return 'new';
+      }
+      return 'reinforced';
     }
 
     const vendors = [
@@ -1135,6 +1160,18 @@
       document.getElementById('signalMetrics').innerHTML = vals.map((v, i) => `<div class="card metric"><div class="metric-label">${labels[i]}</div><div class="metric-value">${v}</div></div>`).join('');
     }
 
+    // Evolution A — render the investigation playbook (grows/strengthens from reviews)
+    function renderPlaybook() {
+      const hdrEl = document.getElementById('playbookHeader');
+      if (!hdrEl) return;
+      hdrEl.innerHTML = t('playbookHeaders').map(h => `<th>${h}</th>`).join('');
+      document.getElementById('playbookRows').innerHTML = investigationPlaybook.map(e => {
+        const rate = e.uses ? Math.round(e.confirmed / e.uses * 100) : 0;
+        const nw = e.isNew ? ` <span class="agent-tag">${t('playbookNew')}</span>` : '';
+        return `<tr><td><strong>${lang === 'zh' ? e.nameZh : e.nameEn}</strong>${nw}</td><td>${lang === 'zh' ? e.actZh : e.actEn}</td><td>${e.uses}</td><td>${e.confirmed}</td><td><div class="ppv-cell"><div class="ppv-bar"><span style="width:${rate}%"></span></div><span class="ppv-num">${rate}%</span></div></td></tr>`;
+      }).join('');
+    }
+
     // ── Monthly calibration ──────────────────────────────────────────
     const CALIB_MIN_SAMPLES = 4;   // need at least this many reviewed before trusting PPV
     const CALIB_PROMOTE = 0.08;    // Wilson 95% lower bound ≥ this → validated trigger
@@ -1405,6 +1442,7 @@
       document.getElementById('investPackage').innerHTML = `<span class="small-muted">${t('investNotRun')}</span>`;
       document.getElementById('investRec').innerHTML = '';
       const rw = document.getElementById('investReasoningWrap'); rw.style.display = 'none'; document.getElementById('investReasoning').textContent = '';
+      const pbw = document.getElementById('investPlaybookWrap'); if (pbw) { pbw.style.display = 'none'; document.getElementById('investPlaybook').innerHTML = ''; }
       document.getElementById('runInvestigateBtn').disabled = false;
       // reset + render the review form (lower half of the combined modal) — investigation is optional/manual
       delete document.getElementById('reviewReason').dataset.touched;
@@ -1429,6 +1467,15 @@
       if (!backend) { pkgEl.innerHTML = `<em>${t('chatBackendError')}</em>`; document.getElementById('runInvestigateBtn').disabled = false; return; }
       const prof = computeVendorProfiles().find(v => v.vendor === payment.vendor);
       const vendorSignals = prof ? prof.signals : [];
+      // Evolution A — apply learned investigation playbook routines (and count the use)
+      const pbWrap = document.getElementById('investPlaybookWrap');
+      const applied = appliedPlaybook(payment);
+      if (applied.length) {
+        applied.forEach(e => { e.uses += 1; });
+        pbWrap.style.display = '';
+        document.getElementById('investPlaybook').innerHTML = applied.map(e => `<div class="invest-pb-item">▸ <strong>${lang === 'zh' ? e.nameZh : e.nameEn}</strong> — ${lang === 'zh' ? e.actZh : e.actEn}</div>`).join('');
+        renderPlaybook();
+      } else { pbWrap.style.display = 'none'; }
       let pkgText = '', reasoningBuf = '', rec = '', started = false;
       const evLines = [];
 
@@ -1828,7 +1875,7 @@
     }
 
     function renderAll() {
-      renderMetrics(); renderHeaders(); renderVendors(); renderDonut(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
+      renderMetrics(); renderHeaders(); renderVendors(); renderDonut(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
       resetChat();
       if (document.getElementById('vendor').classList.contains('active')) openVendor(currentVendor);
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
@@ -1886,7 +1933,10 @@
       reviewedCases.unshift({ caseId: currentPayment.caseId, paymentId: currentPayment.id, vendor: currentPayment.vendor, score: currentPayment.total, result: resultFromConclusion(conclusion), conclusion, by: 'Legal Team', reason: document.getElementById('reviewReason').value.trim() || t('legalReviewCompleted'), reasonZh: lang === 'zh' ? (document.getElementById('reviewReason').value.trim() || t('legalReviewCompleted')) : '', tags: tags.length ? tags : [t('noFeedbackTag')], status: 'Model Feedback Pending' });
       // Confirmed fraud + agent recommended escalate → simulate "hold payment" (real system would call the payment API)
       if (conclusion === 'confirmedFraud' && currentInvestRec === 'escalate') currentPayment.held = true;
-      renderLegal(); renderSignals(); renderUnifiedQueue(); renderMetrics(); renderPaymentList(); closeInvestigateModal(); showToast(currentPayment.held ? t('reviewSavedHeld') : t('reviewSaved')); showScreen('legal');
+      // Evolution A — confirmed fraud reinforces / grows the investigation playbook
+      let pbMsg = '';
+      if (conclusion === 'confirmedFraud') { pbMsg = learnPlaybook(currentPayment) === 'new' ? ' · ' + t('playbookGrew') : ' · ' + t('playbookReinforced'); }
+      renderLegal(); renderSignals(); renderPlaybook(); renderUnifiedQueue(); renderMetrics(); renderPaymentList(); closeInvestigateModal(); showToast((currentPayment.held ? t('reviewSavedHeld') : t('reviewSaved')) + pbMsg); showScreen('legal');
       document.querySelector('[data-wbtab="reviewed"]').click();
     });
     document.getElementById('saveConfig').addEventListener('click', () => showToast(t('configSaved')));
