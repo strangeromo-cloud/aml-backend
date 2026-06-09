@@ -4,3 +4,5 @@ openai>=1.50.0
 pydantic>=2.9.0
 python-dotenv>=1.0.0
 sse-starlette>=2.1.0
+SQLAlchemy[asyncio]>=2.0.30
+asyncpg>=0.29.0

@@ -78,7 +78,10 @@
 - `POST /api/aml/chat/stream` SSE 流式 + reasoning 摘要（OpenAI Responses API）
 - `POST /api/aml/investigate/stream` 调查 Agent：`gather_evidence()`【模拟多源取证】+ GPT 综合【真实】
 
-环境变量（Zeabur 上配，本地用 `.env`）：`LLM_API_KEY` `LLM_BASE_URL` `LLM_MODEL`(gpt-5.5) `CORS_ORIGINS=*` `PORT`。
+环境变量（Zeabur 上配，本地用 `.env`）：`LLM_API_KEY` `LLM_BASE_URL` `LLM_MODEL`(gpt-5.5) `CORS_ORIGINS=*` `PORT`；可选 `DATABASE_URL`（见下）。
+
+**持久化（可选，`db.py`）**：设了 `DATABASE_URL` 才启用（Zeabur → New Service → PostgreSQL，会自动注入 `DATABASE_URL`）。没设则 `DB_ENABLED=False`，后端照常跑、持久化端点返回 503 —— 不会破坏现有部署。表：`review_records`（复核记录，PPV 真源）/ `playbook_entries`（调查 playbook）/ `signal_rows`（信号台账）。端点：`POST/GET /api/aml/reviews`、`GET/POST /api/aml/playbook`。URL 会自动转成 `postgresql+asyncpg://` 并剥掉 `sslmode`。`/api/health` 返回 `db` 字段。
+> 注意：前端目前仍是内存态；要让 evolution 跨端/重启持久，需把前端的复核/playbook 改为读写这些端点（下一步）。
 **注意**：`temperature=1` 是硬编码的（gpt-5.x 只接受默认值，别加别的）。
 模型凭证复用 `~/Documents/cct/server/.env` 里的（OpenAI 兼容）。
 

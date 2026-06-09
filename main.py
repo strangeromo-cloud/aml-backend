@@ -22,6 +22,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
+from sqlalchemy import select
+
+import db as dbmod
+from db import DB_ENABLED, init_db, ReviewRecord, PlaybookEntry, SignalRow
 
 load_dotenv()
 
@@ -40,7 +44,7 @@ if not LLM_API_KEY:
 
 client = AsyncOpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 
-app = FastAPI(title="AML Chat Backend", version="0.2.0")
+app = FastAPI(title="AML Chat Backend", version="0.3.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS if CORS_ORIGINS != ["*"] else ["*"],
@@ -48,6 +52,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def _startup():
+    await init_db()
 
 
 class Payment(BaseModel):
@@ -200,7 +209,75 @@ def split_ids(text: str) -> tuple[str, list[str]]:
 
 @app.get("/api/health")
 async def health():
-    return {"ok": True, "model": LLM_MODEL, "base_url": LLM_BASE_URL, "reasoning_effort": REASONING_EFFORT}
+    return {"ok": True, "model": LLM_MODEL, "base_url": LLM_BASE_URL, "reasoning_effort": REASONING_EFFORT, "db": DB_ENABLED}
+
+
+# ── Persistence (Evolution state) — requires DATABASE_URL ─────────────
+class ReviewIn(BaseModel):
+    paymentId: str
+    vendor: str = ""
+    conclusion: Literal["notFraud", "confirmedFraud", "needEvidence"]
+    reason: str = ""
+    reviewer: str = "Legal Team"
+
+
+class PlaybookIn(BaseModel):
+    id: str
+    name: str
+    action: str = ""
+    uses: int = 0
+    confirmed: int = 0
+
+
+def _need_db():
+    if not DB_ENABLED:
+        raise HTTPException(status_code=503, detail="Persistence disabled: set DATABASE_URL (add a Zeabur PostgreSQL service).")
+
+
+@app.post("/api/aml/reviews")
+async def add_review(r: ReviewIn):
+    _need_db()
+    async with dbmod.Session() as s:
+        rec = ReviewRecord(payment_id=r.paymentId, vendor=r.vendor, conclusion=r.conclusion, reason=r.reason, reviewer=r.reviewer)
+        s.add(rec)
+        await s.commit()
+        await s.refresh(rec)
+        return {"id": rec.id, "createdAt": rec.created_at.isoformat()}
+
+
+@app.get("/api/aml/reviews")
+async def list_reviews(limit: int = 200):
+    if not DB_ENABLED:
+        return {"db": False, "reviews": []}
+    async with dbmod.Session() as s:
+        rows = (await s.execute(select(ReviewRecord).order_by(ReviewRecord.created_at.desc()).limit(limit))).scalars().all()
+        return {"db": True, "reviews": [
+            {"id": x.id, "paymentId": x.payment_id, "vendor": x.vendor, "conclusion": x.conclusion,
+             "reason": x.reason, "reviewer": x.reviewer, "createdAt": x.created_at.isoformat()} for x in rows]}
+
+
+@app.get("/api/aml/playbook")
+async def list_playbook():
+    if not DB_ENABLED:
+        return {"db": False, "playbook": []}
+    async with dbmod.Session() as s:
+        rows = (await s.execute(select(PlaybookEntry))).scalars().all()
+        return {"db": True, "playbook": [
+            {"id": x.id, "name": x.name, "action": x.action, "uses": x.uses, "confirmed": x.confirmed} for x in rows]}
+
+
+@app.post("/api/aml/playbook")
+async def upsert_playbook(e: PlaybookIn):
+    _need_db()
+    async with dbmod.Session() as s:
+        row = await s.get(PlaybookEntry, e.id)
+        if row is None:
+            row = PlaybookEntry(id=e.id, name=e.name, action=e.action, uses=e.uses, confirmed=e.confirmed)
+            s.add(row)
+        else:
+            row.name, row.action, row.uses, row.confirmed = e.name, e.action, e.uses, e.confirmed
+        await s.commit()
+        return {"ok": True, "id": e.id}
 
 
 @app.post("/api/aml/chat", response_model=ChatResp)
