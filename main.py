@@ -324,33 +324,93 @@ class InvestigateReq(BaseModel):
     lang: Literal["en", "zh"] = "en"
 
 
-# riskType / precisionHit → concrete mock finding text (bilingual)
-_FINDINGS = {
-    "geographic": {
-        "en": "Bank country differs from invoice/registration country; entity registered in a high-risk or offshore jurisdiction.",
-        "zh": "银行所在国与发票/注册国不一致；主体注册于高风险或离岸司法辖区。",
-    },
-    "pep": {
-        "en": "A shareholder / legal representative is a probable Politically Exposed Person (PEP) or PEP associate.",
-        "zh": "股东/法定代表人疑似政治公众人物（PEP）或 PEP 关联人。",
-    },
-    "adverseMedia": {
-        "en": "Negative media found in the last 12 months referencing corruption or fraud allegations.",
-        "zh": "近 12 个月检索到与腐败或欺诈指控相关的负面媒体报道。",
-    },
-    "docMissing": {
-        "en": "No PO/contract linked to this payment; vendor business scope does not match the procurement category.",
-        "zh": "本次付款未关联 PO/合同；供应商经营范围与采购品类不符。",
-    },
-    "timeAnomaly": {
-        "en": "Payment timing is anomalous — weekend/holiday execution or a recent surge in payment frequency to this vendor.",
-        "zh": "付款时点异常 —— 周末/节假日执行，或近期对该供应商付款频率突增。",
-    },
-    "behavior": {
-        "en": "Receiving account shows no clear link to the vendor entity; invoice authenticity is questionable.",
-        "zh": "收款账户与供应商主体无明显关联；发票真实性存疑。",
-    },
-}
+# ── Deterministic mock data sources (Tianyancha / Dow Jones) ──────────
+# Stable per-vendor (hash of name), and correlated with the payment's
+# risk types so the "evidence" lines up with why it was flagged.
+# All names are anonymized — not real persons/entities.
+import hashlib
+
+_CN_REPS = ["陈**", "王**", "李**", "张**", "刘**"]
+_EN_REPS = ["Z. Chen", "L. Wang", "Y. Li", "H. Zhang", "J. Liu"]
+_SCOPES_ZH = ["技术咨询与服务", "贸易与供应链", "物流与仓储", "原材料批发", "信息技术服务"]
+_SCOPES_EN = ["tech consulting & services", "trading & supply chain", "logistics & warehousing",
+              "raw-materials wholesale", "IT services"]
+_MEDIA_ZH = ["涉采购回扣调查的报道", "关联方挪用资金的诉讼报道", "海关申报异常的负面报道"]
+_MEDIA_EN = ["coverage of a procurement-kickback probe", "litigation over related-party fund diversion",
+             "negative report on irregular customs declarations"]
+_PEP_ROLES_ZH = ["某地方政府部门前官员的近亲属", "国有机构董事会成员关联人"]
+_PEP_ROLES_EN = ["close relative of a former local-government official", "associate of a state-entity board member"]
+
+
+def _seed(s: str) -> int:
+    return int(hashlib.md5(s.encode("utf-8")).hexdigest(), 16)
+
+
+def _pick(seed: int, arr):
+    return arr[seed % len(arr)]
+
+
+def mock_tianyancha(vendor: str, country: str, risk_types, lang: str):
+    """Company registry profile + beneficial-owner penetration (mock)."""
+    sd = _seed(vendor)
+    zh = lang == "zh"
+    offshore = country.upper() in {"BVI", "PA", "AE", "KZ"}
+    items = []
+    rep = _pick(sd, _CN_REPS if zh else _EN_REPS)
+    scope = _pick(sd >> 3, _SCOPES_ZH if zh else _SCOPES_EN)
+    small_cap = "docMissing" in risk_types or (sd % 3 == 0)
+    cap = ("注册资本 50 万（与付款规模明显不匹配）" if small_cap else "注册资本 5,000 万") if zh \
+        else ("registered capital RMB 500K (clearly mismatched to payment size)" if small_cap else "registered capital RMB 50M")
+    items.append({"source": "天眼查" if zh else "Tianyancha",
+                  "text": (f"法定代表人 {rep}；经营范围：{scope}；{cap}。" if zh
+                           else f"Legal rep {rep}; business scope: {scope}; {cap}.")})
+
+    # ownership penetration → UBO
+    npA = _pick(sd, _CN_REPS if zh else _EN_REPS)
+    npB = _pick(sd >> 5, _CN_REPS[::-1] if zh else _EN_REPS[::-1])
+    if offshore:
+        chain = ("股权穿透：本体 ← 离岸控股公司（持股 100%，受益所有人披露受限）← 名义股东；"
+                 "最终受益人不可见。" if zh
+                 else "Ownership penetration: entity ← offshore holding (100%, limited UBO disclosure) ← nominee shareholders; "
+                      "ultimate beneficial owner not visible.")
+    else:
+        chain = (f"股权穿透：本体 ← 控股公司 X（60%）+ 自然人 {npA}（40%）；控股公司 X 由自然人 {npB}（90%）持有。"
+                 f"最终受益人：{npB}（约 54%）、{npA}（40%）。" if zh
+                 else f"Ownership penetration: entity ← HoldCo X (60%) + natural person {npA} (40%); HoldCo X is 90% held by {npB}. "
+                      f"UBOs: {npB} (~54%), {npA} (40%).")
+    if "pep" in risk_types:
+        chain += ("最终受益人疑似 PEP 关联。" if zh else " One UBO is a probable PEP associate.")
+    items.append({"source": "天眼查·股权穿透" if zh else "Tianyancha · UBO", "text": chain})
+
+    if "adverseMedia" in risk_types or "behavior" in risk_types:
+        items.append({"source": "天眼查·涉诉" if zh else "Tianyancha · litigation",
+                      "text": ("存在 1 起合同纠纷、1 条行政处罚记录。" if zh
+                               else "1 contract-dispute case and 1 administrative-penalty record on file.")})
+    return items
+
+
+def mock_dowjones(vendor: str, country: str, risk_types, lang: str):
+    """Sanctions / watchlist / PEP / adverse-media screening (mock)."""
+    sd = _seed(vendor)
+    zh = lang == "zh"
+    src = "Dow Jones"
+    items = []
+    # sanctions / watchlist
+    if "geographic" in risk_types and sd % 2 == 0:
+        items.append({"source": src, "text": ("观察名单：实体名称存在部分相似匹配，需人工排除。" if zh
+                                               else "Watchlist: partial name-similarity match, needs manual clearing.")})
+    else:
+        items.append({"source": src, "text": ("制裁 / 观察名单：未命中。" if zh else "Sanctions / watchlist: no hit.")})
+    # PEP
+    if "pep" in risk_types:
+        items.append({"source": src, "text": (f"PEP：命中 —— {_pick(sd, _PEP_ROLES_ZH)}。" if zh
+                                               else f"PEP: hit — {_pick(sd, _PEP_ROLES_EN)}.")})
+    # adverse media
+    if "adverseMedia" in risk_types:
+        items.append({"source": src, "text": (f"不利媒体（近 12 月）：{_pick(sd >> 2, _MEDIA_ZH)}。" if zh
+                                               else f"Adverse media (last 12m): {_pick(sd >> 2, _MEDIA_EN)}.")})
+    return items
+
 
 _VENDOR_SIGNAL_FINDINGS = {
     "structuring": {"en": "Multiple sub-threshold payments cluster in a short window (structuring pattern).",
@@ -363,46 +423,47 @@ _VENDOR_SIGNAL_FINDINGS = {
 
 
 def gather_evidence(req: InvestigateReq):
-    """Deterministic mock evidence gathering. Returns (steps, evidence_lines)."""
+    """Deterministic mock evidence gathering (Tianyancha + Dow Jones + internal).
+    Returns (steps, evidence)."""
     lang = req.lang
+    zh = lang == "zh"
     p = req.payment
-    is_cn = (req.vendorCountry or "").upper() == "CN"
-    steps = []
-    evidence = []
+    country = (req.vendorCountry or "").upper()
+    is_cn = country == "CN"
+    steps, evidence = [], []
 
+    # route + always run ownership penetration (beneficial owners matter for offshore too)
     if is_cn:
-        steps.append("天眼查 / 企查查：股东、经营范围、注册资本、涉诉" if lang == "zh"
-                     else "Tianyancha / Qichacha: shareholders, business scope, registered capital, litigation")
-        src = "天眼查" if lang == "zh" else "Tianyancha"
+        steps.append("天眼查 / 企查查：基础信息、股权穿透与受益人、涉诉" if zh
+                     else "Tianyancha / Qichacha: profile, ownership/UBO penetration, litigation")
+        steps.append("Dow Jones：制裁 / 观察名单、PEP、不利媒体" if zh
+                     else "Dow Jones: sanctions / watchlist, PEP, adverse media")
+        evidence += mock_tianyancha(p.vendor, country, p.riskTypes, lang)
+        evidence += mock_dowjones(p.vendor, country, p.riskTypes, lang)
     else:
-        steps.append("Dow Jones：制裁/观察名单、PEP、不利媒体" if lang == "zh"
-                     else "Dow Jones: sanctions/watchlist, PEP, adverse media")
-        src = "Dow Jones"
+        steps.append("Dow Jones：制裁 / 观察名单、PEP、不利媒体" if zh
+                     else "Dow Jones: sanctions / watchlist, PEP, adverse media")
+        steps.append("登记机构：股权穿透与受益人（离岸主体）" if zh
+                     else "Registry: ownership / UBO penetration (offshore entity)")
+        evidence += mock_dowjones(p.vendor, country, p.riskTypes, lang)
+        evidence += mock_tianyancha(p.vendor, country, p.riskTypes, lang)  # provides ownership/UBO block
 
-    for rt in p.riskTypes:
-        f = _FINDINGS.get(rt)
-        if f:
-            evidence.append({"source": src, "text": f[lang]})
-
-    steps.append("内部：历史付款时间线与收款账户" if lang == "zh"
-                 else "Internal: payment-history timeline and receiving accounts")
-    steps.append("内部：关联账户 / 受益人图谱" if lang == "zh"
-                 else "Internal: linked-account / beneficiary graph")
-
+    steps.append("内部：历史付款时间线、收款账户与关联图谱" if zh
+                 else "Internal: payment-history timeline, receiving accounts, relationship graph")
     for s in req.vendorSignals:
         vf = _VENDOR_SIGNAL_FINDINGS.get(s)
         if vf:
-            evidence.append({"source": ("内部" if lang == "zh" else "Internal"), "text": vf[lang]})
+            evidence.append({"source": ("内部" if zh else "Internal"), "text": vf[lang]})
 
     if not evidence:
-        evidence.append({"source": src, "text": ("未发现额外外部风险信号。" if lang == "zh"
-                                                  else "No additional external risk signals found.")})
+        evidence.append({"source": "Dow Jones",
+                         "text": ("未发现额外外部风险信号。" if zh else "No additional external risk signals found.")})
     return steps, evidence
 
 
 REC_MARKER = "__REC__:"
 
-INVESTIGATE_PROMPT_EN = f"""You are an AML investigation agent supporting the Legal team. You are given a flagged payment and the evidence already gathered from external data sources (Tianyancha/Qichacha or Dow Jones) and internal systems. Synthesize a concise investigation package.
+INVESTIGATE_PROMPT_EN = f"""You are an AML investigation agent supporting the Legal team. You are given a flagged payment and the evidence already gathered: company registry profile + ownership/beneficial-owner (UBO) penetration (Tianyancha/registry), sanctions/watchlist/PEP/adverse-media screening (Dow Jones), and internal signals. Synthesize a concise investigation package. Call out the beneficial owners and any opaque/nominee ownership explicitly.
 
 Write in English. Output format — analysis text first, then a recommendation line:
 
@@ -415,7 +476,7 @@ Where:
 - clear = evidence suggests a likely-benign business explanation
 Base everything strictly on the provided evidence. Do not invent facts."""
 
-INVESTIGATE_PROMPT_ZH = f"""你是支持法务团队的 AML 调查 Agent。系统会给你一笔被标记的付款，以及已从外部数据源（天眼查/企查查 或 Dow Jones）和内部系统收集到的证据。请综合给出一份简洁的调查结论包。
+INVESTIGATE_PROMPT_ZH = f"""你是支持法务团队的 AML 调查 Agent。系统会给你一笔被标记的付款，以及已收集的证据：公司基础信息 + 股权穿透/最终受益人（天眼查/登记）、制裁/观察名单/PEP/不利媒体筛查（Dow Jones）、以及内部信号。请综合给出一份简洁的调查结论包，并明确点出最终受益人及任何不透明/名义股东情况。
 
 用中文回答。输出格式 —— 先分析文字，再一行建议：
 
