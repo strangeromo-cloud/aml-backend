@@ -32,12 +32,25 @@ def _normalize(url: str) -> str:
 
 
 _RAW = os.getenv("DATABASE_URL", "").strip()
-DB_ENABLED = bool(_RAW)
+DB_ENABLED = False
 engine = None
 Session = None
-if DB_ENABLED:
-    engine = create_async_engine(_normalize(_RAW), pool_pre_ping=True, pool_size=5, max_overflow=5)
-    Session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+if not _RAW:
+    logger.info("DATABASE_URL not set — persistence disabled, memory-only mode.")
+elif "${" in _RAW or "}" in _RAW:
+    # Zeabur left unresolved ${...} placeholders → don't try to connect, just degrade.
+    logger.error("DATABASE_URL contains unresolved ${...} placeholders (%r). "
+                 "Persistence disabled. Fix the Zeabur variable reference (see README).", _RAW[:60])
+else:
+    try:
+        engine = create_async_engine(_normalize(_RAW), pool_pre_ping=True, pool_size=5, max_overflow=5)
+        Session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+        DB_ENABLED = True
+    except Exception as e:  # bad URL must never crash the whole app
+        logger.exception("Could not init DB engine (%s) — persistence disabled.", e)
+        engine = None
+        Session = None
+        DB_ENABLED = False
 
 
 class Base(DeclarativeBase):
