@@ -586,7 +586,7 @@
         paymentId: 'Payment ID', sourceSystem: 'Source System', amount: 'Amount', category: 'Category', riskLevel: 'Risk Level', date: 'Date', vendorScoreLabel: 'Vendor Score', mlPaymentScore: 'ML Payment Score', reasonablePaymentScore: 'Reasonable Payment Score', vendorScoreDesc: 'External list screening and country/entity indicators.', mlPaymentDesc: 'Machine learning anomaly score from payment behavior.', reasonableDesc: 'vendor experience range and procurement category alignment.',
         configEyebrow: 'Risk Model Config', configTitle: 'Scoring Weights Configuration', configSubtitle: 'Overall dimensions and vendor internal dimensions must each total 100%. Payment Score is ML-calculated.', publishConfig: 'Publish Configuration', overallWeights: 'Overall Score Weights', vendorWeights: 'Vendor Score Weights', paymentScore: 'Payment Score', mlRiskScore: 'ML-based risk score', mlRiskDesc: 'Frequency, holiday frequency, amount timing, and other learned anomaly signals.', reasonableMapping: 'Reasonable Payment Mapping', validConfig: 'Valid configuration', mustEqual100: 'Must equal 100%',
         legalEyebrow: 'Review Workflow', legalTitle: 'Legal Workbench', legalSubtitle: 'Pending alerts to review and the reviewed-case audit trail, in one place.', wbPending: 'Pending Queue', wbReviewed: 'Reviewed Cases', legalRecords: 'Legal Review Records', legalRecordsDesc: 'Reviewed case list for audit trail and model feedback.', noReviewed: 'No reviewed cases yet. After Mark Reviewed from Dashboard, records will appear here.', reviewedCases: n => `${n} reviewed case${n === 1 ? '' : 's'}`,
-        reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
+        reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', syncedTag: 'Synced from server', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
         tags: ['Vendor risk overestimated', 'Payment pattern is normal', 'Category alignment is valid', 'Known business exception'],
         statuses: { High: 'High', Medium: 'Medium', Low: 'Low', Reasonable: 'Reasonable', Warning: 'Warning', Unreasonable: 'Unreasonable' }, resultMap: { 'Not Fraud Payment': 'Not Fraud Payment', 'Confirmed Fraud Payment': 'Confirmed Fraud Payment', 'Need More Evidence': 'Need More Evidence' }, recordStatusMap: { 'Model Feedback Pending': 'Model Feedback Pending' }, page: 'Page', prev: 'Previous', next: 'Next', allOption: 'All', totalPaymentsLabel: n => `${n} payment${n === 1 ? '' : 's'}`, totalCenter: 'Payments',
         chatTitle: 'AML Risk Assistant', chatSubtitle: 'Ask about vendors, dimensions, or risky payments', chatSend: 'Send', chatPlaceholder: 'Try: "Northstar" or "geographic risk"',
@@ -647,7 +647,7 @@
         paymentId: '付款编号', sourceSystem: '来源系统', amount: '金额', category: '采购品类', riskLevel: '风险等级', date: '日期', vendorScoreLabel: '供应商分', mlPaymentScore: '机器学习付款分', reasonablePaymentScore: '付款合理性分', vendorScoreDesc: '外部名单筛查与国家 / 实体风险指标。', mlPaymentDesc: '基于付款行为的机器学习异常评分。', reasonableDesc: '供应商经验范围与采购品类匹配情况。',
         configEyebrow: '风险模型配置', configTitle: '评分权重配置', configSubtitle: '一级维度与供应商内部维度的权重都必须分别合计 100%。付款分由机器学习模型计算。', publishConfig: '发布配置', overallWeights: '总分权重', vendorWeights: '供应商分权重', paymentScore: '付款分', mlRiskScore: '机器学习风险分', mlRiskDesc: '频率、节假日付款频率、金额时点及其他学习到的异常信号。', reasonableMapping: '付款合理性映射', validConfig: '配置有效', mustEqual100: '必须等于 100%',
         legalEyebrow: '复核工作流', legalTitle: '法务工作台', legalSubtitle: '待复核告警与已复核案例审计轨迹，合并在一处。', wbPending: '待复核队列', wbReviewed: '已复核案例', legalRecords: '法务复核记录', legalRecordsDesc: '已复核案例列表，用于审计追踪与模型反馈。', noReviewed: '暂无已复核案例。从风险总览点击"标记已复核"后，记录会显示在这里。', reviewedCases: n => `${n} 个已复核案例`,
-        reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
+        reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', syncedTag: '服务器同步', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
         tags: ['供应商风险被高估', '付款模式正常', '采购品类匹配有效', '已知业务例外'],
         statuses: { High: '高', Medium: '中', Low: '低', Reasonable: '合理', Warning: '警告', Unreasonable: '不合理' }, resultMap: { 'Not Fraud Payment': '非欺诈付款', 'Confirmed Fraud Payment': '确认欺诈付款', 'Need More Evidence': '需要更多证据' }, recordStatusMap: { 'Model Feedback Pending': '待模型反馈' }, page: '第', prev: '上一页', next: '下一页', allOption: '全部', totalPaymentsLabel: n => `${n} 笔付款`, totalCenter: '付款',
         chatTitle: 'AML 风险助手', chatSubtitle: '可询问供应商、维度或可疑付款', chatSend: '发送', chatPlaceholder: '试试："Northstar" 或 "地理风险"',
@@ -1601,6 +1601,53 @@
     const BACKEND_URL = 'https://aml-p.zeabur.app';
     const getBackendUrl = () => (BACKEND_URL || '').trim().replace(/\/+$/, '');
 
+    // --- Optional Postgres persistence (backend /api/aml/reviews + /api/aml/playbook).
+    // Fire-and-forget: if the backend or its DB is down, the demo keeps working memory-only.
+    function persistReview(rec) {
+      fetch(getBackendUrl() + '/api/aml/reviews', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentId: rec.paymentId, vendor: rec.vendor, conclusion: rec.conclusion, reason: rec.reason, reviewer: rec.by })
+      }).catch(e => console.warn('persistReview skipped (memory-only):', e));
+    }
+    function persistPlaybook() {
+      investigationPlaybook.forEach(e => {
+        fetch(getBackendUrl() + '/api/aml/playbook', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: e.id, name: e.nameEn, action: e.actEn, uses: e.uses, confirmed: e.confirmed })
+        }).catch(err => console.warn('persistPlaybook skipped:', err));
+      });
+    }
+    async function syncFromServer() {
+      try {
+        const r = await fetch(getBackendUrl() + '/api/aml/reviews').then(x => x.json());
+        let merged = 0;
+        if (r && r.db && Array.isArray(r.reviews)) {
+          // Server returns newest-first; walk oldest-first so unshift keeps newest at index 0
+          // (verdict maps take index 0 as the latest conclusion).
+          [...r.reviews].reverse().forEach(row => {
+            if (reviewedCases.some(c => c.paymentId === row.paymentId)) return; // seed/session copy wins
+            const p = payments.find(x => x.id === row.paymentId) || {};
+            reviewedCases.unshift({ caseId: p.caseId || '', paymentId: row.paymentId, vendor: row.vendor || p.vendor || '', score: p.total || 0, result: resultFromConclusion(row.conclusion), conclusion: row.conclusion, by: row.reviewer || 'Legal Team', reason: row.reason || '', reasonZh: '', tags: [t('syncedTag')], status: 'Model Feedback Pending' });
+            merged += 1;
+          });
+        }
+        const pb = await fetch(getBackendUrl() + '/api/aml/playbook').then(x => x.json());
+        if (pb && pb.db && Array.isArray(pb.playbook)) {
+          pb.playbook.forEach(row => {
+            let e = investigationPlaybook.find(x => x.id === row.id);
+            if (!e && row.id === 'adverseMedia') {
+              // The one discoverable routine — recreate it from its known definition with server counts.
+              e = { id: 'adverseMedia', nameEn: 'Adverse-media hit', nameZh: '不利媒体命中', actEn: 'retrieve last-12-month negative coverage and link to the entity', actZh: '检索近 12 月负面报道并关联实体', uses: 0, confirmed: 0, match: q => q.riskTypes.includes('adverseMedia'), isNew: true };
+              investigationPlaybook.push(e);
+            }
+            if (e) { e.uses = Math.max(e.uses, row.uses || 0); e.confirmed = Math.max(e.confirmed, row.confirmed || 0); }
+          });
+        }
+        if (merged) { renderLegal(); renderSignals(); renderUnifiedQueue(); renderMetrics(); renderPaymentList(); }
+        renderPlaybook();
+      } catch (e) { console.warn('syncFromServer skipped (offline / db disabled):', e); }
+    }
+
     let chatHistory = [];
     let chatLoadingEl = null;
 
@@ -1935,7 +1982,8 @@
       if (conclusion === 'confirmedFraud' && currentInvestRec === 'escalate') currentPayment.held = true;
       // Evolution A — confirmed fraud reinforces / grows the investigation playbook
       let pbMsg = '';
-      if (conclusion === 'confirmedFraud') { pbMsg = learnPlaybook(currentPayment) === 'new' ? ' · ' + t('playbookGrew') : ' · ' + t('playbookReinforced'); }
+      if (conclusion === 'confirmedFraud') { pbMsg = learnPlaybook(currentPayment) === 'new' ? ' · ' + t('playbookGrew') : ' · ' + t('playbookReinforced'); persistPlaybook(); }
+      persistReview(reviewedCases[0]);
       renderLegal(); renderSignals(); renderPlaybook(); renderUnifiedQueue(); renderMetrics(); renderPaymentList(); closeInvestigateModal(); showToast((currentPayment.held ? t('reviewSavedHeld') : t('reviewSaved')) + pbMsg); showScreen('legal');
       document.querySelector('[data-wbtab="reviewed"]').click();
     });
@@ -1951,6 +1999,7 @@
     openCase(payments[0]);
     showScreen('dashboard');
     initChatResize();
+    syncFromServer();
   </script>
 </body>
 </html>

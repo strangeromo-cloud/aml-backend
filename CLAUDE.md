@@ -80,8 +80,9 @@
 
 环境变量（Zeabur 上配，本地用 `.env`）：`LLM_API_KEY` `LLM_BASE_URL` `LLM_MODEL`(gpt-5.5) `CORS_ORIGINS=*` `PORT`；可选 `DATABASE_URL`（见下）。
 
-**持久化（可选，`db.py`）**：设了 `DATABASE_URL` 才启用（Zeabur → New Service → PostgreSQL，会自动注入 `DATABASE_URL`）。没设则 `DB_ENABLED=False`，后端照常跑、持久化端点返回 503 —— 不会破坏现有部署。表：`review_records`（复核记录，PPV 真源）/ `playbook_entries`（调查 playbook）/ `signal_rows`（信号台账）。端点：`POST/GET /api/aml/reviews`、`GET/POST /api/aml/playbook`。URL 会自动转成 `postgresql+asyncpg://` 并剥掉 `sslmode`。`/api/health` 返回 `db` 字段。
-> 注意：前端目前仍是内存态；要让 evolution 跨端/重启持久，需把前端的复核/playbook 改为读写这些端点（下一步）。
+**持久化（可选，`db.py`）**：设了 `DATABASE_URL` 才启用。没设/值非法（含未解析的 `${...}` 占位符）则 `DB_ENABLED=False`，后端照常跑、持久化端点返回 503 —— **坏 URL 绝不能让容器崩**（曾因 import 时建 engine 未兜底导致 crash-loop）。表：`review_records`（复核记录，PPV 真源）/ `playbook_entries`（调查 playbook）/ `signal_rows`（信号台账）。端点：`POST/GET /api/aml/reviews`、`GET/POST /api/aml/playbook`。URL 会自动转成 `postgresql+asyncpg://` 并剥掉 `sslmode`。`/api/health` 返回 `db` 字段。
+> Zeabur 配法：backend 的 `DATABASE_URL` 引用 Postgres 服务的真实连接串（私网 `.zeabur.internal`）。注意 `${POSTGRES_CONNECTION_STRING}` 可能是"模板套模板"只解析一层 —— 报 `Could not parse SQLAlchemy URL` 时，去 Postgres 服务 Connect 面板复制**真实值**直接粘贴。
+**前端已接持久化**（HTML 里搜 `persistReview` / `persistPlaybook` / `syncFromServer`）：提交复核时 fire-and-forget POST 写库；启动时 GET 合并回 `reviewedCases`（按 `paymentId` 去重，种子/本session优先；合并记录带 `syncedTag` 标签）+ playbook 计数取 max。后端/库不可用时静默降级为内存态，demo 不受影响。
 **注意**：`temperature=1` 是硬编码的（gpt-5.x 只接受默认值，别加别的）。
 模型凭证复用 `~/Documents/cct/server/.env` 里的（OpenAI 兼容）。
 
