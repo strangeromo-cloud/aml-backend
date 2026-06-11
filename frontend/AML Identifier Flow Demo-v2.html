@@ -588,7 +588,7 @@
         legalEyebrow: 'Review Workflow', legalTitle: 'Legal Workbench', legalSubtitle: 'Pending alerts to review and the reviewed-case audit trail, in one place.', wbPending: 'Pending Queue', wbReviewed: 'Reviewed Cases', legalRecords: 'Legal Review Records', legalRecordsDesc: 'Reviewed case list for audit trail and model feedback.', noReviewed: 'No reviewed cases yet. After Mark Reviewed from Dashboard, records will appear here.', reviewedCases: n => `${n} reviewed case${n === 1 ? '' : 's'}`,
         reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', syncedTag: 'Synced from server', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
         tags: ['Vendor risk overestimated', 'Payment pattern is normal', 'Category alignment is valid', 'Known business exception'],
-        statuses: { High: 'High', Medium: 'Medium', Low: 'Low', Reasonable: 'Reasonable', Warning: 'Warning', Unreasonable: 'Unreasonable' }, resultMap: { 'Not Fraud Payment': 'Not Fraud Payment', 'Confirmed Fraud Payment': 'Confirmed Fraud Payment', 'Need More Evidence': 'Need More Evidence' }, recordStatusMap: { 'Model Feedback Pending': 'Model Feedback Pending' }, page: 'Page', prev: 'Previous', next: 'Next', allOption: 'All', totalPaymentsLabel: n => `${n} payment${n === 1 ? '' : 's'}`, totalCenter: 'Payments',
+        statuses: { High: 'High', Medium: 'Medium', Low: 'Low', Reasonable: 'Reasonable', Warning: 'Warning', Unreasonable: 'Unreasonable' }, resultMap: { 'Not Fraud Payment': 'Not Fraud Payment', 'Confirmed Fraud Payment': 'Confirmed Fraud Payment', 'Need More Evidence': 'Need More Evidence' }, recordStatusMap: { 'Model Feedback Pending': 'Model Feedback Pending', 'Model Feedback Incorporated': 'Feedback Incorporated' }, page: 'Page', prev: 'Previous', next: 'Next', allOption: 'All', totalPaymentsLabel: n => `${n} payment${n === 1 ? '' : 's'}`, totalCenter: 'Payments',
         chatTitle: 'AML Risk Assistant', chatSubtitle: 'Ask about vendors, dimensions, or risky payments', chatSend: 'Send', chatPlaceholder: 'Try: "Northstar" or "geographic risk"',
         chatWelcome: "Hi! I'm your AML assistant. I can analyze risky payments across six dimensions or pull payments by vendor name. Try one of these:",
         chatSuggestions: ['Show high-risk payments', 'Analyze geographic risk', 'PEP exposure', 'Find payments for Northstar', 'Time anomaly insights'],
@@ -649,7 +649,7 @@
         legalEyebrow: '复核工作流', legalTitle: '法务工作台', legalSubtitle: '待复核告警与已复核案例审计轨迹，合并在一处。', wbPending: '待复核队列', wbReviewed: '已复核案例', legalRecords: '法务复核记录', legalRecordsDesc: '已复核案例列表，用于审计追踪与模型反馈。', noReviewed: '暂无已复核案例。从风险总览点击"标记已复核"后，记录会显示在这里。', reviewedCases: n => `${n} 个已复核案例`,
         reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', syncedTag: '服务器同步', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
         tags: ['供应商风险被高估', '付款模式正常', '采购品类匹配有效', '已知业务例外'],
-        statuses: { High: '高', Medium: '中', Low: '低', Reasonable: '合理', Warning: '警告', Unreasonable: '不合理' }, resultMap: { 'Not Fraud Payment': '非欺诈付款', 'Confirmed Fraud Payment': '确认欺诈付款', 'Need More Evidence': '需要更多证据' }, recordStatusMap: { 'Model Feedback Pending': '待模型反馈' }, page: '第', prev: '上一页', next: '下一页', allOption: '全部', totalPaymentsLabel: n => `${n} 笔付款`, totalCenter: '付款',
+        statuses: { High: '高', Medium: '中', Low: '低', Reasonable: '合理', Warning: '警告', Unreasonable: '不合理' }, resultMap: { 'Not Fraud Payment': '非欺诈付款', 'Confirmed Fraud Payment': '确认欺诈付款', 'Need More Evidence': '需要更多证据' }, recordStatusMap: { 'Model Feedback Pending': '待模型反馈', 'Model Feedback Incorporated': '已反馈' }, page: '第', prev: '上一页', next: '下一页', allOption: '全部', totalPaymentsLabel: n => `${n} 笔付款`, totalCenter: '付款',
         chatTitle: 'AML 风险助手', chatSubtitle: '可询问供应商、维度或可疑付款', chatSend: '发送', chatPlaceholder: '试试："Northstar" 或 "地理风险"',
         chatWelcome: '你好！我是 AML 风险助手，可对六大风险维度做分析，也能按供应商名查询相关付款。试试这些：',
         chatSuggestions: ['显示高风险付款', '分析地理风险', 'PEP 暴露', '查找 Northstar 相关付款', '时间异常洞察'],
@@ -1231,6 +1231,11 @@
     let _calibRows = [];
     function openCalibration() {
       _calibRows = renderCalibration();
+      // Running the monthly calibration consumes all pending Legal feedback —
+      // their conclusions are now baked into the rolling PPV, so flip the status.
+      const pending = reviewedCases.filter(r => r.status === 'Model Feedback Pending');
+      pending.forEach(r => { r.status = 'Model Feedback Incorporated'; });
+      if (pending.length) renderLegal();
       document.getElementById('calibModal').classList.add('open');
     }
     function applyCalibration() {
@@ -1410,7 +1415,7 @@
       document.getElementById('legalRows').innerHTML = list.map(r => {
         const found = payments.find(p => p.id === r.paymentId);
         const actionCell = found ? `<button class="btn btn-soft" data-reviewedpay="${r.paymentId}">${t('review')}</button>` : '<span class="small-muted">—</span>';
-        return `<tr><td><strong>${r.caseId}</strong></td><td>${r.paymentId}</td><td>${r.vendor}</td><td><span class="tag tag-red">${r.score}</span></td><td>${t('resultMap')[r.result] || r.result}</td><td>${lang === 'zh' ? t('legalTeam') : r.by}</td><td>${lang === 'zh' && r.reasonZh ? r.reasonZh : r.reason}</td><td>${Array.isArray(r.tags) ? r.tags.map(tag => lang === 'zh' ? (i18n.en.tags.indexOf(tag) >= 0 ? t('tags')[i18n.en.tags.indexOf(tag)] : tag) : tag).join(', ') : r.tags}</td><td><span class="tag tag-amber">${t('recordStatusMap')[r.status] || r.status}</span></td><td>${actionCell}</td></tr>`;
+        return `<tr><td><strong>${r.caseId}</strong></td><td>${r.paymentId}</td><td>${r.vendor}</td><td><span class="tag tag-red">${r.score}</span></td><td>${t('resultMap')[r.result] || r.result}</td><td>${lang === 'zh' ? t('legalTeam') : r.by}</td><td>${lang === 'zh' && r.reasonZh ? r.reasonZh : r.reason}</td><td>${Array.isArray(r.tags) ? r.tags.map(tag => lang === 'zh' ? (i18n.en.tags.indexOf(tag) >= 0 ? t('tags')[i18n.en.tags.indexOf(tag)] : tag) : tag).join(', ') : r.tags}</td><td><span class="tag ${r.status === 'Model Feedback Incorporated' ? 'tag-green' : 'tag-amber'}">${t('recordStatusMap')[r.status] || r.status}</span></td><td>${actionCell}</td></tr>`;
       }).join('');
       document.querySelectorAll('[data-reviewedpay]').forEach(btn => btn.addEventListener('click', () => {
         const p = payments.find(x => x.id === btn.dataset.reviewedpay);
