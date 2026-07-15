@@ -1123,17 +1123,28 @@
       });
     }
 
-    function suggestedTier(ppv) {
+    // Tier eligibility is STRUCTURAL for established signals: high-precision payment
+    // rules are T1 by rule class (the hit is a deterministic fact — expected PPV ~30%),
+    // native vendor signals map to T2. PPV banding is only a reference scale for
+    // agent-discovered candidates; Wilson-based calibration guards validated/demoted.
+    function structuralTier(id, level) {
+      if (HIGH_PRECISION_RULES.some(r => r.id === id)) return 'T1';
+      if (level === 'vendor') return 'T2';
+      return null;
+    }
+    function suggestedTier(ppv, id, level) {
+      const st = structuralTier(id, level);
+      if (st) return st;
       if (ppv == null) return null;
       if (ppv >= 0.5) return 'T1';
       if (ppv >= 0.15) return 'T2';
       return 'T3';
     }
     // The effective alert tier a signal maps to, given its status + PPV.
-    function effectiveTier(status, ppv) {
+    function effectiveTier(status, ppv, id, level) {
       if (status === 'demoted') return t('scoringFactor');   // 评分因子
       if (status === 'candidate') return t('tierObserve');   // 观察，不触发
-      return suggestedTier(ppv) || t('tierObserve');
+      return suggestedTier(ppv, id, level) || t('tierObserve');
     }
 
     function renderSignals() {
@@ -1141,7 +1152,7 @@
       const ledger = buildSignalLedger();
       document.getElementById('signalRows').innerHTML = ledger.map(s => {
         const pct = s.ppv == null ? null : Math.round(s.ppv * 100);
-        const tier = suggestedTier(s.ppv);
+        const tier = suggestedTier(s.ppv, s.id, s.level);
         const levelTag = s.level === 'payment' ? 'tag-blue' : 'tag-amber';
         const statusTag = s.status === 'validated' ? 'tag-green' : s.status === 'demoted' ? 'tag-red' : 'tag-gray';
         const ppvCell = pct == null
@@ -1210,7 +1221,7 @@
       document.getElementById('calibRows').innerHTML = rows.map(r => {
         const statusBadge = st => `<span class="tag ${st === 'validated' ? 'tag-green' : st === 'demoted' ? 'tag-red' : 'tag-gray'}">${t('signalStatusMap')[st]}</span>`;
         const cell = st => {
-          const et = effectiveTier(st, r.ppv);
+          const et = effectiveTier(st, r.ppv, r.id, r.level);
           const tierMark = ['T1', 'T2', 'T3'].includes(et) ? `<span class="tier-badge tier-${et}">${et}</span>` : `<span class="calib-tier-text">${et}</span>`;
           return `<span class="calib-cell">${statusBadge(st)}${tierMark}</span>`;
         };
