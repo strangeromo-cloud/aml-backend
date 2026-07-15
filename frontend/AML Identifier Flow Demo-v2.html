@@ -472,7 +472,7 @@
         <div class="topbar"><div><div class="eyebrow" data-i18n="signalsEyebrow"></div><h2 class="title" data-i18n="signalsTitle"></h2><p class="subtitle" data-i18n="signalsSubtitle"></p></div><div class="actions"><button class="btn btn-review-cta btn-teal" id="runDiscoveryBtn">🤖 <span data-i18n="runDiscovery"></span></button><button class="btn btn-primary btn-review-cta" id="runCalibBtn" data-i18n="runCalib"></button></div></div>
         <div class="metric-grid" id="signalMetrics" style="grid-template-columns:repeat(3,minmax(0,1fr))"></div>
         <div class="card"><div class="section-head"><div><h2 data-i18n="signalLedgerTitle"></h2><p data-i18n="signalLedgerDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="signalHeader"></tr></thead><tbody id="signalRows"></tbody></table></div><div class="notice" data-i18n="signalNote"></div></div>
-        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
+        <div class="card" id="playbookCard" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
       </section>
 
       <section class="screen" id="vendor">
@@ -727,6 +727,9 @@
       { id: 'pepCheck', nameEn: 'PEP link', nameZh: 'PEP 关联', actEn: 'cross-check shareholders vs. public-office lists', actZh: '股东与公职人员名单交叉核对', uses: 4, confirmed: 2, match: p => p.riskTypes.includes('pep') },
       { id: 'structTimeline', nameEn: 'Structuring pattern', nameZh: '拆分特征', actEn: "pull the vendor's full payment timeline", actZh: '拉取该供应商完整付款时间线', uses: 3, confirmed: 1, match: p => (vendorSignalMap[p.vendor] || []).includes('structuring') },
     ];
+    // Feature flag: investigation playbook (Evolution A) UI — hidden for now per Legal
+    // scope; learning/persistence keep running silently so data is ready when re-enabled.
+    const SHOW_PLAYBOOK = false;
     function appliedPlaybook(p) { return investigationPlaybook.filter(e => { try { return e.match(p); } catch (_) { return false; } }); }
     function learnPlaybook(p) {
       // reinforce routines that applied to this confirmed-fraud payment
@@ -1173,6 +1176,9 @@
 
     // Evolution A — render the investigation playbook (grows/strengthens from reviews)
     function renderPlaybook() {
+      const card = document.getElementById('playbookCard');
+      if (card) card.style.display = SHOW_PLAYBOOK ? '' : 'none';
+      if (!SHOW_PLAYBOOK) return;
       const hdrEl = document.getElementById('playbookHeader');
       if (!hdrEl) return;
       hdrEl.innerHTML = t('playbookHeaders').map(h => `<th>${h}</th>`).join('');
@@ -1486,7 +1492,7 @@
       // Evolution A — apply learned investigation playbook routines (and count the use)
       const pbWrap = document.getElementById('investPlaybookWrap');
       const applied = appliedPlaybook(payment);
-      if (applied.length) {
+      if (applied.length && SHOW_PLAYBOOK) {
         applied.forEach(e => { e.uses += 1; });
         pbWrap.style.display = '';
         document.getElementById('investPlaybook').innerHTML = applied.map(e => `<div class="invest-pb-item">▸ <strong>${lang === 'zh' ? e.nameZh : e.nameEn}</strong> — ${lang === 'zh' ? e.actZh : e.actEn}</div>`).join('');
@@ -1998,7 +2004,7 @@
       if (conclusion === 'confirmedFraud' && currentInvestRec === 'escalate') currentPayment.held = true;
       // Evolution A — confirmed fraud reinforces / grows the investigation playbook
       let pbMsg = '';
-      if (conclusion === 'confirmedFraud') { pbMsg = learnPlaybook(currentPayment) === 'new' ? ' · ' + t('playbookGrew') : ' · ' + t('playbookReinforced'); persistPlaybook(); }
+      if (conclusion === 'confirmedFraud') { const pbRes = learnPlaybook(currentPayment); if (SHOW_PLAYBOOK) pbMsg = pbRes === 'new' ? ' · ' + t('playbookGrew') : ' · ' + t('playbookReinforced'); persistPlaybook(); }
       persistReview(reviewedCases[0]);
       renderLegal(); renderSignals(); renderPlaybook(); renderUnifiedQueue(); renderMetrics(); renderPaymentList(); closeInvestigateModal(); showToast((currentPayment.held ? t('reviewSavedHeld') : t('reviewSaved')) + pbMsg); showScreen('legal');
       document.querySelector('[data-wbtab="reviewed"]').click();
