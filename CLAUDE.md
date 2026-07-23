@@ -33,13 +33,16 @@
 
 ## 检测模型（前端 HTML 内实现）
 
-**双入口 + 三层 Tier**：
-- 入口 A（付款级）：4 条高精度规则（银行/营业地国家不一致、付款方/发票国不一致、主营业务≠品类、虚假发票），各 ~30% PPV。
-- 入口 B（供应商级）：拆分、突增（原生）+ 高精度多次命中（汇总，是 A 的 roll-up，标"汇总"）。
-- Tier：命中**任意 1 条**高精度规则→T1（24h）；否则其供应商有行为信号（拆分/突增/多次命中）→T2（3天）；都没有→T3（加权分排序）。统一队列 = 付款级 T1 + 供应商级 T2（T2 付款由其供应商条目代表，不重复列）。
-- **高精度信号"跳出"加权平均，不被稀释** —— 这是核心，别改回纯加权。
+**规则表驱动 Tier（2026-07 改，以 Legal 规则表为准）**：
+- 每条规则有**固定的 Tier 和 Risk Type**，来源 = `docs/Payment Monitoring Scenarios-0723.xlsx` 的 `Updated-0714` tab（A 列 Tier、D 列 Risk Type）。前端里是 `RULES` 常量（搜 `const RULES`）。
+- 一笔 payment 的 **Tier = 它命中的规则里最高等级**（T1>T2>T3）；无命中→T3。**不再是"双入口/付款维度/供应商维度"那套**（旧逻辑已废弃，别改回）。
+- **Risk Type = 命中规则的 Risk Type 集合**，7 类图名称：Geographic Risks / Criminal, Civil or Regulatory Proceedings / Adverse Media (PEP) / Documentation Gaps / Vague Descriptions / Timing Irregularities / Behavioral Indicators（`RISK_TYPE_KEYS` = geo/crime/pep/docgap/vague/timing/behavior）。
+- ⚠️ demo 是合成数据，没有真实"银行国别/发票开具地"等字段，`RULES` 的 predicate 是用旧 `p.riskTypes`（geographic/pep/... 6 个内部信号）+ 条件**近似映射**到图规则。生产化时把 predicate 换成真实字段比对，Tier/RiskType 框架不变。
+- SLA：T1 = 5 个工作日、T2 = 10 个工作日、T3 仅展示不报警（`slaDays()` + `addBusinessDays()`）。
 
-**主从评分**：Tier 是主分类；加权分（供应商分40%+ML付款分35%+合理性25%）只在 T3 用。T1/T2 行不显示分数。
+**评分**：每个 payment **不论 Tier 都显示评分**（加权分 = 供应商40%+ML付款35%+合理性25%）。列表页 `sc()` 恒显示、详情页所有 tier 都渲染评分明细（不再只 T3）。
+
+**遗留（进化功能仍用旧概念，A 方案未重构）**：信号台账 / 月度校准 / Agent 自学习仍基于旧的 `HIGH_PRECISION_RULES` + `precisionHits` + `vendorSignalMap`（`assignPrecisionHits` 保留）。这些与新 `RULES` 表**并存**，如需也按规则表重构再议。
 
 ## 关键代码锚点（前端 HTML 里搜这些）
 

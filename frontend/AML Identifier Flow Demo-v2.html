@@ -617,7 +617,7 @@
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
         paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
-        riskTypes: { geographic: 'Geographic Risk', pep: 'PEP Exposure', adverseMedia: 'Adverse Media', docMissing: 'Document Missing', timeAnomaly: 'Time Anomaly', behavior: 'Behavior Indicator' },
+        riskTypes: { geo: 'Geographic Risks', crime: 'Criminal, Civil or Regulatory Proceedings', pep: 'Adverse Media (PEP)', docgap: 'Documentation Gaps', vague: 'Vague Descriptions', timing: 'Timing Irregularities', behavior: 'Behavioral Indicators' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
         investigateNow: 'Investigate', investigateReviewNow: 'Investigate & Review', reviewDecisionLabel: 'Legal decision', heldTag: 'Held', reviewSavedHeld: 'Review submitted · payment placed on Hold', investigateEyebrow: 'AML Investigation Agent', investigateSubtitle: 'Auto multi-source evidence gathering + AI synthesis, then your decision', investSteps: 'Investigation steps', investEvidence: 'Gathered evidence', investPackage: 'Investigation package', investRunning: 'Investigating...', investHint: 'Optional — run the agent to auto-gather evidence and pre-fill the decision below.', investNotRun: 'Agent not run yet. Click Investigate above, or fill the decision manually.', recLabels: { escalate: 'Escalate / hold payment', investigate: 'Investigate further', clear: 'Likely benign' },
@@ -678,7 +678,7 @@
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
         paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
-        riskTypes: { geographic: '地理风险', pep: 'PEP 人物', adverseMedia: '不利媒体', docMissing: '文件缺失', timeAnomaly: '时间异常', behavior: '行为指标' },
+        riskTypes: { geo: '地理风险', crime: '刑事、民事或监管诉讼', pep: '负面媒体（PEP）', docgap: '单据缺失', vague: '模糊描述', timing: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
         investigateNow: '立即调查', investigateReviewNow: '调查并复核', reviewDecisionLabel: '法务结论', heldTag: '已冻结', reviewSavedHeld: '复核已提交 · 付款已置为冻结', investigateEyebrow: 'AML 调查 Agent', investigateSubtitle: '自动多源取证 + AI 综合结论，然后由你定论', investSteps: '调查步骤', investEvidence: '收集到的证据', investPackage: '调查结论', investRunning: '调查中...', investHint: '可选 —— 运行 Agent 自动取证并预填下方结论。', investNotRun: 'Agent 尚未运行。点击上方"立即调查"，或直接手动填写结论。', recLabels: { escalate: '升级 / 暂停付款', investigate: '需进一步调查', clear: '可能合规' },
@@ -706,8 +706,8 @@
       }
     };
 
-    const RISK_TYPE_KEYS = ['geographic', 'pep', 'adverseMedia', 'docMissing', 'timeAnomaly', 'behavior'];
-    const RISK_COLORS = { geographic: '#d84b4b', pep: '#c9861a', adverseMedia: '#8e44ad', docMissing: '#2980b9', timeAnomaly: '#16a085', behavior: '#34495e' };
+    const RISK_TYPE_KEYS = ['geo', 'crime', 'pep', 'docgap', 'vague', 'timing', 'behavior'];
+    const RISK_COLORS = { geo: '#d84b4b', crime: '#a94442', pep: '#c9861a', docgap: '#2980b9', vague: '#5d8aa8', timing: '#16a085', behavior: '#34495e' };
 
     // Strategy 1+2: Accuracy=100% rules (each ~30% PPV). Count of hits drives the alert Tier.
     const HIGH_PRECISION_RULES = [
@@ -741,11 +741,28 @@
       });
       return sig;
     }
+    // Rule table per the Legal rule sheet (Updated-0714): each rule carries a fixed
+    // Tier and Risk Type. A payment's Tier = the highest tier among the rules it hits;
+    // its risk types = the risk types of those rules. Predicates are approximated from
+    // the synthetic fields (production would use the real bank/invoice/registry data).
+    const RULES = [
+      { id: 'geoWatch',  tier: 'T2', rt: 'geo',      predicate: p => p.riskTypes.includes('geographic') },
+      { id: 'payerA2',   tier: 'T1', rt: 'geo',      predicate: p => p.riskTypes.includes('geographic') && p.reasonable === 'Unreasonable' },
+      { id: 'criminal',  tier: 'T1', rt: 'crime',    predicate: p => p.riskTypes.includes('adverseMedia') && p.total >= 80 },
+      { id: 'pep',       tier: 'T3', rt: 'pep',      predicate: p => p.riskTypes.includes('pep') },
+      { id: 'noPO',      tier: 'T3', rt: 'docgap',   predicate: p => p.riskTypes.includes('docMissing') && p.source === 'LGAP' },
+      { id: 'resources', tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore < 60 },
+      { id: 'bgA3',      tier: 'T1', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
+      { id: 'surge',     tier: 'T2', rt: 'timing',   predicate: p => p.riskTypes.includes('timeAnomaly') },
+      { id: 'unconn',    tier: 'T2', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore < 60 },
+      { id: 'fakeA4',    tier: 'T1', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore >= 60 }
+    ];
+    function computeRuleHits(p) { return RULES.filter(r => { try { return r.predicate(p); } catch (_) { return false; } }); }
     function paymentTier(p) {
-      if ((p.precisionHits || []).length >= 1) return 'T1';
-      if ((vendorSignalMap[p.vendor] || []).length) return 'T2';
-      return 'T3';
+      const tiers = new Set(computeRuleHits(p).map(r => r.tier));
+      return tiers.has('T1') ? 'T1' : tiers.has('T2') ? 'T2' : 'T3';
     }
+    function paymentRTKeys(p) { return [...new Set(computeRuleHits(p).map(r => r.rt))]; }
     function assignPrecisionHits() {
       payments.forEach(p => {
         const hits = [];
@@ -1076,7 +1093,7 @@
         };
       }
       const counts = {}; RISK_TYPE_KEYS.forEach(k => counts[k] = 0);
-      payments.forEach(p => p.riskTypes.forEach(k => { if (counts[k] != null) counts[k] += 1; }));
+      payments.forEach(p => paymentRTKeys(p).forEach(k => { if (counts[k] != null) counts[k] += 1; }));
       return {
         keys: RISK_TYPE_KEYS,
         colors: RISK_COLORS,
@@ -1458,7 +1475,7 @@
       const kw = filters.keyword.trim().toLowerCase();
       return payments.filter(p => {
         if (filters.tier && paymentTier(p) !== filters.tier) return false;
-        if (filters.riskType && !p.riskTypes.includes(filters.riskType)) return false;
+        if (filters.riskType && !paymentRTKeys(p).includes(filters.riskType)) return false;
         if (filters.source && p.source !== filters.source) return false;
         if (filters.riskLevel && p.status !== filters.riskLevel) return false;
         if (filters.dateFrom && p.date < filters.dateFrom) return false;
@@ -1492,8 +1509,8 @@
       document.getElementById('paymentListCount').textContent = t('totalPaymentsLabel')(filtered.length);
       document.getElementById('paymentListRows').innerHTML = visible.map(p => {
         const i = payments.indexOf(p);
-        const sc = html => paymentTier(p) === 'T3' ? html : '<span class="small-muted">—</span>';
-        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(p.riskTypes)}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${p.vendorScore}</strong>`)}</td><td>${sc(`<strong>${p.paymentScore}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(p.status)}">${p.total}</span>`)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
+        const sc = html => html; // every payment is scored, regardless of tier
+        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(paymentRTKeys(p))}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${p.vendorScore}</strong>`)}</td><td>${sc(`<strong>${p.paymentScore}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(p.status)}">${p.total}</span>`)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
       }).join('');
       const empty = document.getElementById('paymentListEmpty');
       empty.textContent = t('noPaymentsMatch');
@@ -1524,18 +1541,13 @@
 
       const tierHero = `<div class="tier-hero"><div class="eyebrow">${t('alertTierLabel')}</div><div class="tier-hero-line"><span class="tier-badge tier-${tier}">${tier}</span><strong>${t('tierLabels')[tier]}</strong>${tierSlaChip(tier)}${isOverdue(payment) ? overdueTag() : ''}${payment.held ? heldTag() : ''}</div><p class="driver-meta">${t('tierDesc')[tier]}</p></div>`;
 
-      let body;
-      if (tier === 'T3') {
-        const formula = `${payment.vendorScore}×${weights.overall.Vendor}% + ${payment.paymentScore}×${weights.overall.Payment}% + ${payment.reasonableScore}×${weights.overall.Reasonable}%`;
-        const rows = [[t('vendorScoreLabel'), payment.vendorScore, weights.overall.Vendor, t('vendorScoreDesc')], [t('mlPaymentScore'), payment.paymentScore, weights.overall.Payment, t('mlPaymentDesc')], [t('reasonablePaymentScore'), payment.reasonableScore, weights.overall.Reasonable, `${statusLabel(payment.reasonable)}: ${t('reasonableDesc')}`]];
-        const breakdown = rows.map(r => `<div class="break-row"><div class="break-top"><span>${r[0]}</span><span>${r[1]} · ${t('weight')} ${r[2]}%</span></div><div class="bar"><span style="width:${r[1]}%"></span></div><p class="driver-meta">${r[3]}</p></div>`).join('');
-        body = `<div class="score-hero"><div><div class="eyebrow">${t('overallFraudRisk')}</div><strong>${formula}</strong></div><div class="big">${payment.total}</div></div><div class="breakdown">${breakdown}</div><div class="notice">${t('reasonableNotice')}</div>`;
-      } else {
-        const triggers = (payment.precisionHits || []).map(h => `<span class="trigger-pill">${t('hpRules')[h]}</span>`).join('');
-        body = `<div class="tier-triggers"><div class="eyebrow">${t('triggerReason')}</div><div class="trigger-pills-row">${triggers || '—'}</div></div>`;
-      }
+      // Every payment is scored, regardless of tier.
+      const formula = `${payment.vendorScore}×${weights.overall.Vendor}% + ${payment.paymentScore}×${weights.overall.Payment}% + ${payment.reasonableScore}×${weights.overall.Reasonable}%`;
+      const scoreRows = [[t('vendorScoreLabel'), payment.vendorScore, weights.overall.Vendor, t('vendorScoreDesc')], [t('mlPaymentScore'), payment.paymentScore, weights.overall.Payment, t('mlPaymentDesc')], [t('reasonablePaymentScore'), payment.reasonableScore, weights.overall.Reasonable, `${statusLabel(payment.reasonable)}: ${t('reasonableDesc')}`]];
+      const breakdown = scoreRows.map(r => `<div class="break-row"><div class="break-top"><span>${r[0]}</span><span>${r[1]} · ${t('weight')} ${r[2]}%</span></div><div class="bar"><span style="width:${r[1]}%"></span></div><p class="driver-meta">${r[3]}</p></div>`).join('');
+      const body = `<div class="score-hero"><div><div class="eyebrow">${t('overallFraudRisk')}</div><strong>${formula}</strong></div><div class="big">${payment.total}</div></div><div class="breakdown">${breakdown}</div><div class="notice">${t('reasonableNotice')}</div>`;
 
-      const riskCtx = `<div class="break-row" style="margin-top:14px"><div class="break-top"><span>${t('filterRiskType')}</span></div>${riskTypePills(payment.riskTypes)}</div>`;
+      const riskCtx = `<div class="break-row" style="margin-top:14px"><div class="break-top"><span>${t('filterRiskType')}</span></div>${riskTypePills(paymentRTKeys(payment))}</div>`;
       document.getElementById('caseRiskPanel').innerHTML = tierHero + body + riskCtx;
       showScreen('case');
     }
@@ -1693,7 +1705,7 @@
 
     function chatPaymentCard(p) {
       const idx = payments.indexOf(p);
-      return `<div class="chat-result-card"><div class="row1"><span class="pid">${p.id}</span><span class="tag ${tagClass(p.status)}">${p.total}</span></div><div class="row2">${p.date} · ${p.vendor} · ${p.amount}</div><div class="row3">${riskTypePills(p.riskTypes)}<button class="btn btn-soft openbtn" data-chatcase="${idx}">${t('chatOpen')}</button></div></div>`;
+      return `<div class="chat-result-card"><div class="row1"><span class="pid">${p.id}</span><span class="tag ${tagClass(p.status)}">${p.total}</span></div><div class="row2">${p.date} · ${p.vendor} · ${p.amount}</div><div class="row3">${riskTypePills(paymentRTKeys(p))}<button class="btn btn-soft openbtn" data-chatcase="${idx}">${t('chatOpen')}</button></div></div>`;
     }
 
     function chatStatsBlock(payments) {
@@ -1728,12 +1740,13 @@
     }
 
     function detectRiskType(q) {
-      if (/geo|country|jurisdic|offshore|地理|国家|司法|离岸/i.test(q)) return 'geographic';
-      if (/pep|politic|exposed|政治|公众人物/i.test(q)) return 'pep';
-      if (/media|adverse|news|negative|媒体|不利|负面/i.test(q)) return 'adverseMedia';
-      if (/doc|missing|invoice|contract|文件|缺失|发票|合同/i.test(q)) return 'docMissing';
-      if (/time|holiday|weekend|surge|night|时间|节假|周末|突增/i.test(q)) return 'timeAnomaly';
-      if (/behavi|fraud|fake|account|routing|账户|行为|虚假/i.test(q)) return 'behavior';
+      if (/geo|country|jurisdic|offshore|bank|地理|国家|司法|离岸|银行/i.test(q)) return 'geo';
+      if (/criminal|litigat|proceeding|corrupt|刑事|诉讼|腐败/i.test(q)) return 'crime';
+      if (/pep|politic|exposed|media|adverse|news|negative|政治|媒体|不利|负面/i.test(q)) return 'pep';
+      if (/\bpo\b|remittance|linked|无.?po|合同|单据缺失/i.test(q)) return 'docgap';
+      if (/vague|background|resource|commensurate|背景|资源|不相称|模糊/i.test(q)) return 'vague';
+      if (/time|holiday|weekend|surge|night|时间|节假|周末|突增/i.test(q)) return 'timing';
+      if (/behavi|fraud|fake|account|routing|invoice|账户|行为|虚假|发票/i.test(q)) return 'behavior';
       return null;
     }
 
@@ -1984,7 +1997,7 @@
 
       const riskKey = detectRiskType(q);
       if (riskKey) {
-        const matches = payments.filter(p => p.riskTypes.includes(riskKey));
+        const matches = payments.filter(p => paymentRTKeys(p).includes(riskKey));
         matches.sort((a, b) => b.total - a.total);
         const high = matches.filter(p => p.status === 'High').length;
         const vSet = new Set(matches.map(p => p.vendor));
