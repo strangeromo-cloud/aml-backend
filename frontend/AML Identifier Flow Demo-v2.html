@@ -282,7 +282,7 @@
     .ci-nums .ci-ok { color: var(--green); font-weight: 700; }
     .ci-nums .ci-bad { color: var(--red); font-weight: 700; }
     .queue-list { padding: 12px 16px; display: grid; gap: 8px; }
-    .queue-row { display: grid; grid-template-columns: 44px 76px minmax(140px, 1.2fr) 2fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdfe; }
+    .queue-row { display: grid; grid-template-columns: 44px minmax(160px, 1.2fr) 2fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdfe; }
     .queue-row:hover { border-color: #bfe1e8; background: #f4fafc; }
     .queue-kind { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; text-align: center; }
     .qk-payment { background: #e8f2fb; color: #1e668d; }
@@ -304,7 +304,7 @@
     tr.row-overdue { background: rgba(216,75,75,.06); box-shadow: inset 3px 0 0 var(--red); }
     tr.row-overdue:hover { background: rgba(216,75,75,.1); }
     .queue-row.overdue { border-color: #f0c2c2; background: #fdf4f4; box-shadow: inset 3px 0 0 var(--red); }
-    .qr-entries { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .qr-entries { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
     .qr-entry { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fbfdfe; }
     .qr-entry-head { font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; }
     .qr-entry ul { margin: 0 0 12px; padding-left: 18px; color: var(--ink); font-size: 13px; line-height: 1.75; }
@@ -313,7 +313,7 @@
     .agent-tag { display: inline-block; font-size: 10px; font-weight: 800; color: #1ba39c; background: #e2f6f4; border: 1px solid #b9e7e2; padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
     .disc-pattern { background: linear-gradient(135deg, #f0fbfa, #eef6fb); border: 1px solid #cfe7ee; border-radius: 14px; padding: 14px 16px; margin: 12px 0; }
     .disc-pattern-name { font-weight: 800; font-size: 16px; margin: 4px 0; }
-    @media (max-width: 1200px) { .qr-entries { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .qr-entries { grid-template-columns: 1fr; } }
     .queue-footer { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); background: #fbfdfe; border-radius: 0 0 var(--radius) var(--radius); }
     .page-controls { display: flex; align-items: center; gap: 8px; }
     .page-info { color: var(--muted); font-size: 13px; font-weight: 700; }
@@ -448,13 +448,6 @@
           <button class="btn btn-soft" id="dashRangeReset" data-i18n="filterReset"></button>
         </div>
         <div class="metric-grid" id="metricGrid"></div>
-        <div class="card todo-card">
-          <div class="section-head">
-            <div><h2 data-i18n="todoTitle"></h2><p data-i18n="todoDesc"></p></div>
-            <button class="btn btn-soft" id="todoViewAllBtn"></button>
-          </div>
-          <div class="todo-list" id="todoList"></div>
-        </div>
         <div class="dashboard-grid">
           <div class="card dashboard-card">
             <div class="section-head"><div><h2 data-i18n="rankTitle"></h2><p data-i18n="rankDesc"></p></div></div>
@@ -603,13 +596,13 @@
         brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score, ML Payment Score, and Reasonable Payment Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
-        metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 · dual-entry', metricT1Note: 'Review within 5 business days', metricT2Note: 'Review within 10 business days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
+        metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 · dual-entry', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
         riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Hits any T1 rule', T2: 'Highest hit is a T2 rule', T3: 'Only T3 rules — scored' },
-        tierSla: { T1: '5 business days', T2: '10 business days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
+        tierSla: { T1: '5 work days', T2: '10 work days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
         hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { geoWatch: 'High-risk jurisdiction / CPI', payerA2: 'Payer ≠ invoice origin country', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', noPO: 'No linked PO / contract', resources: 'Resources not commensurate', bgA3: 'Questionable background (scope ≠ business)', surge: 'Surge in payments to new vendor', unconn: 'Funds to an unconnected account', fakeA4: 'Fake invoice' },
         filterTier: 'Tier',
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
@@ -1045,6 +1038,7 @@
     }
     // Home-screen "today's work" list: the unified queue, urgency-sorted, act-in-one-click.
     function renderTodoQueue() {
+      if (!document.getElementById('todoList')) return; // home todo queue removed
       const winIds = new Set(dashPayments().map(p => p.id));
       const winVendors = new Set(dashPayments().map(p => p.vendor));
       const queue = buildUnifiedQueue().filter(it => it.kind === 'payment' ? winIds.has(it.name) : winVendors.has(it.vendor));
