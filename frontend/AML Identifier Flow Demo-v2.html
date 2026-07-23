@@ -68,6 +68,8 @@
     .dash-filter-label { font-weight: 700; font-size: 13px; color: var(--ink); }
     .dash-quick { padding: 6px 12px; }
     .rank-row { grid-template-columns: 1fr auto !important; }
+    .footer-sep { margin: 0 6px; color: var(--muted); }
+    .btn-export::before { content: '⤓'; margin-right: 5px; }
     .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
     .metric { padding: 18px; min-height: 120px; }
     .metric-click { appearance: none; -webkit-appearance: none; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .15s, transform .1s, box-shadow .15s; }
@@ -472,7 +474,7 @@
         <div class="topbar">
           <div>
             <nav class="breadcrumb"><button class="crumb-home" data-nav="dashboard"><span class="crumb-arrow">‹</span><span data-i18n="navDashboard"></span></button><span class="crumb-sep">/</span><span class="crumb-current" data-i18n="navPaymentList"></span></nav>
-            <h2 class="title title-inline"><span data-i18n="paymentListTitle"></span><span class="status-pill title-pill" id="paymentListCount"></span></h2>
+            <h2 class="title title-inline"><span data-i18n="paymentListTitle"></span></h2>
             <p class="subtitle" data-i18n="paymentListSubtitle"></p>
           </div>
         </div>
@@ -490,13 +492,14 @@
             <div class="filter-actions">
               <button class="btn btn-soft" id="resetFilters" data-i18n="filterReset"></button>
               <button class="btn btn-primary" id="applyFiltersBtn" data-i18n="filterApply"></button>
+              <button class="btn btn-soft btn-export" id="exportListBtn" data-i18n="exportExcel"></button>
             </div>
             <div class="filter-active empty" id="filterActive"></div>
           </div>
           <div class="table-wrap"><table><thead><tr id="paymentListHeader"></tr></thead><tbody id="paymentListRows"></tbody></table></div>
           <div class="legal-empty" id="paymentListEmpty" style="display:none"></div>
           <div class="queue-footer">
-            <span class="page-info" id="paymentListPageInfo"></span>
+            <span class="page-info"><span id="paymentListCount"></span><span class="footer-sep">·</span><span id="paymentListPageInfo"></span></span>
             <div class="page-controls">
               <button class="btn btn-soft" id="prevListPage"></button>
               <button class="btn btn-soft" id="nextListPage"></button>
@@ -520,7 +523,7 @@
       <section class="screen" id="case">
         <div class="topbar"><div><nav class="breadcrumb"><button class="crumb-home" data-nav="dashboard"><span class="crumb-arrow">‹</span><span data-i18n="navDashboard"></span></button><span class="crumb-sep">/</span><span class="crumb-current" data-i18n="caseEyebrow"></span></nav><h2 class="title" id="caseTitle"></h2><p class="subtitle" data-i18n="caseSubtitle"></p></div></div>
         <div class="detail-layout"><div class="card panel"><h3 data-i18n="paymentSnapshot"></h3><div class="kv" id="caseKv"></div></div><div class="card panel" id="caseRiskPanel"></div></div>
-        <div class="case-foot"><button class="btn btn-primary btn-review-cta" id="caseReviewedBtnBottom" data-i18n="investigateReviewNow"></button></div>
+        <div class="case-foot"><button class="btn btn-primary btn-review-cta" id="caseReviewedBtnBottom" data-i18n="investigateReviewNow"></button><button class="btn btn-soft btn-export" id="exportCaseBtn" data-i18n="exportExcel"></button></div>
       </section>
 
       <section class="screen" id="config">
@@ -613,7 +616,7 @@
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
-        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
+        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geographic: 'Geographic Risk', pep: 'PEP Exposure', adverseMedia: 'Adverse Media', docMissing: 'Document Missing', timeAnomaly: 'Time Anomaly', behavior: 'Behavior Indicator' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
@@ -674,7 +677,7 @@
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
-        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
+        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geographic: '地理风险', pep: 'PEP 人物', adverseMedia: '不利媒体', docMissing: '文件缺失', timeAnomaly: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
@@ -2143,6 +2146,8 @@
     document.getElementById('nextListPage').addEventListener('click', () => { listPage += 1; renderPaymentList(); });
 
     document.getElementById('caseReviewedBtnBottom').addEventListener('click', () => openCaseReview(currentPayment));
+    document.getElementById('exportListBtn').addEventListener('click', () => showToast(t('exportDemoNote')));
+    document.getElementById('exportCaseBtn').addEventListener('click', () => showToast(t('exportDemoNote')));
     document.getElementById('runInvestigateBtn').addEventListener('click', startInvestigation);
     document.getElementById('closeInvestigate').addEventListener('click', closeInvestigateModal);
     document.getElementById('cancelReview').addEventListener('click', closeInvestigateModal);
