@@ -952,6 +952,31 @@
       return `<div><span>${t('l1Commodity')}</span><strong>${c.l1}</strong></div><div><span>${t('l2Commodity')}</span><strong>${c.l2}</strong></div><div><span>${t('finalCommodity')}</span><strong>${c.final}</strong></div>`;
     }
     function riskTypePill(key) { return `<span class="risk-type-pill" style="background:${RISK_COLORS[key]}">${t('riskTypes')[key]}</span>`; }
+    // Concrete hit evidence per rule (mock fields derived from the vendor country /
+    // source), so the detail reads e.g. "Payer SG ≠ invoice origin PA → mismatch".
+    const CTRY = { CN: ['中国', 'China'], SG: ['新加坡', 'Singapore'], DE: ['德国', 'Germany'], BVI: ['英属维尔京群岛', 'British Virgin Islands'], KY: ['开曼群岛', 'Cayman Islands'], PA: ['巴拿马', 'Panama'], AE: ['阿联酋', 'UAE'], TR: ['土耳其', 'Turkey'], MY: ['马来西亚', 'Malaysia'], HK: ['香港', 'Hong Kong'] };
+    function ctry(code) { const c = CTRY[code]; return `${c ? (lang === 'zh' ? c[0] : c[1]) : code} (${code})`; }
+    function ruleEvidence(id, p) {
+      const vc = vendorCountry(p.vendor) || 'CN';
+      const off = ['BVI', 'PA', 'KY', 'AE'];
+      const bank = off.includes(vc) ? vc : 'KY';
+      const payer = p.source === 'LGAP' ? 'CN' : 'SG';
+      const invoice = vc === 'CN' ? 'HK' : (off.includes(vc) ? 'PA' : vc);
+      const zh = lang === 'zh';
+      const M = {
+        geoWatch: zh ? `供应商营业地 ${ctry(vc)}、收款银行 ${ctry(bank)} 命中高风险 / 离岸辖区名单。` : `Vendor place of business ${ctry(vc)} and receiving bank ${ctry(bank)} are on the high-risk / offshore list.`,
+        payerA2: zh ? `付款方国别 ${ctry(payer)} 与发票开具地 ${ctry(invoice)} 不一致 → 触发。` : `Payer country ${ctry(payer)} ≠ invoice origin country ${ctry(invoice)} → mismatch.`,
+        criminal: zh ? `交易对手在天眼查 / Dow Jones 命中刑事 / 民事 / 监管诉讼记录。` : `Counterparty matched criminal / civil / regulatory proceedings in Tianyancha / Dow Jones.`,
+        pep: zh ? `股权穿透发现受益人 / 董事为政治敏感人物（PEP）。` : `Ownership penetration found a beneficial owner / director who is a PEP.`,
+        noPO: zh ? `付款来源为 LGAP，无关联 PO / 合同，缺少三单匹配锚点。` : `Source is LGAP with no linked PO / contract — the 3-way-match anchor is missing.`,
+        resources: zh ? `供应商注册资本明显低于近 12 个月累计付款，规模与活动不相称。` : `Vendor's registered capital is well below its 12-month cumulative payments.`,
+        bgA3: zh ? `供应商主营业务与采购品类「${categoryLabel(p)}」严重脱节。` : `Vendor's main business does not align with the PO category "${categoryLabel(p)}".`,
+        surge: zh ? `供应商入库不足 1 年，本笔付款金额相对基线突增。` : `Vendor onboarded < 1 year and this payment surged vs the baseline.`,
+        unconn: zh ? `收款账户户名与供应商无股权关联，疑似第三方收款。` : `The receiving-account holder has no ownership link to the vendor.`,
+        fakeA4: zh ? `发票号重复 / 连号 / 模板异常，命中虚假发票特征。` : `Invoice number is duplicated / sequential / template-anomalous — fake-invoice indicators.`
+      };
+      return M[id] || t('ruleNames')[id] || '';
+    }
     function tierBadge(p) { const tier = paymentTier(p); return tier ? `<span class="tier-badge tier-${tier}">${tier}</span>` : '<span class="small-muted">—</span>'; }
     function heldTag() { return `<span class="held-tag">${t('heldTag')}</span>`; }
     function tierSlaChip(k) { return `<span class="tier-sla tier-sla-${k}">⏱ ${t('tierSla')[k]}</span>`; }
@@ -1609,7 +1634,7 @@
       // Right = rules hit + concrete details, then the score.
       const hits = computeRuleHits(payment);
       const hitRules = hits.length
-        ? hits.map(r => `<div class="hit-rule"><div class="hit-rule-head"><span class="tier-badge tier-${r.tier}">${r.tier}</span><strong>${t('ruleNames')[r.id]}</strong><span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></div><p class="driver-meta">${t('ruleDetail')[r.id]}</p></div>`).join('')
+        ? hits.map(r => `<div class="hit-rule"><div class="hit-rule-head"><span class="tier-badge tier-${r.tier}">${r.tier}</span><strong>${t('ruleNames')[r.id]}</strong><span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></div><p class="driver-meta">${ruleEvidence(r.id, payment)}</p></div>`).join('')
         : `<p class="driver-meta">${t('noRuleHitDetail')}</p>`;
       const hitSection = `<div class="hit-rules"><div class="eyebrow">${t('hitRulesLabel')}</div>${hitRules}</div>`;
       document.getElementById('caseRiskPanel').innerHTML = tierHero + hitSection + body;
