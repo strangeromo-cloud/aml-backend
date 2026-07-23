@@ -65,8 +65,12 @@
 
     .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
     .dash-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .dash-filter-label { font-weight: 700; font-size: 13px; color: var(--ink); }
-    .dash-quick { padding: 6px 12px; }
+    .dash-filter-label { font-weight: 700; font-size: 13px; color: var(--ink); margin-right: 4px; }
+    .dash-filter .filter-date-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0; }
+    .dash-filter input[type="date"] { height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
+    .dash-filter .dash-quick { height: 36px; padding: 0 14px; }
+    .dash-filter #dashRangeReset { height: 36px; padding: 0 14px; margin-left: 2px; }
+    .dash-filter .dash-sep { width: 1px; align-self: stretch; background: var(--line); margin: 2px 4px; }
     .rank-row { grid-template-columns: 1fr auto !important; }
     .footer-sep { margin: 0 6px; color: var(--muted); }
     .btn-export::before { content: '⤓'; margin-right: 5px; }
@@ -443,6 +447,7 @@
           <span class="dash-filter-label" data-i18n="dashWindowLabel"></span>
           <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="date" id="dashDateFrom" /></label>
           <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="date" id="dashDateTo" /></label>
+          <span class="dash-sep"></span>
           <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
           <button class="btn btn-soft dash-quick" data-range="90" data-i18n="rangeLast90"></button>
           <button class="btn btn-soft" id="dashRangeReset" data-i18n="filterReset"></button>
@@ -596,7 +601,7 @@
         brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score, ML Payment Score, and Reasonable Payment Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
-        metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 · dual-entry', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
+        metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 rule hits', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
         riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
@@ -657,7 +662,7 @@
         brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
         dashboardEyebrow: '合规风险驾驶舱', dashboardTitle: '付款欺诈风险识别', dashboardSubtitle: '通过供应商评分、机器学习付款评分与付款合理性评分，识别疑似欺诈付款。', lastSync: '最近同步：Ariba 09:14 · LGAP 09:20',
         metrics: [['受监控付款', '演示数据集']],
-        metricQueueTotal: '告警队列', metricQueueTotalNote: 'T1 + T2 · 双入口', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
+        metricQueueTotal: '告警队列', metricQueueTotalNote: '命中 T1 / T2 规则', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
         vendorPanelTitle: '供应商风险评分', vendorPanelDesc: '点击供应商查看命中的名单与得分来源。',
         riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
