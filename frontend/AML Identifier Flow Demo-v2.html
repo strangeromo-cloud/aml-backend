@@ -878,7 +878,7 @@
       { id: 'PAY-2409-0538', caseId: 'CASE-AML-1122', date: '2024-09-29', source: 'Ariba', vendor: 'Caspian Field Services', amountNum: 47800, amount: '$47,800', category: 'Consulting', categoryZh: '咨询服务', vendorScore: 60, paymentScore: 52, reasonable: 'Reasonable', reasonableScore: 0, total: 44, status: 'Low', riskTypes: ['docMissing'] }
     ];
 
-    const weights = { overall: { Vendor: 40, Payment: 35, Reasonable: 25 }, vendor: { FATF: 10, 'Basel AML Index': 14, CPI: 11, 'Offshore List': 18, Watchlist: 20, 'Adverse Media': 17, 'State-owned': 10 }, paymentTier: { T1: 50, T2: 30, T3: 20 } };
+    const weights = { overall: { Vendor: 40, Payment: 35, Reasonable: 25 }, vendor: { FATF: 14, CPI: 14, 'Offshore List': 24, Watchlist: 26, 'Adverse Media': 22 }, paymentTier: { T1: 50, T2: 30, T3: 20 } };
     let lang = 'en';
     let currentPayment = payments[0];
     let currentVendor = vendors[0];
