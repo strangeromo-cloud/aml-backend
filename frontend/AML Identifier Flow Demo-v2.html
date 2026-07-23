@@ -67,7 +67,7 @@
     .dash-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
     .dash-filter-label { font-weight: 700; font-size: 13px; color: var(--ink); margin-right: 4px; }
     .dash-filter .filter-date-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0; }
-    .dash-filter input[type="date"] { height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
+    .dash-filter .date-input { height: 36px; width: 120px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
     .dash-filter .dash-quick { height: 36px; padding: 0 14px; }
     .dash-filter #dashRangeReset { height: 36px; padding: 0 14px; margin-left: 2px; }
     .dash-filter .dash-sep { width: 1px; align-self: stretch; background: var(--line); margin: 2px 4px; }
@@ -227,11 +227,11 @@
     .filter-bar { padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fbfdfe; border-radius: var(--radius) var(--radius) 0 0; }
     .filter-row { display: flex; column-gap: 14px; row-gap: 10px; align-items: center; flex-wrap: wrap; }
     .filter-row > * { flex-shrink: 0; height: 38px; box-sizing: border-box; display: inline-flex; align-items: center; vertical-align: middle; margin: 0; }
-    .filter-row select, .filter-row input[type="search"], .filter-row input[type="date"] { height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: white; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
+    .filter-row select, .filter-row input[type="search"], .filter-row .date-input { height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: white; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
     .filter-row input[type="search"] { flex: 1 0 180px; min-width: 160px; max-width: 250px; }
     .filter-row select { min-width: 130px; max-width: 180px; }
     .filter-date-wrap { gap: 8px; font-size: 12px; color: var(--muted); font-weight: 700; padding-left: 4px; }
-    .filter-date-wrap input[type="date"] { font-size: 12px; padding: 0 10px; }
+    .filter-date-wrap .date-input { font-size: 12px; width: 120px; padding: 0 10px; }
     .filter-actions { display: flex; justify-content: flex-start; gap: 10px; margin-top: 12px; }
     .filter-actions .btn { padding: 0 18px; height: 38px; min-width: 96px; white-space: nowrap; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
     .filter-active { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
@@ -445,8 +445,8 @@
         </div>
         <div class="dash-filter">
           <span class="dash-filter-label" data-i18n="dashWindowLabel"></span>
-          <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="date" id="dashDateFrom" /></label>
-          <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="date" id="dashDateTo" /></label>
+          <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="dashDateFrom" autocomplete="off" /></label>
+          <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="dashDateTo" autocomplete="off" /></label>
           <span class="dash-sep"></span>
           <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
           <button class="btn btn-soft dash-quick" data-range="90" data-i18n="rangeLast90"></button>
@@ -494,8 +494,8 @@
               <select id="filterTier"></select>
               <select id="filterRiskType"></select>
               <select id="filterSource"></select>
-              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="date" id="filterDateFrom" /></label>
-              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="date" id="filterDateTo" /></label>
+              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="filterDateFrom" autocomplete="off" /></label>
+              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="filterDateTo" autocomplete="off" /></label>
             </div>
             <div class="filter-actions">
               <button class="btn btn-soft" id="resetFilters" data-i18n="filterReset"></button>
@@ -1001,10 +1001,20 @@
     function triggerCell(p) { const hits = computeRuleHits(p); if (!hits.length) return '<span class="small-muted">—</span>'; return `<div class="trigger-pills">${hits.map(r => `<span class="trigger-pill">${t('ruleNames')[r.id]}</span>`).join('')}</div>`; }
     function riskTypePills(keys) { return `<div class="risk-type-badges">${keys.map(riskTypePill).join('')}</div>`; }
 
+    // Text date inputs: store ISO (YYYY-MM-DD) in dataset.iso, display per language
+    // (EN mm/dd/yyyy, ZH yyyy/mm/dd) so the format never falls back to the browser locale.
+    function toISODate(s) {
+      s = (s || '').trim(); if (!s) return ''; let m;
+      if (m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/)) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+      if (m = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/)) return `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+      return '';
+    }
+    function fmtDate(iso) { if (!iso) return ''; const [y, m, d] = iso.split('-'); return lang === 'zh' ? `${y}/${m}/${d}` : `${m}/${d}/${y}`; }
+    function setDateInput(el, iso) { if (!el) return; el.dataset.iso = iso || ''; el.value = fmtDate(iso || ''); }
+    function commitDateInput(el) { el.dataset.iso = toISODate(el.value); el.value = fmtDate(el.dataset.iso); return el.dataset.iso; }
     function applyLanguage() {
       document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-      // Native <input type=date> placeholder (年/月/日 vs mm/dd/yyyy) follows lang — sync it.
-      document.querySelectorAll('input[type="date"]').forEach(el => { el.lang = lang === 'zh' ? 'zh-CN' : 'en-US'; });
+      document.querySelectorAll('.date-input').forEach(el => { el.placeholder = lang === 'zh' ? '年/月/日' : 'mm/dd/yyyy'; el.value = fmtDate(el.dataset.iso || ''); });
       document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
       document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.getElementById('filterKeyword').placeholder = t('searchPlaceholder');
@@ -1244,8 +1254,8 @@
       sourceSel.innerHTML = `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`;
       sourceSel.value = draftFilters.source;
       document.getElementById('filterKeyword').value = draftFilters.keyword;
-      document.getElementById('filterDateFrom').value = draftFilters.dateFrom;
-      document.getElementById('filterDateTo').value = draftFilters.dateTo;
+      setDateInput(document.getElementById('filterDateFrom'), draftFilters.dateFrom);
+      setDateInput(document.getElementById('filterDateTo'), draftFilters.dateTo);
     }
 
     // Entry B: vendor-level behavioral signals (aggregate across each vendor's payments)
@@ -1534,8 +1544,8 @@
       if (filters.riskType) items.push({ key: 'riskType', label: t('filterRiskType'), value: t('riskTypes')[filters.riskType] });
       if (filters.source) items.push({ key: 'source', label: t('filterSource'), value: filters.source });
       if (filters.riskLevel) items.push({ key: 'riskLevel', label: t('filterRiskLevel'), value: statusLabel(filters.riskLevel) });
-      if (filters.dateFrom) items.push({ key: 'dateFrom', label: t('filterFrom'), value: filters.dateFrom });
-      if (filters.dateTo) items.push({ key: 'dateTo', label: t('filterTo'), value: filters.dateTo });
+      if (filters.dateFrom) items.push({ key: 'dateFrom', label: t('filterFrom'), value: fmtDate(filters.dateFrom) });
+      if (filters.dateTo) items.push({ key: 'dateTo', label: t('filterTo'), value: fmtDate(filters.dateTo) });
       if (!items.length) { container.classList.add('empty'); container.innerHTML = ''; return; }
       container.classList.remove('empty');
       container.innerHTML = `<span class="filter-active-label">${t('activeFilters')}</span>` + items.map(it => `<span class="filter-chip"><span class="filter-chip-key">${it.label}:</span>${escapeHtml(String(it.value))}<button class="filter-chip-close" data-removechip="${it.key}" title="Remove">×</button></span>`).join('');
@@ -2202,21 +2212,22 @@
     document.querySelectorAll('[data-donutview]').forEach(btn => btn.addEventListener('click', () => { donutView = btn.dataset.donutview; renderDonut(); }));
     document.querySelectorAll('[data-rankview]').forEach(btn => btn.addEventListener('click', () => { rankView = btn.dataset.rankview; renderRankList(); }));
     function applyDashRange() {
-      dashRange.from = document.getElementById('dashDateFrom').value;
-      dashRange.to = document.getElementById('dashDateTo').value;
+      dashRange.from = document.getElementById('dashDateFrom').dataset.iso || '';
+      dashRange.to = document.getElementById('dashDateTo').dataset.iso || '';
       renderDashboard();
     }
-    document.getElementById('dashDateFrom').addEventListener('change', applyDashRange);
-    document.getElementById('dashDateTo').addEventListener('change', applyDashRange);
+    document.getElementById('dashDateFrom').addEventListener('change', e => { commitDateInput(e.target); applyDashRange(); });
+    document.getElementById('dashDateTo').addEventListener('change', e => { commitDateInput(e.target); applyDashRange(); });
     document.querySelectorAll('.dash-quick').forEach(btn => btn.addEventListener('click', () => {
       dashRange.from = addDays(demoNow(), -Number(btn.dataset.range)); dashRange.to = demoNow();
-      document.getElementById('dashDateFrom').value = dashRange.from;
-      document.getElementById('dashDateTo').value = dashRange.to;
+      setDateInput(document.getElementById('dashDateFrom'), dashRange.from);
+      setDateInput(document.getElementById('dashDateTo'), dashRange.to);
       renderDashboard();
     }));
     document.getElementById('dashRangeReset').addEventListener('click', () => {
       dashRange = { from: '', to: '' };
-      document.getElementById('dashDateFrom').value = ''; document.getElementById('dashDateTo').value = '';
+      setDateInput(document.getElementById('dashDateFrom'), '');
+      setDateInput(document.getElementById('dashDateTo'), '');
       renderDashboard();
     });
     document.querySelectorAll('[data-wbtab]').forEach(btn => btn.addEventListener('click', () => {
@@ -2240,8 +2251,8 @@
     document.getElementById('filterTier').addEventListener('change', e => { draftFilters.tier = e.target.value; });
     document.getElementById('filterRiskType').addEventListener('change', e => { draftFilters.riskType = e.target.value; });
     document.getElementById('filterSource').addEventListener('change', e => { draftFilters.source = e.target.value; });
-    document.getElementById('filterDateFrom').addEventListener('change', e => { draftFilters.dateFrom = e.target.value; });
-    document.getElementById('filterDateTo').addEventListener('change', e => { draftFilters.dateTo = e.target.value; });
+    document.getElementById('filterDateFrom').addEventListener('change', e => { draftFilters.dateFrom = commitDateInput(e.target); });
+    document.getElementById('filterDateTo').addEventListener('change', e => { draftFilters.dateTo = commitDateInput(e.target); });
     document.getElementById('applyFiltersBtn').addEventListener('click', () => {
       Object.keys(filters).forEach(k => { filters[k] = draftFilters[k]; });
       listPage = 1;
