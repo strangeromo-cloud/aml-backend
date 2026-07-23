@@ -590,7 +590,7 @@
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
         riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
-        tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' },
+        tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Hits any 1 high-precision rule', T2: 'Vendor-level signal only (no hard hit)', T3: 'No high-precision hit — weighted score ranking' },
         tierSla: { T1: '5 business days', T2: '10 business days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
         hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' },
@@ -651,7 +651,7 @@
         vendorPanelTitle: '供应商风险评分', vendorPanelDesc: '点击供应商查看命中的名单与得分来源。',
         riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
-        tierLabels: { T1: '紧急', T2: '告警', T3: '评分' },
+        tierLabels: { T1: '紧急', T2: '告警', T3: '评分' }, noTierLabel: '未触发规则 · 仅全量列表',
         tierDesc: { T1: '命中任意 1 条高精度规则', T2: '仅命中供应商级信号（无硬规则命中）', T3: '无高精度命中 — 加权评分排序' },
         tierSla: { T1: '5 个工作日', T2: '10 个工作日', T3: '批量 / 评分排序' }, overdueTag: '已超时',
         hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' },
@@ -760,7 +760,8 @@
     function computeRuleHits(p) { return RULES.filter(r => { try { return r.predicate(p); } catch (_) { return false; } }); }
     function paymentTier(p) {
       const tiers = new Set(computeRuleHits(p).map(r => r.tier));
-      return tiers.has('T1') ? 'T1' : tiers.has('T2') ? 'T2' : 'T3';
+      // No rule hit → no tier: the payment only appears in the full list, not any queue/tier.
+      return tiers.has('T1') ? 'T1' : tiers.has('T2') ? 'T2' : tiers.has('T3') ? 'T3' : null;
     }
     function paymentRTKeys(p) { return [...new Set(computeRuleHits(p).map(r => r.rt))]; }
     function assignPrecisionHits() {
@@ -773,7 +774,7 @@
         p.precisionHits = hits;
       });
       vendorSignalMap = computeVendorSignals();
-      payments.forEach(p => { p._tierRank = TIER_RANK[paymentTier(p)]; });
+      payments.forEach(p => { p._tierRank = TIER_RANK[paymentTier(p)] ?? 9; });
     }
 
     // Evolution A — investigation playbook: reusable "how to dig" routines the agent
@@ -886,7 +887,7 @@
     function vendorCountry(name) { const v = vendors.find(v => v.name === name); return v ? v.country : ''; }
     function categoryLabel(p) { return lang === 'zh' ? p.categoryZh : p.category; }
     function riskTypePill(key) { return `<span class="risk-type-pill" style="background:${RISK_COLORS[key]}">${t('riskTypes')[key]}</span>`; }
-    function tierBadge(p) { const tier = paymentTier(p); return `<span class="tier-badge tier-${tier}">${tier}</span>`; }
+    function tierBadge(p) { const tier = paymentTier(p); return tier ? `<span class="tier-badge tier-${tier}">${tier}</span>` : '<span class="small-muted">—</span>'; }
     function heldTag() { return `<span class="held-tag">${t('heldTag')}</span>`; }
     function tierSlaChip(k) { return `<span class="tier-sla tier-sla-${k}">⏱ ${t('tierSla')[k]}</span>`; }
     let _demoNow = null;
@@ -935,7 +936,7 @@
     // 6 summary cards, all scoped to the selected time window.
     function renderMetrics() {
       const dp = dashPayments();
-      const pending = dp.filter(p => !isReviewed(p) && paymentTier(p) !== 'T3').length;
+      const pending = dp.filter(p => !isReviewed(p) && (paymentTier(p) === 'T1' || paymentTier(p) === 'T2')).length;
       const t1 = dp.filter(p => !isReviewed(p) && paymentTier(p) === 'T1').length;
       const t2 = dp.filter(p => !isReviewed(p) && paymentTier(p) === 'T2').length;
       const overdue = dp.filter(isOverdue).length;
@@ -965,7 +966,7 @@
           .map(p => ({ main: p.id, sub: p.vendor, score: p.paymentScore, act: () => openCase(p) }));
       } else if (rankView === 'overall') {
         rows = [...dp].sort((a, b) => b.total - a.total).slice(0, 10)
-          .map(p => ({ main: p.id, sub: `${p.vendor} · ${paymentTier(p)}`, score: p.total, act: () => openCase(p) }));
+          .map(p => ({ main: p.id, sub: `${p.vendor} · ${paymentTier(p) || '—'}`, score: p.total, act: () => openCase(p) }));
       } else {
         const names = [...new Set(dp.map(p => p.vendor))];
         rows = names.map(n => vendors.find(v => v.name === n)).filter(Boolean)
@@ -1068,7 +1069,7 @@
       const payments = dashPayments(); // window-scoped; shadows global for this panel
       if (donutView === 'tier') {
         const counts = { T1: 0, T2: 0, T3: 0 };
-        payments.forEach(p => { counts[paymentTier(p)] += 1; });
+        payments.forEach(p => { const tr = paymentTier(p); if (counts[tr] != null) counts[tr] += 1; });
         return {
           keys: TIER_KEYS,
           colors: TIER_COLORS,
@@ -1539,7 +1540,9 @@
       document.getElementById('caseTitle').textContent = `${payment.caseId} · ${payment.id}`;
       document.getElementById('caseKv').innerHTML = `<div><span>${t('paymentId')}</span><strong>${payment.id}</strong></div><div><span>${t('date')}</span><strong>${payment.date}</strong></div><div><span>${t('vendorScoreLabel').replace('分','')}</span><strong>${payment.vendor}</strong></div><div><span>${t('sourceSystem')}</span><strong>${payment.source}</strong></div><div><span>${t('amount')}</span><strong>${payment.amount}</strong></div><div><span>${t('category')}</span><strong>${categoryLabel(payment)}</strong></div><div><span>${t('riskLevel')}</span><strong>${statusLabel(payment.status)}</strong></div>`;
 
-      const tierHero = `<div class="tier-hero"><div class="eyebrow">${t('alertTierLabel')}</div><div class="tier-hero-line"><span class="tier-badge tier-${tier}">${tier}</span><strong>${t('tierLabels')[tier]}</strong>${tierSlaChip(tier)}${isOverdue(payment) ? overdueTag() : ''}${payment.held ? heldTag() : ''}</div><p class="driver-meta">${t('tierDesc')[tier]}</p></div>`;
+      const tierHero = tier
+        ? `<div class="tier-hero"><div class="eyebrow">${t('alertTierLabel')}</div><div class="tier-hero-line"><span class="tier-badge tier-${tier}">${tier}</span><strong>${t('tierLabels')[tier]}</strong>${tierSlaChip(tier)}${isOverdue(payment) ? overdueTag() : ''}${payment.held ? heldTag() : ''}</div><p class="driver-meta">${t('tierDesc')[tier]}</p></div>`
+        : `<div class="tier-hero"><div class="eyebrow">${t('alertTierLabel')}</div><div class="tier-hero-line"><span class="small-muted">—</span><strong>${t('noTierLabel')}</strong></div></div>`;
 
       // Every payment is scored, regardless of tier.
       const formula = `${payment.vendorScore}×${weights.overall.Vendor}% + ${payment.paymentScore}×${weights.overall.Payment}% + ${payment.reasonableScore}×${weights.overall.Reasonable}%`;

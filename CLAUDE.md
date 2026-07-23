@@ -42,7 +42,12 @@
 
 **评分**：每个 payment **不论 Tier 都显示评分**（加权分 = 供应商40%+ML付款35%+合理性25%）。列表页 `sc()` 恒显示、详情页所有 tier 都渲染评分明细（不再只 T3）。
 
-**遗留（进化功能仍用旧概念，A 方案未重构）**：信号台账 / 月度校准 / Agent 自学习仍基于旧的 `HIGH_PRECISION_RULES` + `precisionHits` + `vendorSignalMap`（`assignPrecisionHits` 保留）。这些与新 `RULES` 表**并存**，如需也按规则表重构再议。
+**无命中 → 无 Tier**：`paymentTier` 无命中返回 `null`（不是 T3）。这类 payment **只进全量列表**，不进任何 Tier / 告警队列 / 待办；详情页显示"未触发规则·仅全量列表"（`noTierLabel`）但仍打分。所有用 `paymentTier` 的地方都要容忍 `null`。
+
+**遗留待重构（方案 A 未动，下次再改）** —— 以下仍基于旧的双入口概念，与新 `RULES` 表并存：
+1. **信号台账 / 月度校准 / Agent 自学习**：基于 `HIGH_PRECISION_RULES` + `precisionHits` + `vendorSignalMap`（`assignPrecisionHits` 保留）。
+2. **告警队列的供应商级 T2 条目**：`buildUnifiedQueue` 的 vendor-level 部分来自 `computeVendorProfiles`（旧供应商信号），payment-level 已跟随新 `paymentTier`。
+3. **列表页"触发规则"列（`triggerCell`）**：仍显示旧的 4 条高精度命中，和新 Risk Type 列语义有重叠，未来统一为新 `RULES` 命中。
 
 ## 关键代码锚点（前端 HTML 里搜这些）
 
