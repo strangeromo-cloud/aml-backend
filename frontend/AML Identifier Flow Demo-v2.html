@@ -494,6 +494,7 @@
               <select id="filterTier"></select>
               <select id="filterRiskType"></select>
               <select id="filterSource"></select>
+              <select id="filterPayingEntity"></select>
               <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="filterDateFrom" autocomplete="off" /></label>
               <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="filterDateTo" autocomplete="off" /></label>
             </div>
@@ -630,7 +631,7 @@
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
-        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
+        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geo: 'Geographic Risks', crime: 'Criminal, Civil or Regulatory Proceedings', pep: 'Adverse Media (PEP)', docgap: 'Documentation Gaps', vague: 'Vague Descriptions', timing: 'Timing Irregularities', behavior: 'Behavioral Indicators' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
@@ -691,7 +692,7 @@
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
-        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
+        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geo: '地理风险', crime: '刑事、民事或监管诉讼', pep: '负面媒体（PEP）', docgap: '单据缺失', vague: '模糊描述', timing: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
@@ -881,8 +882,18 @@
     let lang = 'en';
     let currentPayment = payments[0];
     let currentVendor = vendors[0];
-    const filters = { keyword: '', tier: '', riskType: '', source: '', riskLevel: '', dateFrom: '', dateTo: '' };
-    const draftFilters = { keyword: '', tier: '', riskType: '', source: '', riskLevel: '', dateFrom: '', dateTo: '' };
+    // Mock Lenovo paying entities (company codes) — deterministic per payment id.
+    const LENOVO_ENTITIES = [
+      { code: 'SG01', en: 'Lenovo (Singapore) Pte. Ltd.', zh: '联想（新加坡）私人有限公司' },
+      { code: 'CN01', en: 'Lenovo (Beijing) Ltd.', zh: '联想（北京）有限公司' },
+      { code: 'HK01', en: 'Lenovo PC HK Ltd.', zh: '联想 PC 香港有限公司' },
+      { code: 'DE01', en: 'Lenovo (Deutschland) GmbH', zh: '联想（德国）有限公司' },
+      { code: 'US01', en: 'Lenovo (United States) Inc.', zh: '联想（美国）公司' }
+    ];
+    function payingEntity(p) { const n = parseInt((p.id.match(/\d+$/) || ['0'])[0], 10); return LENOVO_ENTITIES[n % LENOVO_ENTITIES.length]; }
+    function entityLabel(e) { return lang === 'zh' ? e.zh : e.en; }
+    const filters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', riskLevel: '', dateFrom: '', dateTo: '' };
+    const draftFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', riskLevel: '', dateFrom: '', dateTo: '' };
     let listPage = 1;
     const listPerPage = 8;
     let sortBy = 'date';
@@ -1253,6 +1264,9 @@
       const sourceSel = document.getElementById('filterSource');
       sourceSel.innerHTML = `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`;
       sourceSel.value = draftFilters.source;
+      const entSel = document.getElementById('filterPayingEntity');
+      entSel.innerHTML = `<option value="">${t('filterPayingEntity')} · ${t('allOption')}</option>` + LENOVO_ENTITIES.map(e => `<option value="${e.code}">${entityLabel(e)}</option>`).join('');
+      entSel.value = draftFilters.payingEntity;
       document.getElementById('filterKeyword').value = draftFilters.keyword;
       setDateInput(document.getElementById('filterDateFrom'), draftFilters.dateFrom);
       setDateInput(document.getElementById('filterDateTo'), draftFilters.dateTo);
@@ -1543,6 +1557,7 @@
       if (filters.tier) items.push({ key: 'tier', label: 'Tier', value: `${filters.tier} · ${t('tierLabels')[filters.tier]}` });
       if (filters.riskType) items.push({ key: 'riskType', label: t('filterRiskType'), value: t('riskTypes')[filters.riskType] });
       if (filters.source) items.push({ key: 'source', label: t('filterSource'), value: filters.source });
+      if (filters.payingEntity) { const e = LENOVO_ENTITIES.find(x => x.code === filters.payingEntity); items.push({ key: 'payingEntity', label: t('filterPayingEntity'), value: e ? entityLabel(e) : filters.payingEntity }); }
       if (filters.riskLevel) items.push({ key: 'riskLevel', label: t('filterRiskLevel'), value: statusLabel(filters.riskLevel) });
       if (filters.dateFrom) items.push({ key: 'dateFrom', label: t('filterFrom'), value: fmtDate(filters.dateFrom) });
       if (filters.dateTo) items.push({ key: 'dateTo', label: t('filterTo'), value: fmtDate(filters.dateTo) });
@@ -1564,6 +1579,7 @@
         if (filters.tier && paymentTier(p) !== filters.tier) return false;
         if (filters.riskType && !paymentRTKeys(p).includes(filters.riskType)) return false;
         if (filters.source && p.source !== filters.source) return false;
+        if (filters.payingEntity && payingEntity(p).code !== filters.payingEntity) return false;
         if (filters.riskLevel && p.status !== filters.riskLevel) return false;
         if (filters.dateFrom && p.date < filters.dateFrom) return false;
         if (filters.dateTo && p.date > filters.dateTo) return false;
@@ -1625,7 +1641,7 @@
       const tier = paymentTier(payment);
       document.getElementById('caseTitle').textContent = `${payment.caseId} · ${payment.id}`;
       // Left = data only (no risk level). Title + procurement classification per source.
-      document.getElementById('caseKv').innerHTML = `<div><span>${t('paymentId')}</span><strong>${payment.id}</strong></div><div><span>${t('date')}</span><strong>${payment.date}</strong></div><div><span>${lang === 'zh' ? '供应商' : 'Vendor'}</span><strong>${payment.vendor}</strong></div><div><span>${t('sourceSystem')}</span><strong>${payment.source}</strong></div><div><span>${t('amount')}</span><strong>${payment.amount}</strong></div><div class="kv-wide"><span>${t('procTitle')}</span><strong>${procTitle(payment)}</strong></div>${commodityKv(payment)}`;
+      document.getElementById('caseKv').innerHTML = `<div><span>${t('paymentId')}</span><strong>${payment.id}</strong></div><div><span>${t('date')}</span><strong>${payment.date}</strong></div><div><span>${lang === 'zh' ? '供应商' : 'Vendor'}</span><strong>${payment.vendor}</strong></div><div><span>${t('sourceSystem')}</span><strong>${payment.source}</strong></div><div class="kv-wide"><span>${t('filterPayingEntity')}</span><strong>${entityLabel(payingEntity(payment))} (${payingEntity(payment).code})</strong></div><div><span>${t('amount')}</span><strong>${payment.amount}</strong></div><div class="kv-wide"><span>${t('procTitle')}</span><strong>${procTitle(payment)}</strong></div>${commodityKv(payment)}`;
 
       const tierHero = tier
         ? `<div class="tier-hero"><div class="eyebrow">${t('alertTierLabel')}</div><div class="tier-hero-line"><span class="tier-badge tier-${tier}">${tier}</span><strong>${t('tierLabels')[tier]}</strong>${tierSlaChip(tier)}${isOverdue(payment) ? overdueTag() : ''}${payment.held ? heldTag() : ''}</div><p class="driver-meta">${t('tierDesc')[tier]}</p></div>`
@@ -2251,6 +2267,7 @@
     document.getElementById('filterTier').addEventListener('change', e => { draftFilters.tier = e.target.value; });
     document.getElementById('filterRiskType').addEventListener('change', e => { draftFilters.riskType = e.target.value; });
     document.getElementById('filterSource').addEventListener('change', e => { draftFilters.source = e.target.value; });
+    document.getElementById('filterPayingEntity').addEventListener('change', e => { draftFilters.payingEntity = e.target.value; });
     document.getElementById('filterDateFrom').addEventListener('change', e => { draftFilters.dateFrom = commitDateInput(e.target); });
     document.getElementById('filterDateTo').addEventListener('change', e => { draftFilters.dateTo = commitDateInput(e.target); });
     document.getElementById('applyFiltersBtn').addEventListener('click', () => {
