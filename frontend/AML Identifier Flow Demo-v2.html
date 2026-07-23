@@ -494,7 +494,6 @@
               <select id="filterTier"></select>
               <select id="filterRiskType"></select>
               <select id="filterSource"></select>
-              <select id="filterRiskLevel"></select>
               <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="date" id="filterDateFrom" /></label>
               <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="date" id="filterDateTo" /></label>
             </div>
@@ -1244,9 +1243,6 @@
       const sourceSel = document.getElementById('filterSource');
       sourceSel.innerHTML = `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`;
       sourceSel.value = draftFilters.source;
-      const lvl = document.getElementById('filterRiskLevel');
-      lvl.innerHTML = `<option value="">${t('filterRiskLevel')} · ${t('allOption')}</option><option value="High">${t('statuses').High}</option><option value="Medium">${t('statuses').Medium}</option><option value="Low">${t('statuses').Low}</option>`;
-      lvl.value = draftFilters.riskLevel;
       document.getElementById('filterKeyword').value = draftFilters.keyword;
       document.getElementById('filterDateFrom').value = draftFilters.dateFrom;
       document.getElementById('filterDateTo').value = draftFilters.dateTo;
@@ -2244,7 +2240,6 @@
     document.getElementById('filterTier').addEventListener('change', e => { draftFilters.tier = e.target.value; });
     document.getElementById('filterRiskType').addEventListener('change', e => { draftFilters.riskType = e.target.value; });
     document.getElementById('filterSource').addEventListener('change', e => { draftFilters.source = e.target.value; });
-    document.getElementById('filterRiskLevel').addEventListener('change', e => { draftFilters.riskLevel = e.target.value; });
     document.getElementById('filterDateFrom').addEventListener('change', e => { draftFilters.dateFrom = e.target.value; });
     document.getElementById('filterDateTo').addEventListener('change', e => { draftFilters.dateTo = e.target.value; });
     document.getElementById('applyFiltersBtn').addEventListener('click', () => {
