@@ -780,6 +780,25 @@
     }
     function paymentRTKeys(p) { return [...new Set(computeRuleHits(p).map(r => r.rt))]; }
     function paymentRuleNames(p) { return computeRuleHits(p).map(r => t('ruleNames')[r.id]); }
+    // Full rule catalogue matching docs Updated-0714 (14 rules), used for the
+    // "what enters the queue" tier breakdown. Detection RULES above are an
+    // approximation over synthetic fields; this catalogue is the Legal-facing list.
+    const RULE_CATALOG = [
+      { tier: 'T2', rt: 'geo',      en: 'High-risk jurisdiction / CPI',              zh: '高风险辖区 / CPI' },
+      { tier: 'T2', rt: 'geo',      en: 'FATF / sanctioned jurisdiction',            zh: 'FATF / 制裁辖区' },
+      { tier: 'T2', rt: 'geo',      en: 'Tax haven / offshore routing',              zh: '避税天堂 / 离岸中转' },
+      { tier: 'T1', rt: 'crime',    en: 'Criminal / civil / regulatory proceedings', zh: '刑事 / 民事 / 监管诉讼' },
+      { tier: 'T3', rt: 'pep',      en: 'PEP-owned or -operated',                    zh: 'PEP 拥有或经营' },
+      { tier: 'T1', rt: 'geo',      en: 'Bank ≠ principal place of business (A1)',   zh: '银行属地 ≠ 主要经营地 (A1)' },
+      { tier: 'T1', rt: 'geo',      en: 'Payer ≠ invoice origin country (A2)',       zh: '付款方国 ≠ 发票开具地 (A2)' },
+      { tier: 'T3', rt: 'docgap',   en: 'No linked PO / contract',                   zh: '无关联 PO / 合同' },
+      { tier: 'T3', rt: 'vague',    en: 'Resources not commensurate',                zh: '资源与活动规模不相称' },
+      { tier: 'T1', rt: 'vague',    en: 'Questionable background (scope ≠ business, A3)', zh: '背景可疑 / 主营≠业务 (A3)' },
+      { tier: 'T2', rt: 'timing',   en: 'Surge in payments to new vendor',           zh: '对新供应商付款突增' },
+      { tier: 'T2', rt: 'timing',   en: 'Weekend / holiday transaction',             zh: '周末 / 节假日交易' },
+      { tier: 'T2', rt: 'behavior', en: 'Funds to an unconnected account',           zh: '汇入无关联账户' },
+      { tier: 'T1', rt: 'behavior', en: 'Fake invoice (A4)',                         zh: '虚假发票 (A4)' }
+    ];
     function assignPrecisionHits() {
       payments.forEach(p => {
         const hits = [];
@@ -1244,9 +1263,9 @@
     function renderQueueRules() {
       const tierLegend = TIER_KEYS.map(k => `<span class="qr-tier"><span class="tier-badge tier-${k}">${k}</span><span class="qr-tier-cond">${t('tierDesc')[k]}</span>${tierSlaChip(k)}</span>`).join('');
       const groups = TIER_KEYS.map(tk => {
-        const rs = RULES.filter(r => r.tier === tk);
+        const rs = RULE_CATALOG.filter(r => r.tier === tk);
         if (!rs.length) return '';
-        const lis = rs.map(r => `<li>${t('ruleNames')[r.id]} <span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></li>`).join('');
+        const lis = rs.map(r => `<li>${lang === 'zh' ? r.zh : r.en} <span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></li>`).join('');
         return `<div class="qr-entry"><div class="qr-entry-head"><span class="tier-badge tier-${tk}">${tk}</span> ${t('tierLabels')[tk]}</div><ul>${lis}</ul></div>`;
       }).join('');
       document.getElementById('queueRules').innerHTML = `<div class="qr-tiers">${tierLegend}</div><div class="qr-entries">${groups}</div>`;
