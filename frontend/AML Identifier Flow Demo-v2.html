@@ -942,6 +942,8 @@
 
     function applyLanguage() {
       document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      // Native <input type=date> placeholder (年/月/日 vs mm/dd/yyyy) follows lang — sync it.
+      document.querySelectorAll('input[type="date"]').forEach(el => { el.lang = lang === 'zh' ? 'zh-CN' : 'en-US'; });
       document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
       document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.getElementById('filterKeyword').placeholder = t('searchPlaceholder');
