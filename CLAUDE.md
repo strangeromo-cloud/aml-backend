@@ -44,10 +44,11 @@
 
 **无命中 → 无 Tier**：`paymentTier` 无命中返回 `null`（不是 T3）。这类 payment **只进全量列表**，不进任何 Tier / 告警队列 / 待办；详情页显示"未触发规则·仅全量列表"（`noTierLabel`）但仍打分。所有用 `paymentTier` 的地方都要容忍 `null`。
 
-**遗留待重构（方案 A 未动，下次再改）** —— 以下仍基于旧的双入口概念，与新 `RULES` 表并存：
-1. **信号台账 / 月度校准 / Agent 自学习**：基于 `HIGH_PRECISION_RULES` + `precisionHits` + `vendorSignalMap`（`assignPrecisionHits` 保留）。
-2. **告警队列的供应商级 T2 条目**：`buildUnifiedQueue` 的 vendor-level 部分来自 `computeVendorProfiles`（旧供应商信号），payment-level 已跟随新 `paymentTier`。
-3. **列表页"触发规则"列（`triggerCell`）**：仍显示旧的 4 条高精度命中，和新 Risk Type 列语义有重叠，未来统一为新 `RULES` 命中。
+**方案 B 已完成（2026-07，全部切到 `RULES` 表）**：
+- **信号台账**：`signalHitMap` / `buildSignalLedger` 的"信号"= 10 条 `RULES`（`t('ruleNames')`），每条显示其固定 tier；`structuralTier` 从 `RULES` 取 tier。候选（`discoveredSignals`）仍走 PPV 分档。
+- **告警队列**：`buildUnifiedQueue` 纯 payment（T1/T2 按新 `paymentTier`），reason = 命中规则名（`paymentRuleNames`）。**已无 vendor-level 条目**。`renderQueueRules` 按 tier 分组列 `RULES`。
+- **触发列**：`triggerCell` 显示命中的新 `RULES` 名。
+- **仍保留但不再驱动检测**：`precisionHits` / `vendorSignalMap` / `computeVendorProfiles` / `HIGH_PRECISION_RULES` 只给供应商画像（`openVendor`）等用；删之前先确认无引用。
 
 ## 关键代码锚点（前端 HTML 里搜这些）
 

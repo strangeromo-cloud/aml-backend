@@ -591,9 +591,9 @@
         riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
-        tierDesc: { T1: 'Hits any 1 high-precision rule', T2: 'Vendor-level signal only (no hard hit)', T3: 'No high-precision hit — weighted score ranking' },
+        tierDesc: { T1: 'Hits any T1 rule', T2: 'Highest hit is a T2 rule', T3: 'Only T3 rules — scored' },
         tierSla: { T1: '5 business days', T2: '10 business days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
-        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' },
+        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { geoWatch: 'High-risk jurisdiction / CPI', payerA2: 'Payer ≠ invoice origin country', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', noPO: 'No linked PO / contract', resources: 'Resources not commensurate', bgA3: 'Questionable background (scope ≠ business)', surge: 'Surge in payments to new vendor', unconn: 'Funds to an unconnected account', fakeA4: 'Fake invoice' },
         filterTier: 'Tier',
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
         signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal. Validated signals are promoted; unproven ones stay in candidate status.',
@@ -652,9 +652,9 @@
         riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
         tierLabels: { T1: '紧急', T2: '告警', T3: '评分' }, noTierLabel: '未触发规则 · 仅全量列表',
-        tierDesc: { T1: '命中任意 1 条高精度规则', T2: '仅命中供应商级信号（无硬规则命中）', T3: '无高精度命中 — 加权评分排序' },
+        tierDesc: { T1: '命中任意 T1 规则', T2: '最高命中为 T2 规则', T3: '仅命中 T3 规则 · 评分' },
         tierSla: { T1: '5 个工作日', T2: '10 个工作日', T3: '批量 / 评分排序' }, overdueTag: '已超时',
-        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' },
+        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { geoWatch: '高风险辖区 / CPI', payerA2: '付款方与发票开具地不一致', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', noPO: '无关联 PO / 合同', resources: '资源与活动规模不相称', bgA3: '背景可疑（主营≠业务）', surge: '对新供应商付款突增', unconn: '汇入无关联账户', fakeA4: '虚假发票' },
         filterTier: '告警等级',
         signalsEyebrow: '策略 4 · 反馈闭环', signalsTitle: '信号台账', signalsSubtitle: '每个检测信号都根据「实测 PPV（确认数 ÷ 触发数）」获得自己的告警等级。这张表是法务反馈与告警分级之间的桥梁。',
         signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV。已验证的信号被提升，未验证的保持候选状态。',
@@ -764,6 +764,7 @@
       return tiers.has('T1') ? 'T1' : tiers.has('T2') ? 'T2' : tiers.has('T3') ? 'T3' : null;
     }
     function paymentRTKeys(p) { return [...new Set(computeRuleHits(p).map(r => r.rt))]; }
+    function paymentRuleNames(p) { return computeRuleHits(p).map(r => t('ruleNames')[r.id]); }
     function assignPrecisionHits() {
       payments.forEach(p => {
         const hits = [];
@@ -909,7 +910,7 @@
       return demoNow() > addBusinessDays(p.date, days);
     }
     function overdueTag() { return `<span class="overdue-tag">⚠ ${t('overdueTag')}</span>`; }
-    function triggerCell(p) { const hits = p.precisionHits || []; if (!hits.length) return '<span class="small-muted">—</span>'; return `<div class="trigger-pills">${hits.map(id => `<span class="trigger-pill">${t('hpRules')[id]}</span>`).join('')}</div>`; }
+    function triggerCell(p) { const hits = computeRuleHits(p); if (!hits.length) return '<span class="small-muted">—</span>'; return `<div class="trigger-pills">${hits.map(r => `<span class="trigger-pill">${t('ruleNames')[r.id]}</span>`).join('')}</div>`; }
     function riskTypePills(keys) { return `<div class="risk-type-badges">${keys.map(riskTypePill).join('')}</div>`; }
 
     function applyLanguage() {
@@ -1179,43 +1180,30 @@
       });
     }
 
+    // Scope B: queue is pure payment-level, tiered by the rule table. T1/T2 payments
+    // enter; reason = the rules they hit. No vendor-level entries anymore.
     function buildUnifiedQueue() {
       const items = [];
       payments.forEach(p => {
-        // Payment-level entries = T1 (hard-rule hit). Vendor-level T2 is added below;
-        // T2 payments are represented by their vendor entry (avoid double-listing).
-        if (paymentTier(p) === 'T1' && !isReviewed(p)) {
-          items.push({ tier: 'T1', kind: 'payment', name: p.id, sub: p.vendor, reason: (p.precisionHits || []).map(h => t('hpRules')[h]).join(' · '), idx: payments.indexOf(p), overdue: isOverdue(p) });
-        }
-      });
-      computeVendorProfiles().forEach(v => {
-        if (v.tier) {
-          items.push({ tier: v.tier, kind: 'vendor', name: v.vendor, sub: `${v.country} · ${v.count} ${lang === 'zh' ? '笔' : 'pmts'}`, reason: v.signals.map(s => t('vendorSignals')[s]).join(' · '), vendor: v.vendor, overdue: v.items.some(isOverdue) });
+        const tier = paymentTier(p);
+        if ((tier === 'T1' || tier === 'T2') && !isReviewed(p)) {
+          items.push({ tier, kind: 'payment', name: p.id, sub: p.vendor, reason: paymentRuleNames(p).join(' · '), idx: payments.indexOf(p), overdue: isOverdue(p) });
         }
       });
       items.sort((a, b) => TIER_RANK[a.tier] - TIER_RANK[b.tier]);
       return items;
     }
 
+    // Scope B: the queue is fed by the rule table. Show rules grouped by their fixed tier.
     function renderQueueRules() {
       const tierLegend = TIER_KEYS.map(k => `<span class="qr-tier"><span class="tier-badge tier-${k}">${k}</span><span class="qr-tier-cond">${t('tierDesc')[k]}</span>${tierSlaChip(k)}</span>`).join('');
-      const entryA = HIGH_PRECISION_RULES.map(r => `<li>${t('hpRules')[r.id]}</li>`).join('');
-      const entryB = ['structuring', 'surge', 'cumulativeAlerts'].map(s => `<li>${t('vendorSignals')[s]}${ROLLUP_SIGNALS.includes(s) ? ` <span class="rollup-tag" title="${t('signalRollupNote')}">${t('signalRollupShort')}</span>` : ''}</li>`).join('');
-      document.getElementById('queueRules').innerHTML = `
-        <div class="qr-tiers">${tierLegend}</div>
-        <div class="qr-entries">
-          <div class="qr-entry">
-            <div class="qr-entry-head"><span class="queue-kind qk-payment">${t('queueKindPayment')}</span>${t('entryATitle')}</div>
-            <ul>${entryA}</ul>
-            <div class="qr-rule-logic">${t('entryARule')}</div>
-          </div>
-          <div class="qr-entry">
-            <div class="qr-entry-head"><span class="queue-kind qk-vendor">${t('queueKindVendor')}</span>${t('entryBTitle')}</div>
-            <ul>${entryB}</ul>
-            <div class="qr-rule-logic">${t('entryBRule')}</div>
-            <p class="driver-meta" style="margin-top:8px">${t('signalRollupNote')}</p>
-          </div>
-        </div>`;
+      const groups = TIER_KEYS.map(tk => {
+        const rs = RULES.filter(r => r.tier === tk);
+        if (!rs.length) return '';
+        const lis = rs.map(r => `<li>${t('ruleNames')[r.id]} <span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></li>`).join('');
+        return `<div class="qr-entry"><div class="qr-entry-head"><span class="tier-badge tier-${tk}">${tk}</span> ${t('tierLabels')[tk]}</div><ul>${lis}</ul></div>`;
+      }).join('');
+      document.getElementById('queueRules').innerHTML = `<div class="qr-tiers">${tierLegend}</div><div class="qr-entries">${groups}</div>`;
     }
 
     function renderUnifiedQueue() {
@@ -1243,16 +1231,12 @@
     const VALIDATE_MIN_REVIEWS = 4; // aligned with CALIB_MIN_SAMPLES — a signal needs this many reviewed before it's "validated"
 
     // For each signal id, the list of payments that hit it (payment-level precision rules + vendor-level behavioral signals).
+    // Scope B: signals ARE the RULES. Each rule's hit set = payments matching its predicate.
     function signalHitMap() {
-      const vendorSig = {};
-      computeVendorProfiles().forEach(v => { vendorSig[v.vendor] = v.signals; });
       const map = {};
-      const ensure = id => (map[id] = map[id] || []);
-      payments.forEach(p => {
-        (p.precisionHits || []).forEach(id => ensure(id).push(p));
-        (vendorSig[p.vendor] || []).forEach(id => ensure(id).push(p));
-      });
-      discoveredSignals.forEach(ds => payments.forEach(p => { if (ds.predicate(p)) ensure(ds.id).push(p); }));
+      const safe = (p, fn) => { try { return fn(p); } catch (_) { return false; } };
+      RULES.forEach(r => { map[r.id] = payments.filter(p => safe(p, r.predicate)); });
+      discoveredSignals.forEach(ds => { map[ds.id] = payments.filter(p => safe(p, ds.predicate)); });
       return map;
     }
 
@@ -1262,10 +1246,7 @@
       const verdict = {};
       [...reviewedCases].reverse().forEach(r => { if (r.conclusion) verdict[r.paymentId] = r.conclusion; }); // newest (index 0) wins
       const defs = [
-        ...HIGH_PRECISION_RULES.map(r => ({ id: r.id, name: t('hpRules')[r.id], level: 'payment' })),
-        { id: 'structuring', name: t('vendorSignals').structuring, level: 'vendor' },
-        { id: 'surge', name: t('vendorSignals').surge, level: 'vendor' },
-        { id: 'cumulativeAlerts', name: t('vendorSignals').cumulativeAlerts, level: 'vendor' },
+        ...RULES.map(r => ({ id: r.id, name: t('ruleNames')[r.id], level: 'payment' })),
         ...discoveredSignals.map(ds => ({ id: ds.id, name: lang === 'zh' ? ds.nameZh : ds.nameEn, level: ds.level, discovered: true }))
       ];
       return defs.map(d => {
@@ -1284,9 +1265,8 @@
     // native vendor signals map to T2. PPV banding is only a reference scale for
     // agent-discovered candidates; Wilson-based calibration guards validated/demoted.
     function structuralTier(id, level) {
-      if (HIGH_PRECISION_RULES.some(r => r.id === id)) return 'T1';
-      if (level === 'vendor') return 'T2';
-      return null;
+      const r = RULES.find(x => x.id === id);
+      return r ? r.tier : null; // established rules carry their fixed tier; candidates fall to PPV banding
     }
     function suggestedTier(ppv, id, level) {
       const st = structuralTier(id, level);
