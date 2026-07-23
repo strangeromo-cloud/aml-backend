@@ -266,7 +266,11 @@
     .calib-rule .tag { flex: 0 0 auto; margin-top: 1px; min-width: 58px; justify-content: center; }
     .calib-rule-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
     #calibModal .table-wrap { overflow: visible; }
-    #calibModal .modal { width: min(820px, 100%); }
+    #calibModal .modal { width: min(860px, 100%); }
+    .dir-tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 6px; white-space: nowrap; }
+    .dir-up { background: #e7f4ec; color: #1d7a46; }
+    .dir-down { background: #fdecec; color: #b3261e; }
+    .calib-check { width: 16px; height: 16px; cursor: pointer; }
     .ci-cell { min-width: 190px; }
     .ci-track { position: relative; height: 14px; background: #eef3f5; border-radius: 7px; }
     .ci-range { position: absolute; top: 3px; height: 8px; border-radius: 4px; min-width: 3px; }
@@ -617,7 +621,7 @@
         discoveryIntro: n => `Across <strong>${n}</strong> confirmed-fraud cases the agent noticed a recurring pattern not yet in the rule set:`,
         discoveryPatternLabel: 'Discovered pattern', discoveryPatternName: 'Large payment + geographic/behavior risk', discoveryPatternDesc: 'Amount ≥ $200k combined with geographic or behavioral risk signals.',
         discoveryLearnedFrom: 'Learned from (confirmed-fraud payments)', discoveryRec: 'Proposed as a candidate signal — it will be validated at the next monthly calibration (PPV + confidence lower bound), not auto-promoted.', discoveryAdd: 'Add as candidate', discoveryAdded: 'Candidate signal added to the ledger', discoveryAlready: 'Already added as a candidate signal',
-        runCalib: 'Run monthly calibration', calibEyebrow: 'Monthly Calibration', calibTitle: 'Proposed signal changes', calibSubtitle: 'Rolling PPV + 95% confidence lower bound. Tier changes need sign-off before they go live.', calibHeaders: ['Signal', 'Reviewed', 'PPV (95% CI)', 'Current → Proposed'], calibCiLegend: 'Bar = 95% confidence interval · dot = PPV point estimate · red dashed line = 8% threshold. A wider bar means fewer samples / more uncertainty.', calibApply: 'Approve & apply', calibNoChange: 'no change', calibApplied: 'Calibration applied to the signal ledger', calibSummary: (now, total, changes) => `Calibration as of <strong>${now}</strong> · ${total} signals evaluated · <strong>${changes}</strong> change${changes === 1 ? '' : 's'} proposed.`,
+        runCalib: 'Run monthly calibration', calibEyebrow: 'Monthly Calibration', calibTitle: 'Proposed signal changes', calibSubtitle: 'Rolling PPV + 95% confidence lower bound. Tier changes need sign-off before they go live.', calibHeaders: ['Signal', 'Reviewed', 'PPV (95% CI)', 'Current → Proposed'], calibCiLegend: 'Bar = 95% confidence interval · dot = PPV point estimate · red dashed line = 8% threshold. A wider bar means fewer samples / more uncertainty.', calibApply: 'Approve & apply selected', calibNoChange: 'no change', applyCol: 'Apply', promoteTag: 'Promote', demoteTag: 'Demote', calibNoneSelected: 'Select at least one change to apply.', calibAppliedN: n => `${n} change${n === 1 ? '' : 's'} applied to the signal ledger`, calibApplied: 'Calibration applied to the signal ledger', calibSummary: (now, total, changes) => `Calibration as of <strong>${now}</strong> · ${total} signals evaluated · <strong>${changes}</strong> change${changes === 1 ? '' : 's'} proposed.`,
         calibRulesTitle: 'Decision rules (applied in order)', calibRuleCandidate: 'Reviewed &lt; 4 samples — too few to judge, keep observing (no verdict). Even a 0% rate here may just be bad luck.', calibRuleValidated: 'Reviewed ≥ 4 AND 95% lower-bound ≥ 8% — trustworthy, kept as a live trigger.', calibRuleDemoted: 'Reviewed ≥ 4 AND 95% lower-bound &lt; 8% — enough data and genuinely not precise → demoted to a scoring factor.', calibRuleNote: 'Sample gate first, then PPV gate. "Demote" is a negative verdict that needs enough evidence — with too few samples we suspend judgment rather than punish a signal for small-sample luck.',
         vendorSignals: { structuring: 'Structuring (split payments)', surge: 'Payment surge (new vendor)', accountChurn: 'Receiving-account churn', cumulativeAlerts: 'Repeated high-precision hits' },
         unifiedQueueTitle: 'Unified Alert Queue', unifiedQueueDesc: 'Two entry points merged into one worklist: payment-level rule hits (Entry A) + vendor-level behavioral signals (Entry B), sorted by tier.', unifiedQueueCountLabel: n => `${n} alert${n === 1 ? '' : 's'}`, queueKindPayment: 'Payment', queueKindVendor: 'Vendor', queueView: 'View',
@@ -678,7 +682,7 @@
         discoveryIntro: n => `在 <strong>${n}</strong> 个已确认欺诈案例中，Agent 注意到一个尚未纳入规则集的反复模式：`,
         discoveryPatternLabel: '发现的模式', discoveryPatternName: '大额付款 + 地理/行为风险', discoveryPatternDesc: '金额 ≥ $20 万，且叠加地理或行为风险信号。',
         discoveryLearnedFrom: '学习来源（已确认欺诈付款）', discoveryRec: '建议作为候选信号加入 —— 它会在下次每月校准时按 PPV + 置信下界验证，不会自动转正。', discoveryAdd: '加入候选信号', discoveryAdded: '候选信号已加入台账', discoveryAlready: '已加入为候选信号',
-        runCalib: '跑本月校准', calibEyebrow: '每月校准', calibTitle: '本月信号变更建议', calibSubtitle: '基于滚动 PPV + 95% 置信下界。等级变更需审批后才上线。', calibHeaders: ['信号', '已复核', 'PPV（95% 置信区间）', '当前 → 建议'], calibCiLegend: '色条 = 95% 置信区间 · 圆点 = PPV 点值 · 红虚线 = 8% 阈值。色条越宽 = 样本越少 / 越不确定。', calibApply: '批准并应用', calibNoChange: '无变更', calibApplied: '校准已应用到信号台账', calibSummary: (now, total, changes) => `截至 <strong>${now}</strong> 的校准 · 评估 ${total} 个信号 · 建议变更 <strong>${changes}</strong> 项。`,
+        runCalib: '跑本月校准', calibEyebrow: '每月校准', calibTitle: '本月信号变更建议', calibSubtitle: '基于滚动 PPV + 95% 置信下界。等级变更需审批后才上线。', calibHeaders: ['信号', '已复核', 'PPV（95% 置信区间）', '当前 → 建议'], calibCiLegend: '色条 = 95% 置信区间 · 圆点 = PPV 点值 · 红虚线 = 8% 阈值。色条越宽 = 样本越少 / 越不确定。', calibApply: '批准并应用所选', calibNoChange: '无变更', applyCol: '应用', promoteTag: '升级', demoteTag: '降级', calibNoneSelected: '请至少勾选一项变更再应用。', calibAppliedN: n => `已应用 ${n} 项变更到信号台账`, calibApplied: '校准已应用到信号台账', calibSummary: (now, total, changes) => `截至 <strong>${now}</strong> 的校准 · 评估 ${total} 个信号 · 建议变更 <strong>${changes}</strong> 项。`,
         calibRulesTitle: '判定规则（按顺序执行）', calibRuleCandidate: '已复核 &lt; 4 笔 — 样本太少，无法判断，继续观察（不下结论）。此时即便 PPV 为 0% 也可能只是运气差。', calibRuleValidated: '已复核 ≥ 4 且 95% 置信下界 ≥ 8% — 信得过，保留为正式触发器。', calibRuleDemoted: '已复核 ≥ 4 且 95% 置信下界 &lt; 8% — 数据足够且确实不够准 → 降级为评分因子。', calibRuleNote: '先过样本关，再过 PPV 关。"降级"是负面判决，需要足够证据 —— 样本不足时宁可暂缓观察，也不因小样本运气而冤枉一个信号。',
         vendorSignals: { structuring: '拆分付款（化整为零）', surge: '付款突增（新供应商）', accountChurn: '收款账户频繁变更', cumulativeAlerts: '高精度规则多次命中' },
         unifiedQueueTitle: '统一告警队列', unifiedQueueDesc: '两个入口合并成一份工作清单：付款级规则命中（入口 A）+ 供应商级行为信号（入口 B），按告警等级排序。', unifiedQueueCountLabel: n => `${n} 条告警`, queueKindPayment: '付款', queueKindVendor: '供应商', queueView: '查看',
@@ -864,7 +868,10 @@
     let sortBy = 'date';
     let sortDir = 'desc';
     let reviewedFilter = '';
-    let signalOverrides = {}; // signalId → 'validated' | 'candidate' | 'demoted', set by monthly calibration
+    // signalId → 'validated' | 'candidate' | 'demoted', set by monthly calibration.
+    // Seed: 'surge' was demoted last month; its PPV has since recovered, so this month's
+    // calibration proposes promoting it back — demonstrates the ↑ Promote path.
+    let signalOverrides = { surge: 'demoted' };
     let discoveredSignals = []; // candidate signals the (Hermes-style) self-learning agent surfaces from experience
     const AGENT_DISCOVERY = {
       id: 'agentLargeAmountCombo',
@@ -1381,10 +1388,18 @@
         return { id: s.id, name: s.name, level: s.level, samples: s.reviewed, ppv: s.ppv, wl: ci.lo, wu: ci.up, current: s.status, proposed, changed: s.status !== proposed };
       });
     }
+    // Promote (candidate/demoted → validated) vs demote (→ demoted), for the UI tag.
+    function directionTag(r) {
+      if (!r.changed) return '';
+      const rank = { demoted: 0, candidate: 1, validated: 2 };
+      if (rank[r.proposed] > rank[r.current]) return `<span class="dir-tag dir-up">↑ ${t('promoteTag')}</span>`;
+      if (rank[r.proposed] < rank[r.current]) return `<span class="dir-tag dir-down">↓ ${t('demoteTag')}</span>`;
+      return '';
+    }
     function renderCalibration() {
       const rows = buildCalibration();
       const changes = rows.filter(r => r.changed).length;
-      document.getElementById('calibHeader').innerHTML = t('calibHeaders').map(h => `<th>${h}</th>`).join('');
+      document.getElementById('calibHeader').innerHTML = `<th>${t('applyCol')}</th>` + t('calibHeaders').map(h => `<th>${h}</th>`).join('');
       document.getElementById('calibSummary').innerHTML = `
         <div class="calib-rules">
           <div class="invest-label">${t('calibRulesTitle')}</div>
@@ -1411,7 +1426,8 @@
           const pass = r.wl >= CALIB_PROMOTE;
           ciCell = `<div class="ci-cell"><div class="ci-track"><div class="ci-threshold"></div><div class="ci-range ${pass ? 'ci-pass' : 'ci-fail'}" style="left:${lo}%;width:${Math.max(up - lo, 1.5)}%"></div><div class="ci-point" style="left:${pt}%"></div></div><div class="ci-nums"><span>PPV <strong>${pt}%</strong></span><span class="${pass ? 'ci-ok' : 'ci-bad'}">95%CI ${lo}–${up}%</span></div></div>`;
         }
-        return `<tr${r.changed ? ' class="calib-changed"' : ''}><td><strong>${r.name}</strong></td><td>${r.samples}</td><td>${ciCell}</td><td>${arrow}</td></tr>`;
+        const check = r.changed ? `<input type="checkbox" class="calib-check" data-cid="${r.id}" checked>` : '<span class="small-muted">—</span>';
+        return `<tr${r.changed ? ' class="calib-changed"' : ''}><td>${check}</td><td><strong>${r.name}</strong>${directionTag(r)}</td><td>${r.samples}</td><td>${ciCell}</td><td>${arrow}</td></tr>`;
       }).join('');
       document.getElementById('applyCalib').disabled = changes === 0;
       return rows;
@@ -1427,10 +1443,13 @@
       document.getElementById('calibModal').classList.add('open');
     }
     function applyCalibration() {
-      _calibRows.forEach(r => { signalOverrides[r.id] = r.proposed; });
+      const checked = new Set([...document.querySelectorAll('#calibRows .calib-check:checked')].map(c => c.dataset.cid));
+      if (!checked.size) { showToast(t('calibNoneSelected')); return; }
+      let n = 0;
+      _calibRows.forEach(r => { if (checked.has(r.id)) { signalOverrides[r.id] = r.proposed; n++; } });
       renderSignals();
       document.getElementById('calibModal').classList.remove('open');
-      showToast(t('calibApplied'));
+      showToast(t('calibAppliedN')(n));
     }
 
     // ── Hermes-style self-learning: agent surfaces a candidate signal from experience ──
