@@ -63,7 +63,11 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .dash-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .dash-filter-label { font-weight: 700; font-size: 13px; color: var(--ink); }
+    .dash-quick { padding: 6px 12px; }
+    .rank-row { grid-template-columns: 1fr auto !important; }
     .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
     .metric { padding: 18px; min-height: 120px; }
     .metric-click { appearance: none; -webkit-appearance: none; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .15s, transform .1s, box-shadow .15s; }
@@ -422,6 +426,14 @@
           <div><div class="eyebrow" data-i18n="dashboardEyebrow"></div><h2 class="title" data-i18n="dashboardTitle"></h2><p class="subtitle" data-i18n="dashboardSubtitle"></p></div>
           <div class="status-pill" data-i18n="lastSync"></div>
         </div>
+        <div class="dash-filter">
+          <span class="dash-filter-label" data-i18n="dashWindowLabel"></span>
+          <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="date" id="dashDateFrom" /></label>
+          <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="date" id="dashDateTo" /></label>
+          <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
+          <button class="btn btn-soft dash-quick" data-range="90" data-i18n="rangeLast90"></button>
+          <button class="btn btn-soft" id="dashRangeReset" data-i18n="filterReset"></button>
+        </div>
         <div class="metric-grid" id="metricGrid"></div>
         <div class="card todo-card">
           <div class="section-head">
@@ -431,7 +443,15 @@
           <div class="todo-list" id="todoList"></div>
         </div>
         <div class="dashboard-grid">
-          <div class="card dashboard-card"><div class="section-head"><div><h2 data-i18n="vendorPanelTitle"></h2><p data-i18n="vendorPanelDesc"></p></div></div><div class="vendor-list scroll-area" id="vendorList"></div></div>
+          <div class="card dashboard-card">
+            <div class="section-head"><div><h2 data-i18n="rankTitle"></h2><p data-i18n="rankDesc"></p></div></div>
+            <div class="donut-tabs">
+              <button class="donut-tab active" data-rankview="vendor" data-i18n="rankTabVendor"></button>
+              <button class="donut-tab" data-rankview="payment" data-i18n="rankTabPayment"></button>
+              <button class="donut-tab" data-rankview="overall" data-i18n="rankTabOverall"></button>
+            </div>
+            <div class="vendor-list scroll-area" id="rankList"></div>
+          </div>
           <div class="card dashboard-card">
             <div class="section-head">
               <div><h2 data-i18n="riskTypeBreakdownTitle"></h2><p data-i18n="riskTypeBreakdownDesc"></p></div>
@@ -565,7 +585,7 @@
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
         metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 · dual-entry', metricT1Note: 'Review within 5 business days', metricT2Note: 'Review within 10 business days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
-        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`,
+        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' },
         tierDesc: { T1: 'Hits any 1 high-precision rule', T2: 'Vendor-level signal only (no hard hit)', T3: 'No high-precision hit — weighted score ranking' },
@@ -626,7 +646,7 @@
         metrics: [['受监控付款', '演示数据集']],
         metricQueueTotal: '告警队列', metricQueueTotalNote: 'T1 + T2 · 双入口', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
         vendorPanelTitle: '供应商风险评分', vendorPanelDesc: '点击供应商查看命中的名单与得分来源。',
-        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`,
+        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
         tierLabels: { T1: '紧急', T2: '告警', T3: '评分' },
         tierDesc: { T1: '命中任意 1 条高精度规则', T2: '仅命中供应商级信号（无硬规则命中）', T3: '无高精度命中 — 加权评分排序' },
@@ -886,24 +906,58 @@
       filters.tier = tier; draftFilters.tier = tier;
       listPage = 1; renderPaymentList(); showScreen('paymentList');
     }
+    let dashRange = { from: '', to: '' };
+    // Payments inside the dashboard's selected time window (all when unset).
+    function dashPayments() {
+      return payments.filter(p => (!dashRange.from || p.date >= dashRange.from) && (!dashRange.to || p.date <= dashRange.to));
+    }
+    function paymentConfirmed(p) { const r = reviewedCases.find(x => x.paymentId === p.id); return r && r.conclusion === 'confirmedFraud'; }
+    // 6 summary cards, all scoped to the selected time window.
     function renderMetrics() {
-      const queue = buildUnifiedQueue();
-      const t1 = queue.filter(it => it.tier === 'T1').length;
-      const t2 = queue.filter(it => it.tier === 'T2').length;
-      const overdue = payments.filter(isOverdue).length;
-      const reviewed = reviewedCases.length;
-      const confirmed = reviewedCases.filter(r => r.conclusion === 'confirmedFraud').length;
-      // 4 action-oriented cards, each a shortcut into the reviewer's work.
+      const dp = dashPayments();
+      const pending = dp.filter(p => !isReviewed(p) && paymentTier(p) !== 'T3').length;
+      const t1 = dp.filter(p => !isReviewed(p) && paymentTier(p) === 'T1').length;
+      const t2 = dp.filter(p => !isReviewed(p) && paymentTier(p) === 'T2').length;
+      const overdue = dp.filter(isOverdue).length;
+      const reviewed = dp.filter(isReviewed).length;
+      const confirmed = dp.filter(paymentConfirmed).length;
+      const meta = t('metrics')[0];
       const cards = [
-        { label: t('metricOverdue'), value: overdue, note: t('metricOverdueNote'), color: 'var(--red)', act: () => showScreen('legal') },
+        { label: meta[0], value: dp.length, note: meta[1], color: '', act: () => showScreen('paymentList') },
+        { label: t('metricQueueTotal'), value: pending, note: t('metricQueueTotalNote'), color: '', act: () => showScreen('legal') },
         { label: `T1 · ${t('tierLabels').T1}`, value: t1, note: t('metricT1Note'), color: 'var(--red)', act: () => jumpTierFilter('T1') },
         { label: `T2 · ${t('tierLabels').T2}`, value: t2, note: t('metricT2Note'), color: 'var(--amber)', act: () => jumpTierFilter('T2') },
+        { label: t('metricOverdue'), value: overdue, note: t('metricOverdueNote'), color: 'var(--red)', act: () => showScreen('legal') },
         { label: t('metricReviewed'), value: reviewed, note: t('metricReviewedNote')(confirmed), color: '', act: () => showScreen('legal') }
       ];
       document.getElementById('metricGrid').innerHTML = cards.map((c, i) =>
         `<button class="card metric metric-click" data-metric="${i}"><div class="metric-label">${c.label}</div><div class="metric-value" style="${c.color ? 'color:' + c.color : ''}">${c.value}</div><div class="metric-note">${c.note}</div></button>`).join('');
       document.querySelectorAll('#metricGrid [data-metric]').forEach(btn => btn.addEventListener('click', () => cards[Number(btn.dataset.metric)].act()));
     }
+    // Top-10 ranking panel with Vendor / Payment / Overall score tabs (window-scoped).
+    let rankView = 'vendor';
+    function renderRankList() {
+      const dp = dashPayments();
+      document.querySelectorAll('[data-rankview]').forEach(b => b.classList.toggle('active', b.dataset.rankview === rankView));
+      let rows;
+      if (rankView === 'payment') {
+        rows = [...dp].sort((a, b) => b.paymentScore - a.paymentScore).slice(0, 10)
+          .map(p => ({ main: p.id, sub: p.vendor, score: p.paymentScore, act: () => openCase(p) }));
+      } else if (rankView === 'overall') {
+        rows = [...dp].sort((a, b) => b.total - a.total).slice(0, 10)
+          .map(p => ({ main: p.id, sub: `${p.vendor} · ${paymentTier(p)}`, score: p.total, act: () => openCase(p) }));
+      } else {
+        const names = [...new Set(dp.map(p => p.vendor))];
+        rows = names.map(n => vendors.find(v => v.name === n)).filter(Boolean)
+          .sort((a, b) => b.score - a.score).slice(0, 10)
+          .map(v => ({ main: v.name, sub: v.country, score: v.score, act: () => openVendor(v) }));
+      }
+      const list = document.getElementById('rankList');
+      if (!rows.length) { list.innerHTML = `<div class="todo-empty">${t('todoEmpty')}</div>`; return; }
+      list.innerHTML = rows.map((r, i) => `<button class="vendor-row rank-row" data-rank="${i}"><span><span class="vendor-name">${r.main}</span><span class="small-muted">${r.sub}</span></span><span class="score">${r.score}</span></button>`).join('');
+      document.querySelectorAll('#rankList [data-rank]').forEach(btn => btn.addEventListener('click', () => rows[Number(btn.dataset.rank)].act()));
+    }
+    function renderDashboard() { renderMetrics(); renderTodoQueue(); renderDonut(); renderRankList(); }
 
     // Days until (or past) a payment's SLA deadline. <0 overdue, 0 due today, >0 remaining.
     function slaRemainingDays(p) {
@@ -920,7 +974,9 @@
     }
     // Home-screen "today's work" list: the unified queue, urgency-sorted, act-in-one-click.
     function renderTodoQueue() {
-      const queue = buildUnifiedQueue();
+      const winIds = new Set(dashPayments().map(p => p.id));
+      const winVendors = new Set(dashPayments().map(p => p.vendor));
+      const queue = buildUnifiedQueue().filter(it => it.kind === 'payment' ? winIds.has(it.name) : winVendors.has(it.vendor));
       const profiles = computeVendorProfiles();
       queue.forEach(it => {
         if (it.kind === 'payment') it._sla = slaRemainingDays(payments[it.idx]);
@@ -989,6 +1045,7 @@
     const LEVEL_COLORS = { High: '#d84b4b', Medium: '#c9861a', Low: '#22875a' };
 
     function getDonutSpec() {
+      const payments = dashPayments(); // window-scoped; shadows global for this panel
       if (donutView === 'tier') {
         const counts = { T1: 0, T2: 0, T3: 0 };
         payments.forEach(p => { counts[paymentTier(p)] += 1; });
@@ -1048,7 +1105,7 @@
         const large = (endAngle - startAngle) > Math.PI ? 1 : 0;
         return `<path d="M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${IR} ${IR} 0 ${large} 0 ${ix1} ${iy1} Z" fill="${colors[k]}" data-slicekey="${k}" style="cursor:pointer"></path>`;
       }).join('');
-      const centerNum = donutView === 'riskLevel' ? payments.length : payments.length;
+      const centerNum = dashPayments().length;
       const svg = `<svg class="donut-svg" viewBox="0 0 220 220">${slices}<text x="110" y="106" text-anchor="middle" font-size="12" fill="#71838f">${t('totalCenter')}</text><text x="110" y="132" text-anchor="middle" font-size="32" font-weight="800" fill="#17313f">${centerNum}</text></svg>`;
       document.getElementById('riskDonut').innerHTML = svg;
       document.getElementById('riskDonutLegend').innerHTML = keys.map(k => {
@@ -2019,7 +2076,7 @@
     }
 
     function renderAll() {
-      renderMetrics(); renderTodoQueue(); renderHeaders(); renderVendors(); renderDonut(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
+      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
       resetChat();
       if (document.getElementById('vendor').classList.contains('active')) openVendor(currentVendor);
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
@@ -2029,6 +2086,25 @@
     document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => { lang = btn.dataset.lang; applyLanguage(); }));
     document.getElementById('collapseBtn').addEventListener('click', () => document.getElementById('appShell').classList.toggle('collapsed'));
     document.querySelectorAll('[data-donutview]').forEach(btn => btn.addEventListener('click', () => { donutView = btn.dataset.donutview; renderDonut(); }));
+    document.querySelectorAll('[data-rankview]').forEach(btn => btn.addEventListener('click', () => { rankView = btn.dataset.rankview; renderRankList(); }));
+    function applyDashRange() {
+      dashRange.from = document.getElementById('dashDateFrom').value;
+      dashRange.to = document.getElementById('dashDateTo').value;
+      renderDashboard();
+    }
+    document.getElementById('dashDateFrom').addEventListener('change', applyDashRange);
+    document.getElementById('dashDateTo').addEventListener('change', applyDashRange);
+    document.querySelectorAll('.dash-quick').forEach(btn => btn.addEventListener('click', () => {
+      dashRange.from = addDays(demoNow(), -Number(btn.dataset.range)); dashRange.to = demoNow();
+      document.getElementById('dashDateFrom').value = dashRange.from;
+      document.getElementById('dashDateTo').value = dashRange.to;
+      renderDashboard();
+    }));
+    document.getElementById('dashRangeReset').addEventListener('click', () => {
+      dashRange = { from: '', to: '' };
+      document.getElementById('dashDateFrom').value = ''; document.getElementById('dashDateTo').value = '';
+      renderDashboard();
+    });
     document.querySelectorAll('[data-wbtab]').forEach(btn => btn.addEventListener('click', () => {
       const tab = btn.dataset.wbtab;
       document.querySelectorAll('[data-wbtab]').forEach(b => b.classList.toggle('active', b.dataset.wbtab === tab));
