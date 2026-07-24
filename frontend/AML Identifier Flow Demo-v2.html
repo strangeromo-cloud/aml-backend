@@ -98,8 +98,8 @@
     .sla-ok { background: #eef3f8; color: #40607a; }
     .todo-review { padding: 7px 18px; }
     .todo-empty { padding: 28px; text-align: center; color: var(--muted); }
-    .dashboard-grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: stretch; }
-    .dashboard-card { height: 582px; display: flex; flex-direction: column; min-height: 0; }
+    .dashboard-grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
+    .dashboard-card { height: 560px; display: flex; flex-direction: column; min-height: 0; }
     .dashboard-card .section-head { flex: 0 0 auto; }
     .scroll-area { flex: 1; min-height: 0; overflow: auto; }
     .section-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 20px 12px; border-bottom: 1px solid var(--line); }
@@ -215,7 +215,7 @@
     .legend-count { font-weight: 800; font-size: 14px; }
     .legend-pct { color: var(--muted); font-size: 12px; min-width: 38px; text-align: right; }
     .donut-insight { font-size: 12px; color: var(--muted); padding: 0 20px 18px; line-height: 1.5; }
-    .mc-card { height: 582px; }
+    .mc-card { height: auto; }
     .mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 6px; }
     .mc-cell { padding: 12px 14px; min-width: 0; border: 1px solid #dbe7ec; border-radius: 14px; background: #fbfeff; }
     .mc-cell h3 { margin: 0; font-size: 14px; color: var(--ink); }
@@ -1407,7 +1407,19 @@
       document.getElementById('regionChart').innerHTML = miniHBarsStacked(d.regionArr.map(r => ({ label: regionLabel(r.k), T1: r.T1, T2: r.T2, T3: r.T3, total: r.total })), TIER_KEYS, TIER_BRIGHT) + tierLegendInline();
       document.getElementById('ruleChart').innerHTML = miniTreemap(d.ruleArr.map(r => ({ label: t('ruleNames')[r.id], value: r.v, color: RT_BRIGHT[r.rt] || '#4dabf7' })));
       document.getElementById('quarterChart').innerHTML = miniColumns(d.quarterArr.map(c => ({ label: monthLabel(c.key), total: c.total, segs: TIER_KEYS.slice().reverse().map(k => ({ color: TIER_BRIGHT[k], value: c[k] })) }))) + tierLegendInline();
+      syncDashHeights();
     }
+    // Chart card grows with its content; match the left ranking card to it so both
+    // stay aligned at any width (the ranking scrolls internally).
+    function syncDashHeights() {
+      const mc = document.querySelector('.mc-card');
+      const rk = document.querySelector('.dashboard-grid .dashboard-card:not(.mc-card)');
+      if (!mc || !rk) return;
+      const h = mc.getBoundingClientRect().height;
+      if (h < 50) return;
+      rk.style.height = Math.round(h) + 'px';
+    }
+    window.addEventListener('resize', syncDashHeights);
 
     function renderFilterControls() {
       const tierSel = document.getElementById('filterTier');
