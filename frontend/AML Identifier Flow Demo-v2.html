@@ -215,6 +215,32 @@
     .legend-count { font-weight: 800; font-size: 14px; }
     .legend-pct { color: var(--muted); font-size: 12px; min-width: 38px; text-align: right; }
     .donut-insight { font-size: 12px; color: var(--muted); padding: 0 20px 18px; line-height: 1.5; }
+    .dash-charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 18px; }
+    .mini-chart { padding: 18px 20px; }
+    .mini-chart h3 { margin: 0; font-size: 15px; color: var(--ink); }
+    .mini-chart .mc-sub { margin: 3px 0 14px; font-size: 12px; color: var(--muted); }
+    .mc-body { min-height: 170px; }
+    .mc-donut-wrap { display: flex; align-items: center; gap: 22px; justify-content: center; padding: 8px 0; }
+    .mc-vlegend { display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--ink); }
+    .mc-vlegend span { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+    .mc-vlegend b { margin-left: 4px; }
+    .mc-vlegend i, .mc-legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: 0 0 11px; }
+    .mc-hbars { display: flex; flex-direction: column; gap: 9px; padding: 4px 0; }
+    .hbar-row { display: grid; grid-template-columns: 118px 1fr 30px; gap: 10px; align-items: center; }
+    .hbar-label { font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hbar-track { background: #eef3f5; border-radius: 6px; height: 16px; overflow: hidden; }
+    .hbar-fill { height: 100%; border-radius: 6px; min-width: 2px; transition: width .3s ease; }
+    .hbar-val { font-size: 12px; font-weight: 800; text-align: right; color: var(--ink); }
+    .mc-cols { display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; height: 160px; padding-top: 6px; }
+    .mc-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; flex: 1; }
+    .mc-col-val { font-size: 12px; font-weight: 800; color: var(--ink); }
+    .mc-col-stack { width: 66%; max-width: 34px; display: flex; flex-direction: column-reverse; border-radius: 5px 5px 0 0; overflow: hidden; }
+    .mc-col-seg { width: 100%; }
+    .mc-col-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .mc-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+    .mc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .mc-empty { color: var(--muted); font-size: 13px; padding: 24px 0; text-align: center; }
+    @media (max-width: 900px) { .dash-charts { grid-template-columns: 1fr; } }
     .donut-tabs { display: flex; gap: 6px; padding: 12px 20px 0; border-bottom: 1px solid var(--line); }
     .donut-tab { padding: 9px 14px; background: transparent; color: var(--muted); font-weight: 700; font-size: 13px; border-radius: 10px 10px 0 0; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: .15s ease; }
     .donut-tab:hover { color: var(--ink); }
@@ -477,6 +503,12 @@
             </div>
           </div>
         </div>
+        <div class="dash-charts">
+          <div class="card mini-chart"><h3 data-i18n="gradeChartTitle"></h3><p class="mc-sub" data-i18n="gradeChartSub"></p><div class="mc-body" id="gradeChart"></div></div>
+          <div class="card mini-chart"><h3 data-i18n="regionChartTitle"></h3><p class="mc-sub" data-i18n="regionChartSub"></p><div class="mc-body" id="regionChart"></div></div>
+          <div class="card mini-chart"><h3 data-i18n="ruleChartTitle"></h3><p class="mc-sub" data-i18n="ruleChartSub"></p><div class="mc-body" id="ruleChart"></div></div>
+          <div class="card mini-chart"><h3 data-i18n="quarterChartTitle"></h3><p class="mc-sub" data-i18n="quarterChartSub"></p><div class="mc-body" id="quarterChart"></div></div>
+        </div>
       </section>
 
 <section class="screen" id="paymentList">
@@ -603,7 +635,7 @@
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
         metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 rule hits', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
-        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days',
+        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days', mcTotal: 'Total', gradeChartTitle: 'Grade Distribution', gradeChartSub: 'Flagged payments by risk grade.', regionChartTitle: 'Regional Distribution', regionChartSub: 'Flagged payments by counterparty country.', ruleChartTitle: 'Rule-Based Distribution', ruleChartSub: 'How often each rule is triggered.', quarterChartTitle: 'Monthly Distribution', quarterChartSub: 'Flagged payments per month, by grade.',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Hits any T1 rule', T2: 'Highest hit is a T2 rule', T3: 'Only T3 rules — scored' },
@@ -664,7 +696,7 @@
         metrics: [['受监控付款', '演示数据集']],
         metricQueueTotal: '告警队列', metricQueueTotalNote: '命中 T1 / T2 规则', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
         vendorPanelTitle: '供应商风险评分', vendorPanelDesc: '点击供应商查看命中的名单与得分来源。',
-        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天',
+        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天', mcTotal: '总数', gradeChartTitle: '评级分布', gradeChartSub: '按风险评级划分的可疑付款。', regionChartTitle: '地区分布', regionChartSub: '按交易对手国家划分的可疑付款。', ruleChartTitle: '规则命中分布', ruleChartSub: '各规则被触发的频次。', quarterChartTitle: '月度分布', quarterChartSub: '各月可疑付款，按评级细分。',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
         tierLabels: { T1: '紧急', T2: '告警', T3: '评分' }, noTierLabel: '未触发规则 · 仅全量列表',
         tierDesc: { T1: '命中任意 T1 规则', T2: '最高命中为 T2 规则', T3: '仅命中 T3 规则 · 评分' },
@@ -1090,7 +1122,7 @@
       list.innerHTML = rows.map((r, i) => `<button class="vendor-row rank-row" data-rank="${i}"><span><span class="vendor-name">${r.main}</span><span class="small-muted">${r.sub}</span></span><span class="score">${r.score}</span></button>`).join('');
       document.querySelectorAll('#rankList [data-rank]').forEach(btn => btn.addEventListener('click', () => rows[Number(btn.dataset.rank)].act()));
     }
-    function renderDashboard() { renderMetrics(); renderTodoQueue(); renderDonut(); renderRankList(); }
+    function renderDashboard() { renderMetrics(); renderTodoQueue(); renderDonut(); renderRankList(); renderDashCharts(); }
 
     // Days until (or past) a payment's SLA deadline. <0 overdue, 0 due today, >0 remaining.
     function slaRemainingDays(p) {
@@ -1252,6 +1284,67 @@
           spec.onPick(key);
         });
       });
+    }
+
+    // ---- Dashboard distribution charts (grade / regional / rule-based / quarterly) ----
+    const GRADE_COLORS = { High: '#ef4444', Medium: '#f59e0b', Low: '#10b981' };
+    const GRADE_KEYS = ['High', 'Medium', 'Low'];
+    const CCODE = { BVI: { en: 'British Virgin Is.', zh: '英属维尔京' }, SG: { en: 'Singapore', zh: '新加坡' }, MY: { en: 'Malaysia', zh: '马来西亚' }, CN: { en: 'China', zh: '中国' }, TR: { en: 'Türkiye', zh: '土耳其' }, KZ: { en: 'Kazakhstan', zh: '哈萨克斯坦' }, AE: { en: 'UAE', zh: '阿联酋' }, HK: { en: 'Hong Kong', zh: '香港' }, PA: { en: 'Panama', zh: '巴拿马' }, RU: { en: 'Russia', zh: '俄罗斯' }, US: { en: 'United States', zh: '美国' }, DE: { en: 'Germany', zh: '德国' } };
+    function ccodeLabel(c) { const m = CCODE[c]; return m ? (lang === 'zh' ? m.zh : m.en) : (c || '—'); }
+    function gradeLabel(k) { const m = { High: { en: 'High', zh: '高风险' }, Medium: { en: 'Medium', zh: '中风险' }, Low: { en: 'Low', zh: '低风险' } }[k]; return lang === 'zh' ? m.zh : m.en; }
+    const MON_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    function monthLabel(key) { const [y, m] = key.split('-'); return lang === 'zh' ? (Number(m) + '月') : (MON_EN[Number(m) - 1] + " '" + y.slice(2)); }
+    function dashChartData() {
+      const ps = dashPayments();
+      const grade = { High: 0, Medium: 0, Low: 0 };
+      ps.forEach(p => { if (grade[p.status] != null) grade[p.status]++; });
+      const region = {};
+      ps.forEach(p => { const c = vendorCountry(p.vendor) || '—'; region[c] = (region[c] || 0) + 1; });
+      const regionArr = Object.entries(region).map(([k, v]) => ({ k, v })).sort((a, b) => b.v - a.v).slice(0, 6);
+      const rule = {};
+      ps.forEach(p => computeRuleHits(p).forEach(r => { (rule[r.id] = rule[r.id] || { id: r.id, rt: r.rt, v: 0 }).v++; }));
+      const ruleArr = Object.values(rule).sort((a, b) => b.v - a.v).slice(0, 6);
+      const q = {};
+      ps.forEach(p => { const key = p.date.slice(0, 7); (q[key] = q[key] || { key, High: 0, Medium: 0, Low: 0, total: 0 }); if (q[key][p.status] != null) q[key][p.status]++; q[key].total++; });
+      const quarterArr = Object.values(q).sort((a, b) => a.key < b.key ? -1 : 1);
+      return { grade, regionArr, ruleArr, quarterArr };
+    }
+    function miniDonut(segs, center) {
+      const total = segs.reduce((s, x) => s + x.value, 0) || 1;
+      const R = 68, IR = 43, CX = 80, CY = 80; let acc = 0;
+      const paths = segs.filter(s => s.value > 0).map(s => {
+        const a0 = acc / total * Math.PI * 2 - Math.PI / 2; acc += s.value; const a1 = acc / total * Math.PI * 2 - Math.PI / 2;
+        const x1 = CX + R * Math.cos(a0), y1 = CY + R * Math.sin(a0), x2 = CX + R * Math.cos(a1), y2 = CY + R * Math.sin(a1);
+        const ix1 = CX + IR * Math.cos(a0), iy1 = CY + IR * Math.sin(a0), ix2 = CX + IR * Math.cos(a1), iy2 = CY + IR * Math.sin(a1);
+        const large = (a1 - a0) > Math.PI ? 1 : 0;
+        return `<path d="M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${IR} ${IR} 0 ${large} 0 ${ix1} ${iy1} Z" fill="${s.color}"></path>`;
+      }).join('');
+      return `<svg viewBox="0 0 160 160" style="width:148px;height:148px;flex:0 0 148px">${paths}<text x="80" y="76" text-anchor="middle" font-size="10" fill="#71838f">${center.label}</text><text x="80" y="98" text-anchor="middle" font-size="24" font-weight="800" fill="#17313f">${center.value}</text></svg>`;
+    }
+    function miniHBars(rows) {
+      if (!rows.length) return `<p class="mc-empty">—</p>`;
+      const max = Math.max(1, ...rows.map(r => r.value));
+      return `<div class="mc-hbars">` + rows.map(r => `<div class="hbar-row"><span class="hbar-label" title="${r.label}">${r.label}</span><div class="hbar-track"><div class="hbar-fill" style="width:${Math.round(r.value / max * 100)}%;background:${r.color}"></div></div><span class="hbar-val">${r.value}</span></div>`).join('') + `</div>`;
+    }
+    function miniColumns(cols) {
+      if (!cols.length) return `<p class="mc-empty">—</p>`;
+      const max = Math.max(1, ...cols.map(c => c.total));
+      return `<div class="mc-cols">` + cols.map(c => {
+        const h = Math.max(4, Math.round(c.total / max * 120));
+        const segs = c.segs.filter(s => s.value > 0).map(s => `<div class="mc-col-seg" style="height:${Math.round(s.value / c.total * h)}px;background:${s.color}"></div>`).join('');
+        return `<div class="mc-col"><span class="mc-col-val">${c.total}</span><div class="mc-col-stack" style="height:${h}px">${segs}</div><span class="mc-col-label">${c.label}</span></div>`;
+      }).join('') + `</div>`;
+    }
+    function gradeLegendInline() { return `<div class="mc-legend">` + GRADE_KEYS.map(k => `<span><i style="background:${GRADE_COLORS[k]}"></i>${gradeLabel(k)}</span>`).join('') + `</div>`; }
+    function renderDashCharts() {
+      if (!document.getElementById('gradeChart')) return;
+      const d = dashChartData();
+      const gSegs = GRADE_KEYS.map(k => ({ key: k, value: d.grade[k], color: GRADE_COLORS[k] }));
+      document.getElementById('gradeChart').innerHTML =
+        `<div class="mc-donut-wrap">${miniDonut(gSegs, { label: t('mcTotal'), value: dashPayments().length })}<div class="mc-vlegend">${GRADE_KEYS.map(k => `<span><i style="background:${GRADE_COLORS[k]}"></i>${gradeLabel(k)}<b>${d.grade[k]}</b></span>`).join('')}</div></div>`;
+      document.getElementById('regionChart').innerHTML = miniHBars(d.regionArr.map(r => ({ label: ccodeLabel(r.k), value: r.v, color: '#2f9bb0' })));
+      document.getElementById('ruleChart').innerHTML = miniHBars(d.ruleArr.map(r => ({ label: t('ruleNames')[r.id], value: r.v, color: RISK_COLORS[r.rt] || '#2f9bb0' })));
+      document.getElementById('quarterChart').innerHTML = miniColumns(d.quarterArr.map(c => ({ label: monthLabel(c.key), total: c.total, segs: GRADE_KEYS.slice().reverse().map(k => ({ color: GRADE_COLORS[k], value: c[k] })) }))) + gradeLegendInline();
     }
 
     function renderFilterControls() {
@@ -2216,7 +2309,7 @@
     }
 
     function renderAll() {
-      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('paymentTier', 'paymentScoreSliders', 'paymentScoreTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
+      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderDashCharts(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('paymentTier', 'paymentScoreSliders', 'paymentScoreTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
       resetChat();
       if (document.getElementById('vendor').classList.contains('active')) openVendor(currentVendor);
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
