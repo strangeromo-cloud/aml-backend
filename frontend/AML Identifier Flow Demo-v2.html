@@ -167,6 +167,7 @@
     .tier-hero .tier-badge { font-size: 18px; padding: 6px 14px; }
     .btn-investigate { margin-top: 14px; padding: 11px 22px; font-size: 14px; border-radius: 12px; background: linear-gradient(135deg, #37b7ad, #1ba39c); color: #fff; box-shadow: 0 8px 20px rgba(27,163,156,.34); transition: transform .15s ease, box-shadow .15s ease; }
     .btn-investigate:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(27,163,156,.45); }
+    body:not(.agent-on) .agent-only { display: none !important; }
     .tier-triggers { background: #fbfdfe; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .trigger-pills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .trigger-pills-row .trigger-pill { font-size: 13px; padding: 5px 12px; }
@@ -550,7 +551,7 @@
       </section>
 
       <section class="screen" id="signals">
-        <div class="topbar"><div><div class="eyebrow" data-i18n="signalsEyebrow"></div><h2 class="title" data-i18n="signalsTitle"></h2><p class="subtitle" data-i18n="signalsSubtitle"></p></div><div class="actions"><button class="btn btn-review-cta btn-teal" id="runDiscoveryBtn">🤖 <span data-i18n="runDiscovery"></span></button><button class="btn btn-primary btn-review-cta" id="runCalibBtn" data-i18n="runCalib"></button></div></div>
+        <div class="topbar"><div><div class="eyebrow" data-i18n="signalsEyebrow"></div><h2 class="title" data-i18n="signalsTitle"></h2><p class="subtitle" data-i18n="signalsSubtitle"></p></div><div class="actions"><button class="btn btn-review-cta btn-teal agent-only" id="runDiscoveryBtn">🤖 <span data-i18n="runDiscovery"></span></button><button class="btn btn-primary btn-review-cta" id="runCalibBtn" data-i18n="runCalib"></button></div></div>
         <div class="metric-grid" id="signalMetrics" style="grid-template-columns:repeat(3,minmax(0,1fr))"></div>
         <div class="card"><div class="section-head"><div><h2 data-i18n="signalLedgerTitle"></h2><p data-i18n="signalLedgerDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="signalHeader"></tr></thead><tbody id="signalRows"></tbody></table></div><div class="notice" data-i18n="signalNote"></div></div>
         <div class="card" id="playbookCard" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
@@ -566,7 +567,7 @@
         <div class="detail-layout"><div class="card panel"><h3 data-i18n="paymentSnapshot"></h3><div class="kv" id="caseKv"></div></div><div class="card panel" id="caseRiskPanel"></div></div>
         <div class="case-foot">
           <div class="case-foot-actions">
-            <button class="btn btn-soft btn-investigate-cta" id="investigateBtn">🤖 <span data-i18n="investigateNow"></span></button>
+            <button class="btn btn-soft btn-investigate-cta agent-only" id="investigateBtn">🤖 <span data-i18n="investigateNow"></span></button>
             <button class="btn btn-primary btn-review-cta" id="reviewBtn" data-i18n="reviewBtnLabel"></button>
           </div>
           <button class="btn btn-soft btn-export" id="exportCaseBtn" data-i18n="exportExcel"></button>
@@ -601,7 +602,7 @@
     </main>
   </div>
 
-  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section" id="investPlaybookWrap" style="display:none"><div class="invest-label" data-i18n="investPlaybookApplied"></div><div id="investPlaybook" class="invest-playbook"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div><div class="add-tag-row" id="addTagRow"><input type="text" id="newTagInput" /><button class="btn btn-soft" id="addTagBtn" data-i18n="addTag"></button></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
+  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow agent-only" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle agent-only" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="agent-only"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section" id="investPlaybookWrap" style="display:none"><div class="invest-label" data-i18n="investPlaybookApplied"></div><div id="investPlaybook" class="invest-playbook"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div><div class="add-tag-row" id="addTagRow"><input type="text" id="newTagInput" /><button class="btn btn-soft" id="addTagBtn" data-i18n="addTag"></button></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
   <div class="modal-backdrop" id="discoveryModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="discoveryEyebrow"></div><h3 data-i18n="discoveryTitle"></h3><p class="subtitle" data-i18n="discoverySubtitle"></p></div><button class="btn btn-soft" id="closeDiscovery" data-i18n="close"></button></div><div class="modal-body"><div id="discoveryBody"></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelDiscovery" data-i18n="cancel"></button><button class="btn btn-primary" id="addDiscovery" data-i18n="discoveryAdd"></button></div></div></div>
   <div class="modal-backdrop" id="calibModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="calibEyebrow"></div><h3 data-i18n="calibTitle"></h3><p class="subtitle" data-i18n="calibSubtitle"></p></div><button class="btn btn-soft" id="closeCalib" data-i18n="close"></button></div><div class="modal-body"><div id="calibSummary"></div><div class="table-wrap"><table><thead><tr id="calibHeader"></tr></thead><tbody id="calibRows"></tbody></table></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelCalib" data-i18n="cancel"></button><button class="btn btn-primary" id="applyCalib" data-i18n="calibApply"></button></div></div></div>
   <div class="toast" id="toast"></div>
@@ -931,6 +932,11 @@
     let sortBy = 'date';
     let sortDir = 'desc';
     let reviewedFilter = '';
+    // Agent/LLM features — the detail-page investigation entry + its display in the
+    // review modal, the "Run agent self-learning" entry, and the agent-discovered
+    // rules in monthly calibration — are hidden unless the URL carries ?agent=1.
+    const AGENT_UI = new URLSearchParams(location.search).has('agent');
+    if (AGENT_UI && document.body) document.body.classList.add('agent-on');
     // signalId → 'validated' | 'candidate' | 'demoted', set by monthly calibration.
     // Seed: 'surge' was demoted last month; its PPV has since recovered, so this month's
     // calibration proposes promoting it back — demonstrates the ↑ Promote path.
@@ -1522,7 +1528,7 @@
       [...reviewedCases].reverse().forEach(r => { if (r.conclusion) verdict[r.paymentId] = r.conclusion; }); // newest (index 0) wins
       const defs = [
         ...RULES.map(r => ({ id: r.id, name: t('ruleNames')[r.id], level: 'payment' })),
-        ...discoveredSignals.map(ds => ({ id: ds.id, name: lang === 'zh' ? ds.nameZh : ds.nameEn, level: ds.level, discovered: true }))
+        ...(AGENT_UI ? discoveredSignals.map(ds => ({ id: ds.id, name: lang === 'zh' ? ds.nameZh : ds.nameEn, level: ds.level, discovered: true })) : [])
       ];
       return defs.map(d => {
         const ps = hits[d.id] || [];
