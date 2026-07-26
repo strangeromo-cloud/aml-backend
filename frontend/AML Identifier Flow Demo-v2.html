@@ -591,12 +591,12 @@
             <div class="queue-rules" id="queueRules"></div>
           </div>
           <div class="card">
-            <div class="section-head"><div><h2 data-i18n="unifiedQueueTitle"></h2><p data-i18n="unifiedQueueDesc"></p></div></div>
+            <div class="section-head"><div><h2 data-i18n="unifiedQueueTitle"></h2><p data-i18n="unifiedQueueDesc"></p></div><select id="queueTierFilter" class="reviewed-filter"></select></div>
             <div class="queue-list" id="unifiedQueue"></div>
           </div>
         </div>
         <div class="wb-panel" id="wbReviewed" style="display:none">
-          <div class="card"><div class="section-head"><div><h2 data-i18n="legalRecords"></h2><p data-i18n="legalRecordsDesc"></p></div><select id="reviewedFilter" class="reviewed-filter"></select></div><div class="table-wrap"><table><thead><tr id="legalHeader"></tr></thead><tbody id="legalRows"></tbody></table><div class="legal-empty" id="legalEmpty"></div></div></div>
+          <div class="card"><div class="section-head"><div><h2 data-i18n="legalRecords"></h2><p data-i18n="legalRecordsDesc"></p></div><div style="display:flex;gap:8px"><select id="reviewedTierFilter" class="reviewed-filter"></select><select id="reviewedFilter" class="reviewed-filter"></select></div></div><div class="table-wrap"><table><thead><tr id="legalHeader"></tr></thead><tbody id="legalRows"></tbody></table><div class="legal-empty" id="legalEmpty"></div></div></div>
         </div>
       </section>
     </main>
@@ -932,6 +932,8 @@
     let sortBy = 'date';
     let sortDir = 'desc';
     let reviewedFilter = '';
+    let queueTier = '';
+    let reviewedTier = '';
     // Agent/LLM features — the detail-page investigation entry + its display in the
     // review modal, the "Run agent self-learning" entry, and the agent-discovered
     // rules in monthly calibration — are hidden unless the URL carries ?agent=1.
@@ -1490,8 +1492,11 @@
     }
 
     function renderUnifiedQueue() {
-      const queue = buildUnifiedQueue();
-      document.getElementById('wbPendingCount').textContent = queue.length;
+      const tierSel = document.getElementById('queueTierFilter');
+      if (tierSel) { tierSel.innerHTML = `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''); tierSel.value = queueTier; }
+      const all = buildUnifiedQueue();
+      document.getElementById('wbPendingCount').textContent = all.length;
+      const queue = queueTier ? all.filter(it => it.tier === queueTier) : all;
       document.getElementById('unifiedQueue').innerHTML = queue.map((it, i) => {
         return `<div class="queue-row${it.overdue ? ' overdue' : ''}"><span class="tier-badge tier-${it.tier}">${it.tier}</span><span class="queue-main"><span class="queue-name">${it.name}${it.overdue ? ' ' + overdueTag() : ''}</span><span class="small-muted">${it.sub}</span></span><span class="queue-reason">${it.reason || '—'}</span><button class="btn btn-soft queue-view" data-queue="${i}">${t('queueView')}</button></div>`;
       }).join('');
@@ -1856,7 +1861,10 @@
       const opts = [['', t('allOption')], ['Not Fraud Payment', t('notFraud')], ['Confirmed Fraud Payment', t('confirmedFraud')], ['Need More Evidence', t('needEvidence')]];
       sel.innerHTML = opts.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('');
       sel.value = reviewedFilter;
-      const list = reviewedFilter ? reviewedCases.filter(r => r.result === reviewedFilter) : reviewedCases;
+      const tierSel = document.getElementById('reviewedTierFilter');
+      if (tierSel) { tierSel.innerHTML = `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''); tierSel.value = reviewedTier; }
+      let list = reviewedFilter ? reviewedCases.filter(r => r.result === reviewedFilter) : reviewedCases;
+      if (reviewedTier) list = list.filter(r => { const p = payments.find(x => x.id === r.paymentId); return p && paymentTier(p) === reviewedTier; });
       document.getElementById('wbReviewedCount').textContent = reviewedCases.length;
       document.getElementById('legalEmpty').textContent = t('noReviewed');
       document.getElementById('legalEmpty').style.display = list.length ? 'none' : 'block';
@@ -2426,6 +2434,8 @@
       document.getElementById('wbReviewed').style.display = tab === 'reviewed' ? '' : 'none';
     }));
     document.getElementById('reviewedFilter').addEventListener('change', e => { reviewedFilter = e.target.value; renderLegal(); });
+    document.getElementById('reviewedTierFilter').addEventListener('change', e => { reviewedTier = e.target.value; renderLegal(); });
+    document.getElementById('queueTierFilter').addEventListener('change', e => { queueTier = e.target.value; renderUnifiedQueue(); });
     document.getElementById('runCalibBtn').addEventListener('click', openCalibration);
     document.getElementById('runDiscoveryBtn').addEventListener('click', openDiscovery);
     document.getElementById('closeDiscovery').addEventListener('click', () => document.getElementById('discoveryModal').classList.remove('open'));
