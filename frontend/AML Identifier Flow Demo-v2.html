@@ -244,6 +244,9 @@
     .mc-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 11px; color: var(--muted); }
     .mc-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .mc-empty { color: var(--muted); font-size: 12px; padding: 20px 0; text-align: center; }
+    .src-updated { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .src-updated b { color: var(--ink); font-weight: 700; }
+    .src-note { font-size: 13px; color: var(--muted); padding: 0 4px 12px; line-height: 1.5; }
     .mc-treemap { position: relative; width: 100%; height: 158px; border-radius: 8px; overflow: hidden; }
     .tm-cell { position: absolute; box-sizing: border-box; border: 2px solid #fff; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 3px; overflow: hidden; color: #fff; text-align: center; }
     .tm-label { font-size: 10px; font-weight: 700; line-height: 1.12; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,.22); }
@@ -467,6 +470,7 @@
         <button data-nav="paymentList"><span class="nav-icon">P</span><span class="nav-text"><span data-i18n="navPaymentList"></span><span class="nav-sub" data-i18n="navPaymentListSub"></span></span></button>
         <button data-nav="signals"><span class="nav-icon">S</span><span class="nav-text"><span data-i18n="navSignals"></span><span class="nav-sub" data-i18n="navSignalsSub"></span></span></button>
         <button data-nav="config"><span class="nav-icon">M</span><span class="nav-text"><span data-i18n="navConfig"></span><span class="nav-sub" data-i18n="navConfigSub"></span></span></button>
+        <button data-nav="sources"><span class="nav-icon">🌐</span><span class="nav-text"><span data-i18n="navSources"></span><span class="nav-sub" data-i18n="navSourcesSub"></span></span></button>
       </nav>
       <div class="sidebar-footer" data-i18n="sidebarFooter"></div>
     </aside>
@@ -557,6 +561,13 @@
         <div class="card" id="playbookCard" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
       </section>
 
+      <section class="screen" id="sources">
+        <div class="topbar"><div><div class="eyebrow" data-i18n="sourcesEyebrow"></div><h2 class="title" data-i18n="sourcesTitle"></h2><p class="subtitle" data-i18n="sourcesSubtitle"></p></div></div>
+        <div class="card"><div class="section-head"><div><h2 id="srcCpiName"></h2><p id="srcCpiAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcCpiUpdated"></b></span></div><div class="src-note" id="srcCpiNote"></div><div class="table-wrap"><table><thead><tr id="srcCpiHead"></tr></thead><tbody id="srcCpiRows"></tbody></table></div></div>
+        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 id="srcFatfName"></h2><p id="srcFatfAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcFatfUpdated"></b></span></div><div class="src-note" id="srcFatfNote"></div><div class="table-wrap"><table><thead><tr id="srcFatfHead"></tr></thead><tbody id="srcFatfRows"></tbody></table></div></div>
+        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 id="srcOffName"></h2><p id="srcOffAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcOffUpdated"></b></span></div><div class="src-note" id="srcOffNote"></div><div class="table-wrap"><table><thead><tr id="srcOffHead"></tr></thead><tbody id="srcOffRows"></tbody></table></div></div>
+      </section>
+
       <section class="screen" id="vendor">
         <div class="topbar"><div><nav class="breadcrumb"><button class="crumb-home" data-nav="dashboard"><span class="crumb-arrow">‹</span><span data-i18n="navDashboard"></span></button><span class="crumb-sep">/</span><span class="crumb-current" data-i18n="vendorProfileEyebrow"></span></nav><h2 class="title" id="vendorTitle"></h2><p class="subtitle" data-i18n="vendorProfileSubtitle"></p></div><div class="status-pill" id="vendorScorePill"></div></div>
         <div class="detail-layout"><div class="card panel"><h3 data-i18n="vendorSnapshot"></h3><div class="kv" id="vendorKv"></div></div><div class="card panel"><div class="score-hero"><div><div class="eyebrow" data-i18n="scoreExplanation"></div><strong data-i18n="whyVendorHigh"></strong></div><div class="big" id="vendorBigScore"></div></div><div class="driver-grid" id="vendorDrivers"></div></div></div>
@@ -631,7 +642,7 @@
   <script>
     const i18n = {
       en: {
-        brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
+        brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', navSources: 'Public Data Sources', navSourcesSub: 'CPI · FATF · Offshore', sourcesEyebrow: 'Reference Data', sourcesTitle: 'Public Data Sources', sourcesSubtitle: 'The three public lists scraped for detection — CPI, FATF black/grey, and the offshore list — each with its last update time.', srcUpdated: 'Last updated', srcCountry: 'Country', srcJurisdiction: 'Jurisdiction', srcCode: 'Code', srcStatus: 'Status', srcRisk: 'Risk', srcHigh: 'High-risk', srcOk: 'OK', srcBlack: 'Black list', srcGrey: 'Grey list', srcOffshore: 'Offshore', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score, ML Payment Score, and Reasonable Payment Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
         metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 rule hits', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
@@ -692,7 +703,7 @@
         chatBackendError: 'Backend unreachable — falling back to local rule engine.', chatSettingsPrompt: 'Paste the chatbot backend URL (leave empty to disable and use the local engine).', chatBackendSet: 'Backend URL saved.', chatBackendCleared: 'Backend URL cleared — using local engine.', chatThinking: 'Thinking...', chatSourceLlm: 'GPT', chatSourceLocal: 'Local engine', chatNoResults: 'No matching payments in the current dataset.', chatReasoningTitle: '💭 Reasoning'
       },
       zh: {
-        brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
+        brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', navSources: '公开数据源', navSourcesSub: 'CPI · FATF · 离岸', sourcesEyebrow: '参考数据', sourcesTitle: '公开数据源', sourcesSubtitle: '用于检测的三个公开名单 —— CPI、FATF 黑/灰名单、离岸名单 —— 及各自的最近更新时间。', srcUpdated: '更新时间', srcCountry: '国家', srcJurisdiction: '司法辖区', srcCode: '代码', srcStatus: '状态', srcRisk: '风险', srcHigh: '高风险', srcOk: '正常', srcBlack: '黑名单', srcGrey: '灰名单', srcOffshore: '离岸', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
         dashboardEyebrow: '合规风险驾驶舱', dashboardTitle: '付款欺诈风险识别', dashboardSubtitle: '通过供应商评分、机器学习付款评分与付款合理性评分，识别疑似欺诈付款。', lastSync: '最近同步：Ariba 09:14 · LGAP 09:20',
         metrics: [['受监控付款', '演示数据集']],
         metricQueueTotal: '告警队列', metricQueueTotalNote: '命中 T1 / T2 规则', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
@@ -972,6 +983,80 @@
       screens.forEach(s => s.classList.toggle('active', s.id === id));
       document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.nav === id));
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Public data sources (scraped public lists), shown on the Public Data Sources page ──
+    const PUBLIC_SOURCES = {
+      cpi: {
+        name: { en: 'Corruption Perceptions Index (CPI 2024)', zh: '清廉指数 (CPI 2024)' },
+        authority: 'Transparency International · transparency.org/en/cpi',
+        updated: '2026-02-11 06:00',
+        note: { en: 'Score 0–100 (higher = cleaner). Rule threshold: a score ≤ 40 counts as high-risk.', zh: '分数 0–100(越高越清廉)。规则阈值:分数 ≤ 40 记为高风险。' },
+        rows: [
+          { c: { en: 'Denmark', zh: '丹麦' }, code: 'DK', v: 90 }, { c: { en: 'Singapore', zh: '新加坡' }, code: 'SG', v: 84 },
+          { c: { en: 'Germany', zh: '德国' }, code: 'DE', v: 75 }, { c: { en: 'United States', zh: '美国' }, code: 'US', v: 65 },
+          { c: { en: 'Malaysia', zh: '马来西亚' }, code: 'MY', v: 50 }, { c: { en: 'China', zh: '中国' }, code: 'CN', v: 43 },
+          { c: { en: 'Kazakhstan', zh: '哈萨克斯坦' }, code: 'KZ', v: 40 }, { c: { en: 'India', zh: '印度' }, code: 'IN', v: 38 },
+          { c: { en: 'Türkiye', zh: '土耳其' }, code: 'TR', v: 34 }, { c: { en: 'Panama', zh: '巴拿马' }, code: 'PA', v: 33 },
+          { c: { en: 'Iran', zh: '伊朗' }, code: 'IR', v: 23 }, { c: { en: 'Russia', zh: '俄罗斯' }, code: 'RU', v: 22 },
+          { c: { en: 'Myanmar', zh: '缅甸' }, code: 'MM', v: 16 }, { c: { en: 'North Korea', zh: '朝鲜' }, code: 'KP', v: 15 },
+          { c: { en: 'Venezuela', zh: '委内瑞拉' }, code: 'VE', v: 10 }
+        ]
+      },
+      fatf: {
+        name: { en: 'FATF Black / Grey List', zh: 'FATF 黑名单 / 灰名单' },
+        authority: 'FATF · fatf-gafi.org/en/countries/black-and-grey-lists',
+        updated: '2026-06-27 12:00',
+        note: { en: 'Black = high-risk (call for action); Grey = jurisdictions under increased monitoring.', zh: '黑名单 = 高风险(呼吁采取行动);灰名单 = 加强监控的司法辖区。' },
+        rows: [
+          { c: { en: 'Iran', zh: '伊朗' }, code: 'IR', s: 'black' }, { c: { en: 'North Korea', zh: '朝鲜' }, code: 'KP', s: 'black' },
+          { c: { en: 'Myanmar', zh: '缅甸' }, code: 'MM', s: 'black' }, { c: { en: 'Nigeria', zh: '尼日利亚' }, code: 'NG', s: 'grey' },
+          { c: { en: 'South Africa', zh: '南非' }, code: 'ZA', s: 'grey' }, { c: { en: 'Vietnam', zh: '越南' }, code: 'VN', s: 'grey' },
+          { c: { en: 'Syria', zh: '叙利亚' }, code: 'SY', s: 'grey' }, { c: { en: 'Yemen', zh: '也门' }, code: 'YE', s: 'grey' },
+          { c: { en: 'Venezuela', zh: '委内瑞拉' }, code: 'VE', s: 'grey' }, { c: { en: 'Haiti', zh: '海地' }, code: 'HT', s: 'grey' },
+          { c: { en: 'Mali', zh: '马里' }, code: 'ML', s: 'grey' }, { c: { en: 'Mozambique', zh: '莫桑比克' }, code: 'MZ', s: 'grey' }
+        ]
+      },
+      offshore: {
+        name: { en: 'Offshore / Tax-Haven List', zh: '离岸 / 避税天堂名单' },
+        authority: { en: 'Internally maintained (offshore financial centres)', zh: '内部维护(离岸金融中心)' },
+        updated: '2026-01-15 09:00',
+        note: { en: 'Jurisdictions treated as offshore for routing / shell-entity checks.', zh: '在中转 / 壳公司检查中视为离岸的司法辖区。' },
+        rows: [
+          { c: { en: 'British Virgin Islands', zh: '英属维尔京群岛' }, code: 'VG' }, { c: { en: 'Cayman Islands', zh: '开曼群岛' }, code: 'KY' },
+          { c: { en: 'Bermuda', zh: '百慕大' }, code: 'BM' }, { c: { en: 'Panama', zh: '巴拿马' }, code: 'PA' },
+          { c: { en: 'Seychelles', zh: '塞舌尔' }, code: 'SC' }, { c: { en: 'Bahamas', zh: '巴哈马' }, code: 'BS' },
+          { c: { en: 'Mauritius', zh: '毛里求斯' }, code: 'MU' }, { c: { en: 'Jersey', zh: '泽西岛' }, code: 'JE' },
+          { c: { en: 'Guernsey', zh: '根西岛' }, code: 'GG' }, { c: { en: 'Isle of Man', zh: '马恩岛' }, code: 'IM' },
+          { c: { en: 'Marshall Islands', zh: '马绍尔群岛' }, code: 'MH' }, { c: { en: 'Belize', zh: '伯利兹' }, code: 'BZ' },
+          { c: { en: 'Gibraltar', zh: '直布罗陀' }, code: 'GI' }, { c: { en: 'Samoa', zh: '萨摩亚' }, code: 'WS' }
+        ]
+      }
+    };
+    function srcTL(v) { return typeof v === 'string' ? v : (lang === 'zh' ? v.zh : v.en); }
+    function renderSources() {
+      if (!document.getElementById('srcCpiRows')) return;
+      const cpi = PUBLIC_SOURCES.cpi;
+      document.getElementById('srcCpiName').textContent = srcTL(cpi.name);
+      document.getElementById('srcCpiAuth').textContent = srcTL(cpi.authority);
+      document.getElementById('srcCpiUpdated').textContent = cpi.updated;
+      document.getElementById('srcCpiNote').textContent = srcTL(cpi.note);
+      document.getElementById('srcCpiHead').innerHTML = `<th>${t('srcCountry')}</th><th>${t('srcCode')}</th><th>CPI</th><th>${t('srcRisk')}</th>`;
+      document.getElementById('srcCpiRows').innerHTML = cpi.rows.map(r => `<tr><td>${srcTL(r.c)}</td><td>${r.code}</td><td><strong>${r.v}</strong></td><td>${r.v <= 40 ? `<span class="tag tag-red">${t('srcHigh')}</span>` : `<span class="tag tag-green">${t('srcOk')}</span>`}</td></tr>`).join('');
+      const fatf = PUBLIC_SOURCES.fatf;
+      document.getElementById('srcFatfName').textContent = srcTL(fatf.name);
+      document.getElementById('srcFatfAuth').textContent = srcTL(fatf.authority);
+      document.getElementById('srcFatfUpdated').textContent = fatf.updated;
+      document.getElementById('srcFatfNote').textContent = srcTL(fatf.note);
+      document.getElementById('srcFatfHead').innerHTML = `<th>${t('srcCountry')}</th><th>${t('srcCode')}</th><th>${t('srcStatus')}</th>`;
+      document.getElementById('srcFatfRows').innerHTML = fatf.rows.map(r => `<tr><td>${srcTL(r.c)}</td><td>${r.code}</td><td>${r.s === 'black' ? `<span class="tag tag-red">${t('srcBlack')}</span>` : `<span class="tag tag-amber">${t('srcGrey')}</span>`}</td></tr>`).join('');
+      const off = PUBLIC_SOURCES.offshore;
+      document.getElementById('srcOffName').textContent = srcTL(off.name);
+      document.getElementById('srcOffAuth').textContent = srcTL(off.authority);
+      document.getElementById('srcOffUpdated').textContent = off.updated;
+      document.getElementById('srcOffNote').textContent = srcTL(off.note);
+      document.getElementById('srcOffHead').innerHTML = `<th>${t('srcJurisdiction')}</th><th>${t('srcCode')}</th><th>${t('srcStatus')}</th>`;
+      document.getElementById('srcOffRows').innerHTML = off.rows.map(r => `<tr><td>${srcTL(r.c)}</td><td>${r.code}</td><td><span class="tag tag-amber">${t('srcOffshore')}</span></td></tr>`).join('');
     }
 
     function tagClass(level) { return level === 'High' || level === 'Unreasonable' ? 'tag-red' : level === 'Medium' || level === 'Warning' ? 'tag-amber' : level === 'Reasonable' ? 'tag-green' : 'tag-blue'; }
@@ -2397,7 +2482,7 @@
     }
 
     function renderAll() {
-      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderDashCharts(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('paymentTier', 'paymentScoreSliders', 'paymentScoreTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm();
+      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderDashCharts(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('paymentTier', 'paymentScoreSliders', 'paymentScoreTotal'); renderReasonableMapping(); renderLegal(); renderReviewForm(); renderSources();
       resetChat();
       if (document.getElementById('vendor').classList.contains('active')) openVendor(currentVendor);
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
