@@ -247,6 +247,7 @@
     .src-updated { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
     .src-updated b { color: var(--ink); font-weight: 700; }
     .src-note { font-size: 13px; color: var(--muted); padding: 0 4px 12px; line-height: 1.5; }
+    #sources .table-wrap { max-height: 620px; overflow-y: auto; }
     .mc-treemap { position: relative; width: 100%; height: 158px; border-radius: 8px; overflow: hidden; }
     .tm-cell { position: absolute; box-sizing: border-box; border: 2px solid #fff; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 3px; overflow: hidden; color: #fff; text-align: center; }
     .tm-label { font-size: 10px; font-weight: 700; line-height: 1.12; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-shadow: 0 1px 2px rgba(0,0,0,.22); }
@@ -563,9 +564,10 @@
 
       <section class="screen" id="sources">
         <div class="topbar"><div><div class="eyebrow" data-i18n="sourcesEyebrow"></div><h2 class="title" data-i18n="sourcesTitle"></h2><p class="subtitle" data-i18n="sourcesSubtitle"></p></div></div>
-        <div class="card"><div class="section-head"><div><h2 id="srcCpiName"></h2><p id="srcCpiAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcCpiUpdated"></b></span></div><div class="src-note" id="srcCpiNote"></div><div class="table-wrap"><table><thead><tr id="srcCpiHead"></tr></thead><tbody id="srcCpiRows"></tbody></table></div></div>
-        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 id="srcFatfName"></h2><p id="srcFatfAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcFatfUpdated"></b></span></div><div class="src-note" id="srcFatfNote"></div><div class="table-wrap"><table><thead><tr id="srcFatfHead"></tr></thead><tbody id="srcFatfRows"></tbody></table></div></div>
-        <div class="card" style="margin-top:18px"><div class="section-head"><div><h2 id="srcOffName"></h2><p id="srcOffAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcOffUpdated"></b></span></div><div class="src-note" id="srcOffNote"></div><div class="table-wrap"><table><thead><tr id="srcOffHead"></tr></thead><tbody id="srcOffRows"></tbody></table></div></div>
+        <div class="donut-tabs" style="margin-bottom:18px"><button class="donut-tab active" data-srctab="cpi" data-i18n="srcTabCpi"></button><button class="donut-tab" data-srctab="fatf" data-i18n="srcTabFatf"></button><button class="donut-tab" data-srctab="offshore" data-i18n="srcTabOffshore"></button></div>
+        <div class="src-pane" id="srcPaneCpi"><div class="card"><div class="section-head"><div><h2 id="srcCpiName"></h2><p id="srcCpiAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcCpiUpdated"></b></span></div><div class="src-note" id="srcCpiNote"></div><div class="table-wrap"><table><thead><tr id="srcCpiHead"></tr></thead><tbody id="srcCpiRows"></tbody></table></div></div></div>
+        <div class="src-pane" id="srcPaneFatf" style="display:none"><div class="card"><div class="section-head"><div><h2 id="srcFatfName"></h2><p id="srcFatfAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcFatfUpdated"></b></span></div><div class="src-note" id="srcFatfNote"></div><div class="table-wrap"><table><thead><tr id="srcFatfHead"></tr></thead><tbody id="srcFatfRows"></tbody></table></div></div></div>
+        <div class="src-pane" id="srcPaneOff" style="display:none"><div class="card"><div class="section-head"><div><h2 id="srcOffName"></h2><p id="srcOffAuth"></p></div><span class="src-updated">🕒 <span data-i18n="srcUpdated"></span>: <b id="srcOffUpdated"></b></span></div><div class="src-note" id="srcOffNote"></div><div class="table-wrap"><table><thead><tr id="srcOffHead"></tr></thead><tbody id="srcOffRows"></tbody></table></div></div></div>
       </section>
 
       <section class="screen" id="vendor">
@@ -642,7 +644,7 @@
   <script>
     const i18n = {
       en: {
-        brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', navSources: 'Public Data Sources', navSourcesSub: 'CPI · FATF · Offshore', sourcesEyebrow: 'Reference Data', sourcesTitle: 'Public Data Sources', sourcesSubtitle: 'The three public lists scraped for detection — CPI, FATF black/grey, and the offshore list — each with its last update time.', srcUpdated: 'Last updated', srcCountry: 'Country', srcJurisdiction: 'Jurisdiction', srcCode: 'Code', srcStatus: 'Status', srcRisk: 'Risk', srcHigh: 'High-risk', srcOk: 'OK', srcBlack: 'Black list', srcGrey: 'Grey list', srcOffshore: 'Offshore', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
+        brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', navSources: 'Public Data Sources', navSourcesSub: 'CPI · FATF · Offshore', sourcesEyebrow: 'Reference Data', sourcesTitle: 'Public Data Sources', sourcesSubtitle: 'The three public lists scraped for detection — CPI, FATF black/grey, and the offshore list — each with its last update time.', srcUpdated: 'Last updated', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: 'Offshore', srcRank: 'Rank', srcCountry: 'Country', srcJurisdiction: 'Jurisdiction', srcCode: 'Code', srcStatus: 'Status', srcRisk: 'Risk', srcHigh: 'High-risk', srcOk: 'OK', srcBlack: 'Black list', srcGrey: 'Grey list', srcOffshore: 'Offshore', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score, ML Payment Score, and Reasonable Payment Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
         metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'T1 + T2 rule hits', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
@@ -703,7 +705,7 @@
         chatBackendError: 'Backend unreachable — falling back to local rule engine.', chatSettingsPrompt: 'Paste the chatbot backend URL (leave empty to disable and use the local engine).', chatBackendSet: 'Backend URL saved.', chatBackendCleared: 'Backend URL cleared — using local engine.', chatThinking: 'Thinking...', chatSourceLlm: 'GPT', chatSourceLocal: 'Local engine', chatNoResults: 'No matching payments in the current dataset.', chatReasoningTitle: '💭 Reasoning'
       },
       zh: {
-        brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', navSources: '公开数据源', navSourcesSub: 'CPI · FATF · 离岸', sourcesEyebrow: '参考数据', sourcesTitle: '公开数据源', sourcesSubtitle: '用于检测的三个公开名单 —— CPI、FATF 黑/灰名单、离岸名单 —— 及各自的最近更新时间。', srcUpdated: '更新时间', srcCountry: '国家', srcJurisdiction: '司法辖区', srcCode: '代码', srcStatus: '状态', srcRisk: '风险', srcHigh: '高风险', srcOk: '正常', srcBlack: '黑名单', srcGrey: '灰名单', srcOffshore: '离岸', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
+        brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', navSources: '公开数据源', navSourcesSub: 'CPI · FATF · 离岸', sourcesEyebrow: '参考数据', sourcesTitle: '公开数据源', sourcesSubtitle: '用于检测的三个公开名单 —— CPI、FATF 黑/灰名单、离岸名单 —— 及各自的最近更新时间。', srcUpdated: '更新时间', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: '离岸', srcRank: '排名', srcCountry: '国家', srcJurisdiction: '司法辖区', srcCode: '代码', srcStatus: '状态', srcRisk: '风险', srcHigh: '高风险', srcOk: '正常', srcBlack: '黑名单', srcGrey: '灰名单', srcOffshore: '离岸', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
         dashboardEyebrow: '合规风险驾驶舱', dashboardTitle: '付款欺诈风险识别', dashboardSubtitle: '通过供应商评分、机器学习付款评分与付款合理性评分，识别疑似欺诈付款。', lastSync: '最近同步：Ariba 09:14 · LGAP 09:20',
         metrics: [['受监控付款', '演示数据集']],
         metricQueueTotal: '告警队列', metricQueueTotalNote: '命中 T1 / T2 规则', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
@@ -991,19 +993,48 @@
         name: { en: 'Corruption Perceptions Index (CPI 2024)', zh: '清廉指数 (CPI 2024)' },
         authority: 'Transparency International · transparency.org/en/cpi',
         updated: '2026-02-11 06:00',
-        note: { en: 'Score 0–100 (higher = cleaner). Rule threshold: a score ≤ 40 counts as high-risk.', zh: '分数 0–100(越高越清廉)。规则阈值:分数 ≤ 40 记为高风险。' },
+        note: { en: 'Full 2024 index (181 economies). Score 0–100 (higher = cleaner). Rule threshold: a score ≤ 40 counts as high-risk.', zh: '2024 完整榜单（181 个经济体）。分数 0–100（越高越清廉）。规则阈值：分数 ≤ 40 记为高风险。' },
         rows: [
-          { c: { en: 'Denmark', zh: '丹麦' }, code: 'DK', v: 90 }, { c: { en: 'Singapore', zh: '新加坡' }, code: 'SG', v: 84 },
-          { c: { en: 'Germany', zh: '德国' }, code: 'DE', v: 75 }, { c: { en: 'United States', zh: '美国' }, code: 'US', v: 65 },
-          { c: { en: 'Malaysia', zh: '马来西亚' }, code: 'MY', v: 50 }, { c: { en: 'China', zh: '中国' }, code: 'CN', v: 43 },
-          { c: { en: 'Kazakhstan', zh: '哈萨克斯坦' }, code: 'KZ', v: 40 }, { c: { en: 'India', zh: '印度' }, code: 'IN', v: 38 },
-          { c: { en: 'Türkiye', zh: '土耳其' }, code: 'TR', v: 34 }, { c: { en: 'Panama', zh: '巴拿马' }, code: 'PA', v: 33 },
-          { c: { en: 'Iran', zh: '伊朗' }, code: 'IR', v: 23 }, { c: { en: 'Russia', zh: '俄罗斯' }, code: 'RU', v: 22 },
-          { c: { en: 'Myanmar', zh: '缅甸' }, code: 'MM', v: 16 }, { c: { en: 'North Korea', zh: '朝鲜' }, code: 'KP', v: 15 },
-          { c: { en: 'Venezuela', zh: '委内瑞拉' }, code: 'VE', v: 10 }
+          {r:1,c:"Denmark",v:89}, {r:2,c:"Finland",v:88}, {r:3,c:"Singapore",v:84}, {r:4,c:"New Zealand",v:81}, {r:4,c:"Norway",v:81},
+          {r:6,c:"Sweden",v:80}, {r:6,c:"Switzerland",v:80}, {r:8,c:"Luxembourg",v:78}, {r:8,c:"Netherlands",v:78}, {r:10,c:"Germany",v:77},
+          {r:10,c:"Iceland",v:77}, {r:12,c:"Australia",v:76}, {r:12,c:"Estonia",v:76}, {r:12,c:"Ireland",v:76}, {r:16,c:"Canada",v:75},
+          {r:17,c:"Uruguay",v:73}, {r:18,c:"Bhutan",v:71}, {r:18,c:"Japan",v:71}, {r:20,c:"United Kingdom",v:70}, {r:21,c:"Austria",v:69},
+          {r:21,c:"Belgium",v:69}, {r:21,c:"United Arab Emirates",v:69}, {r:24,c:"Barbados",v:68}, {r:24,c:"Seychelles",v:68}, {r:24,c:"Taiwan",v:68},
+          {r:27,c:"France",v:66}, {r:28,c:"Lithuania",v:65}, {r:29,c:"Bahamas",v:64}, {r:29,c:"United States of America",v:64}, {r:31,c:"Brunei Darussalam",v:63},
+          {r:31,c:"Chile",v:63}, {r:31,c:"Saint Vincent and the Grenadines",v:63}, {r:31,c:"South Korea",v:63}, {r:35,c:"Cabo Verde",v:62}, {r:35,c:"Israel",v:62},
+          {r:37,c:"Dominica",v:60}, {r:37,c:"Latvia",v:60}, {r:39,c:"Czechia",v:59}, {r:39,c:"Saint Lucia",v:59}, {r:41,c:"Botswana",v:58},
+          {r:41,c:"Qatar",v:58}, {r:41,c:"Rwanda",v:58}, {r:41,c:"Slovenia",v:58}, {r:45,c:"Saudi Arabia",v:57}, {r:46,c:"Costa Rica",v:56},
+          {r:46,c:"Grenada",v:56}, {r:46,c:"Portugal",v:56}, {r:49,c:"Cyprus",v:55}, {r:49,c:"Fiji",v:55}, {r:49,c:"Spain",v:55},
+          {r:52,c:"Italy",v:53}, {r:52,c:"Poland",v:53}, {r:54,c:"Malaysia",v:52}, {r:54,c:"Oman",v:52}, {r:56,c:"Bahrain",v:50},
+          {r:56,c:"Georgia",v:50}, {r:56,c:"Greece",v:50}, {r:56,c:"Jordan",v:50}, {r:60,c:"Malta",v:49}, {r:61,c:"Mauritius",v:48},
+          {r:61,c:"Slovakia",v:48}, {r:63,c:"Croatia",v:47}, {r:63,c:"Vanuatu",v:47}, {r:65,c:"Armenia",v:46}, {r:65,c:"Kuwait",v:46},
+          {r:65,c:"Montenegro",v:46}, {r:65,c:"Namibia",v:46}, {r:65,c:"Senegal",v:46}, {r:70,c:"Benin",v:45}, {r:70,c:"Romania",v:45},
+          {r:70,c:"Sao Tome and Principe",v:45}, {r:73,c:"Jamaica",v:44}, {r:73,c:"Solomon Islands",v:44}, {r:73,c:"Timor-Leste",v:44}, {r:76,c:"China",v:43},
+          {r:76,c:"C\u00f4te d'Ivoire",v:43}, {r:76,c:"Ghana",v:43}, {r:76,c:"Kosovo",v:43}, {r:80,c:"Moldova",v:42}, {r:81,c:"South Africa",v:41},
+          {r:81,c:"Trinidad and Tobago",v:41}, {r:81,c:"Vietnam",v:41}, {r:84,c:"Bulgaria",v:40}, {r:84,c:"Burkina Faso",v:40}, {r:84,c:"Cuba",v:40},
+          {r:84,c:"Guyana",v:40}, {r:84,c:"Hungary",v:40}, {r:84,c:"North Macedonia",v:40}, {r:84,c:"Tanzania",v:40}, {r:91,c:"Albania",v:39},
+          {r:91,c:"India",v:39}, {r:91,c:"Maldives",v:39}, {r:91,c:"Morocco",v:39}, {r:91,c:"Tunisia",v:39}, {r:96,c:"Ethiopia",v:38},
+          {r:96,c:"Kazakhstan",v:38}, {r:96,c:"Suriname",v:38}, {r:99,c:"Colombia",v:37}, {r:99,c:"Dominican Republic",v:37}, {r:99,c:"Gambia",v:37},
+          {r:99,c:"Lesotho",v:37}, {r:99,c:"Zambia",v:37}, {r:104,c:"Argentina",v:36}, {r:104,c:"Belize",v:36}, {r:104,c:"Ukraine",v:36},
+          {r:107,c:"Brazil",v:35}, {r:107,c:"Sri Lanka",v:35}, {r:109,c:"Algeria",v:34}, {r:109,c:"Bosnia and Herzegovina",v:34}, {r:109,c:"Indonesia",v:34},
+          {r:109,c:"Laos",v:34}, {r:109,c:"Malawi",v:34}, {r:109,c:"Nepal",v:34}, {r:109,c:"Sierra Leone",v:34}, {r:116,c:"Ecuador",v:33},
+          {r:116,c:"Panama",v:33}, {r:116,c:"Serbia",v:33}, {r:116,c:"Thailand",v:33}, {r:120,c:"Angola",v:32}, {r:120,c:"El Salvador",v:32},
+          {r:120,c:"Philippines",v:32}, {r:120,c:"Togo",v:32}, {r:124,c:"Belarus",v:31}, {r:124,c:"Djibouti",v:31}, {r:124,c:"Mongolia",v:31},
+          {r:124,c:"Niger",v:31}, {r:124,c:"Turkey",v:31}, {r:124,c:"Uzbekistan",v:31}, {r:130,c:"Azerbaijan",v:30}, {r:130,c:"Egypt",v:30},
+          {r:130,c:"Kenya",v:30}, {r:130,c:"Mauritania",v:30}, {r:130,c:"Peru",v:30}, {r:135,c:"Gabon",v:29}, {r:136,c:"Bolivia",v:28},
+          {r:136,c:"Iraq",v:28}, {r:136,c:"Liberia",v:28}, {r:136,c:"Mali",v:28}, {r:136,c:"Pakistan",v:28}, {r:141,c:"Mexico",v:27},
+          {r:142,c:"Cameroon",v:26}, {r:142,c:"Guatemala",v:26}, {r:142,c:"Guinea",v:26}, {r:142,c:"Kyrgyzstan",v:26}, {r:142,c:"Nigeria",v:26},
+          {r:142,c:"Papua New Guinea",v:26}, {r:148,c:"Madagascar",v:25}, {r:148,c:"Uganda",v:25}, {r:150,c:"Bangladesh",v:24}, {r:150,c:"Central African Republic",v:24},
+          {r:150,c:"Paraguay",v:24}, {r:153,c:"Congo",v:23}, {r:153,c:"Eswatini",v:23}, {r:153,c:"Iran",v:23}, {r:153,c:"Lebanon",v:23},
+          {r:157,c:"Chad",v:22}, {r:157,c:"Honduras",v:22}, {r:157,c:"Russia",v:22}, {r:157,c:"Zimbabwe",v:22}, {r:161,c:"Guinea-Bissau",v:21},
+          {r:161,c:"Mozambique",v:21}, {r:163,c:"Cambodia",v:20}, {r:163,c:"Comoros",v:20}, {r:163,c:"Democratic Republic of the Congo",v:20}, {r:166,c:"Tajikistan",v:19},
+          {r:167,c:"Burundi",v:17}, {r:167,c:"Turkmenistan",v:17}, {r:169,c:"Afghanistan",v:16}, {r:169,c:"Haiti",v:16}, {r:169,c:"Myanmar",v:16},
+          {r:172,c:"Equatorial Guinea",v:15}, {r:172,c:"North Korea",v:15}, {r:172,c:"Syria",v:15}, {r:175,c:"Nicaragua",v:14}, {r:175,c:"Sudan",v:14},
+          {r:177,c:"Eritrea",v:13}, {r:177,c:"Libya",v:13}, {r:177,c:"Yemen",v:13}, {r:180,c:"Venezuela",v:10}, {r:181,c:"Somalia",v:9},
+          {r:181,c:"South Sudan",v:9}
         ]
       },
-      fatf: {
+            fatf: {
         name: { en: 'FATF Black / Grey List', zh: 'FATF 黑名单 / 灰名单' },
         authority: 'FATF · fatf-gafi.org/en/countries/black-and-grey-lists',
         updated: '2026-06-27 12:00',
@@ -1034,6 +1065,12 @@
       }
     };
     function srcTL(v) { return typeof v === 'string' ? v : (lang === 'zh' ? v.zh : v.en); }
+    function showSourceTab(k) {
+      document.querySelectorAll('#sources [data-srctab]').forEach(b => b.classList.toggle('active', b.dataset.srctab === k));
+      document.getElementById('srcPaneCpi').style.display = k === 'cpi' ? '' : 'none';
+      document.getElementById('srcPaneFatf').style.display = k === 'fatf' ? '' : 'none';
+      document.getElementById('srcPaneOff').style.display = k === 'offshore' ? '' : 'none';
+    }
     function renderSources() {
       if (!document.getElementById('srcCpiRows')) return;
       const cpi = PUBLIC_SOURCES.cpi;
@@ -1041,8 +1078,8 @@
       document.getElementById('srcCpiAuth').textContent = srcTL(cpi.authority);
       document.getElementById('srcCpiUpdated').textContent = cpi.updated;
       document.getElementById('srcCpiNote').textContent = srcTL(cpi.note);
-      document.getElementById('srcCpiHead').innerHTML = `<th>${t('srcCountry')}</th><th>${t('srcCode')}</th><th>CPI</th><th>${t('srcRisk')}</th>`;
-      document.getElementById('srcCpiRows').innerHTML = cpi.rows.map(r => `<tr><td>${srcTL(r.c)}</td><td>${r.code}</td><td><strong>${r.v}</strong></td><td>${r.v <= 40 ? `<span class="tag tag-red">${t('srcHigh')}</span>` : `<span class="tag tag-green">${t('srcOk')}</span>`}</td></tr>`).join('');
+      document.getElementById('srcCpiHead').innerHTML = `<th>${t('srcRank')}</th><th>${t('srcCountry')}</th><th>CPI</th><th>${t('srcRisk')}</th>`;
+      document.getElementById('srcCpiRows').innerHTML = cpi.rows.map(r => `<tr><td>${r.r}</td><td>${r.c}</td><td><strong>${r.v}</strong></td><td>${r.v <= 40 ? `<span class="tag tag-red">${t('srcHigh')}</span>` : `<span class="tag tag-green">${t('srcOk')}</span>`}</td></tr>`).join('');
       const fatf = PUBLIC_SOURCES.fatf;
       document.getElementById('srcFatfName').textContent = srcTL(fatf.name);
       document.getElementById('srcFatfAuth').textContent = srcTL(fatf.authority);
@@ -2489,6 +2526,7 @@
     }
 
     document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.nav)));
+    document.querySelectorAll('#sources [data-srctab]').forEach(btn => btn.addEventListener('click', () => showSourceTab(btn.dataset.srctab)));
     document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => { lang = btn.dataset.lang; applyLanguage(); }));
     document.getElementById('collapseBtn').addEventListener('click', () => document.getElementById('appShell').classList.toggle('collapsed'));
     document.querySelectorAll('[data-donutview]').forEach(btn => btn.addEventListener('click', () => { donutView = btn.dataset.donutview; renderDonut(); }));
