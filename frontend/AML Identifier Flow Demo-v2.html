@@ -207,6 +207,10 @@
     .sd-sum { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink); }
     .sd-sum strong { font-size: 15px; }
     .sd-note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; color: var(--muted); }
+    .vf-hit { color: #d84b4b; font-size: 10px; }
+    .driver.vf-on { border-color: #f0c4c4; background: #fffaf9; }
+    .vf-total { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink); }
+    .vf-total strong { font-size: 17px; }
     .bar { height: 9px; border-radius: 999px; background: #e5eef2; overflow: hidden; }
     .bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--teal), var(--primary)); }
     .driver-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -549,6 +553,8 @@
               <select id="filterRiskType"></select>
               <select id="filterSource"></select>
               <select id="filterPayingEntity"></select>
+              <select id="filterRegion"></select>
+              <select id="filterStatus"></select>
               <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="filterDateFrom" autocomplete="off" /></label>
               <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="filterDateTo" autocomplete="off" /></label>
             </div>
@@ -614,24 +620,43 @@
           <button class="donut-tab active" data-wbtab="pending"><span data-i18n="wbPending"></span> <span class="wb-count" id="wbPendingCount"></span></button>
           <button class="donut-tab" data-wbtab="reviewed"><span data-i18n="wbReviewed"></span> <span class="wb-count" id="wbReviewedCount"></span></button>
         </div>
+        <div class="card" style="margin-bottom:18px">
+          <div class="filter-bar">
+            <div class="filter-row">
+              <input type="search" id="wbKeyword" />
+              <select id="wbTier"></select>
+              <select id="wbRiskType"></select>
+              <select id="wbSource"></select>
+              <select id="wbPayingEntity"></select>
+              <select id="wbRegion"></select>
+              <select id="wbStatus"></select>
+              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="wbDateFrom" autocomplete="off" /></label>
+              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="wbDateTo" autocomplete="off" /></label>
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-soft" id="wbReset" data-i18n="filterReset"></button>
+              <button class="btn btn-primary" id="wbApply" data-i18n="filterApply"></button>
+            </div>
+          </div>
+        </div>
         <div class="wb-panel" id="wbPending">
           <div class="card" style="margin-bottom:18px">
             <div class="section-head"><div><h2 data-i18n="queueRulesTitle"></h2><p data-i18n="queueRulesDesc"></p></div></div>
             <div class="queue-rules" id="queueRules"></div>
           </div>
           <div class="card">
-            <div class="section-head"><div><h2 data-i18n="unifiedQueueTitle"></h2><p data-i18n="unifiedQueueDesc"></p></div><select id="queueTierFilter" class="reviewed-filter"></select></div>
+            <div class="section-head"><div><h2 data-i18n="unifiedQueueTitle"></h2><p data-i18n="unifiedQueueDesc"></p></div></div>
             <div class="queue-list" id="unifiedQueue"></div>
           </div>
         </div>
         <div class="wb-panel" id="wbReviewed" style="display:none">
-          <div class="card"><div class="section-head"><div><h2 data-i18n="legalRecords"></h2><p data-i18n="legalRecordsDesc"></p></div><div style="display:flex;gap:8px"><select id="reviewedTierFilter" class="reviewed-filter"></select><select id="reviewedFilter" class="reviewed-filter"></select></div></div><div class="table-wrap"><table><thead><tr id="legalHeader"></tr></thead><tbody id="legalRows"></tbody></table><div class="legal-empty" id="legalEmpty"></div></div></div>
+          <div class="card"><div class="section-head"><div><h2 data-i18n="legalRecords"></h2><p data-i18n="legalRecordsDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="legalHeader"></tr></thead><tbody id="legalRows"></tbody></table><div class="legal-empty" id="legalEmpty"></div></div></div>
         </div>
       </section>
     </main>
   </div>
 
-  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow agent-only" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle agent-only" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="agent-only"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section" id="investPlaybookWrap" style="display:none"><div class="invest-label" data-i18n="investPlaybookApplied"></div><div id="investPlaybook" class="invest-playbook"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div><div class="add-tag-row" id="addTagRow"><input type="text" id="newTagInput" /><button class="btn btn-soft" id="addTagBtn" data-i18n="addTag"></button></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
+  <div class="modal-backdrop" id="investigateModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow agent-only" data-i18n="investigateEyebrow"></div><h3 id="investigateTitle"></h3><p class="subtitle agent-only" data-i18n="investigateSubtitle"></p></div><button class="btn btn-soft" id="closeInvestigate" data-i18n="close"></button></div><div class="modal-body"><div class="agent-only"><div class="invest-run-row"><button class="btn btn-investigate" id="runInvestigateBtn">🔎 <span data-i18n="investigateNow"></span></button><span class="small-muted" data-i18n="investHint"></span></div><div class="invest-section"><div class="invest-label" data-i18n="investSteps"></div><div id="investSteps" class="invest-steps"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investEvidence"></div><div id="investEvidence" class="invest-evidence"></div></div><div class="invest-section" id="investPlaybookWrap" style="display:none"><div class="invest-label" data-i18n="investPlaybookApplied"></div><div id="investPlaybook" class="invest-playbook"></div></div><div class="invest-section"><div class="invest-label" data-i18n="investPackage"></div><details class="chat-reasoning" id="investReasoningWrap" open style="display:none"><summary><span id="investReasoningTitle"></span><span class="reasoning-pulse"></span></summary><div class="reasoning-text" id="investReasoning"></div></details><div id="investPackage" class="invest-package"></div><div id="investRec"></div></div><div class="invest-divider"></div></div><div class="invest-section"><div class="invest-label" data-i18n="reviewDecisionLabel"></div><label><span data-i18n="reviewResult"></span><select id="reviewResult"><option value="notFraud"></option><option value="confirmedFraud"></option><option value="needEvidence"></option><option value="spurious"></option></select></label><label><span data-i18n="legalComment"></span><textarea id="reviewReason"></textarea></label><label data-i18n="modelFeedbackTags"></label><div class="checks" id="feedbackChecks"></div><div class="add-tag-row" id="addTagRow"><input type="text" id="newTagInput" /><button class="btn btn-soft" id="addTagBtn" data-i18n="addTag"></button></div></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelReview" data-i18n="cancel"></button><button class="btn btn-primary" id="submitReview" data-i18n="submitReview"></button></div></div></div>
   <div class="modal-backdrop" id="discoveryModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="discoveryEyebrow"></div><h3 data-i18n="discoveryTitle"></h3><p class="subtitle" data-i18n="discoverySubtitle"></p></div><button class="btn btn-soft" id="closeDiscovery" data-i18n="close"></button></div><div class="modal-body"><div id="discoveryBody"></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelDiscovery" data-i18n="cancel"></button><button class="btn btn-primary" id="addDiscovery" data-i18n="discoveryAdd"></button></div></div></div>
   <div class="modal-backdrop" id="calibModal"><div class="modal"><div class="modal-head"><div><div class="eyebrow" data-i18n="calibEyebrow"></div><h3 data-i18n="calibTitle"></h3><p class="subtitle" data-i18n="calibSubtitle"></p></div><button class="btn btn-soft" id="closeCalib" data-i18n="close"></button></div><div class="modal-body"><div id="calibSummary"></div><div class="table-wrap"><table><thead><tr id="calibHeader"></tr></thead><tbody id="calibRows"></tbody></table></div></div><div class="modal-foot"><button class="btn btn-soft" id="cancelCalib" data-i18n="cancel"></button><button class="btn btn-primary" id="applyCalib" data-i18n="calibApply"></button></div></div></div>
   <div class="toast" id="toast"></div>
@@ -692,20 +717,20 @@
         signalNote: 'PPV is computed live from structured Legal review records — each "Review Now" decision updates the numbers here. A signal needs at least 3 reviewed payments before its PPV is trusted (Validated); below that it stays a Candidate. Validated signals with high PPV are promoted; low-PPV ones are demoted to scoring factors.',
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
-        paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
-        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
+        paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Reasonable', 'Total', 'Review Status', 'Reviewed By', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
+        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRegion: 'Region', filterStatus: 'Status', rvPending: 'Pending review', wbFilterTitle: 'Filters', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search payment ID, vendor, category...', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geo: 'Geographic Risks', crime: 'Criminal, Civil or Regulatory Proceedings', pep: 'Adverse Media (PEP)', docgap: 'Documentation Gaps', vague: 'Vague Descriptions', timing: 'Timing Irregularities', behavior: 'Behavioral Indicators' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
         investigateNow: 'Investigate', investigateReviewNow: 'Investigate & Review', reviewBtnLabel: 'Review', addTag: 'Add', addTagPlaceholder: 'Add a custom tag…', reviewDecisionLabel: 'Legal decision', heldTag: 'Held', reviewSavedHeld: 'Review submitted · payment placed on Hold', investigateEyebrow: 'AML Investigation Agent', investigateSubtitle: 'Auto multi-source evidence gathering + AI synthesis, then your decision', investSteps: 'Investigation steps', investEvidence: 'Gathered evidence', investPackage: 'Investigation package', investRunning: 'Investigating...', investHint: 'Optional — run the agent to auto-gather evidence and pre-fill the decision below.', investNotRun: 'Agent not run yet. Click Investigate above, or fill the decision manually.', recLabels: { escalate: 'Escalate / hold payment', investigate: 'Investigate further', clear: 'Likely benign' },
         alertTierLabel: 'Alert Tier', triggerReason: 'Trigger rules (why this tier)', tierScoreNote: 'This alert is driven by high-precision rules, not the weighted score. The weighted fraud score is only used to rank T3 gray-zone payments.',
-        caseEyebrow: 'Fraud Case Detail', caseSubtitle: 'Overall score = Vendor Score × weight + Payment (tier) Score × weight.', paymentScoreNotice: 'Payment score = sum of the weights of the rules this payment hits. Overall = Vendor × 40% + Payment × 60%.', sdHitSum: 'Sum of rules hit', sdVendorNote: 'Vendor score comes from vendor-level list screening. Listed above are the configured factors, their weights, and the ones this payment triggered.', tuneWeights: 'Tune Weights', paymentSnapshot: 'Payment Snapshot', overallFraudRisk: 'Overall Fraud Risk Score', reasonableNotice: 'Reasonable Payment mapping: Reasonable = 0, Warning = 60, Unreasonable = 100. Higher score means higher risk.',
+        caseEyebrow: 'Fraud Case Detail', caseSubtitle: 'Overall score = Vendor Score × weight + Payment (tier) Score × weight.', paymentScoreNotice: 'Payment score = sum of the weights of the rules this payment hits. Overall = Vendor × 40% + Payment × 60%.', sdHitSum: 'Sum of rules hit', vfContrib: 'contribution', vfTotal: 'Vendor score (sum of contributions)', sdVendorNote: 'Vendor score = Σ (factor strength × weight). ● marks the factors this payment triggered.', tuneWeights: 'Tune Weights', paymentSnapshot: 'Payment Snapshot', overallFraudRisk: 'Overall Fraud Risk Score', reasonableNotice: 'Reasonable Payment mapping: Reasonable = 0, Warning = 60, Unreasonable = 100. Higher score means higher risk.',
         paymentId: 'Payment ID', sourceSystem: 'Source System', amount: 'Amount', category: 'Category', riskLevel: 'Risk Level', date: 'Date', vendorScoreLabel: 'Vendor Score', mlPaymentScore: 'Payment Score', reasonablePaymentScore: 'Reasonable Payment Score', vendorScoreDesc: 'External list screening and country/entity indicators.', mlPaymentDesc: 'Sum of the weights of the payment-activity rules this payment hits.', reasonableDesc: 'vendor experience range and procurement category alignment.', procTitle: 'Procurement title', l1Commodity: 'L1 Commodity', l2Commodity: 'L2 Commodity', finalCommodity: 'Final Commodity', lgapCategory: 'Category', lgapSubCategory: 'Sub Category', hitRulesLabel: 'Rules hit & details', noRuleHitDetail: 'No rule hit — appears in the full list only.', ruleDetail: { cpi: 'Vendor / invoice / bank country scores at or below the CPI high-risk threshold.', fatf: 'One of the three countries is on the FATF black or grey list.', offshore: 'The receiving-bank country is an offshore / tax-haven jurisdiction.', criminal: 'Counterparty is linked to criminal, civil or regulatory proceedings.', pep: 'A beneficial owner / director is a politically exposed person.', fourCountry: 'Payer, vendor, invoice-issuing and receiving-bank countries are not all the same.', bigCategory: 'Sensitive procurement category combined with a large payment amount.', capital: 'Payment exceeds registered capital and the vendor was established within 12 months.', scope: "Vendor's business scope does not match the commodity / category.", surge: 'Payment exceeds 500% of the 24-month average for this vendor.', holderName: 'The receiving account holder name differs significantly from the vendor name.', fakeInvoice: 'OCR + LLM found fake-invoice indicators on the invoice.', acctChange: 'The unregistered receiving account changed twice or more within 12 months.' },
         configEyebrow: 'Risk Model Config', configTitle: 'Scoring Weights Configuration', configSubtitle: 'All three weight groups total 100%. Payment score = sum of the weights of the rules a payment hits.', publishConfig: 'Publish Configuration', overallWeights: 'Overall Score Weights', vendorWeights: 'Vendor Score Weights', paymentScore: 'Payment Score', paymentTierDesc: 'Default weight per rule follows its Tier (adjustable); payment score = sum of the weights of the rules a payment hits (weights total 100%).', paymentPointsNote: 'Points per rule · payment score = sum of hit rules, capped at 100', mlRiskScore: 'ML-based risk score', mlRiskDesc: 'Frequency, holiday frequency, amount timing, and other learned anomaly signals.', reasonableMapping: 'Reasonable Payment Mapping', validConfig: 'Valid configuration', mustEqual100: 'Must equal 100%',
         legalEyebrow: 'Review Workflow', legalTitle: 'Legal Workbench', legalSubtitle: 'Pending alerts to review and the reviewed-case audit trail, in one place.', wbPending: 'Pending Queue', wbReviewed: 'Reviewed Cases', legalRecords: 'Legal Review Records', legalRecordsDesc: 'Reviewed case list for audit trail and model feedback.', noReviewed: 'No reviewed cases yet. After Mark Reviewed from Dashboard, records will appear here.', reviewedCases: n => `${n} reviewed case${n === 1 ? '' : 's'}`,
-        reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', syncedTag: 'Synced from server', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
+        reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', spurious: 'Irrelevant / spurious trigger', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', syncedTag: 'Synced from server', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
         tags: ['Vendor risk overestimated', 'Payment pattern is normal', 'Category alignment is valid', 'Known business exception'],
-        statuses: { High: 'High', Medium: 'Medium', Low: 'Low', Reasonable: 'Reasonable', Warning: 'Warning', Unreasonable: 'Unreasonable' }, resultMap: { 'Not Fraud Payment': 'Not Fraud Payment', 'Confirmed Fraud Payment': 'Confirmed Fraud Payment', 'Need More Evidence': 'Need More Evidence' }, recordStatusMap: { 'Model Feedback Pending': 'Model Feedback Pending', 'Model Feedback Incorporated': 'Feedback Incorporated' }, page: 'Page', prev: 'Previous', next: 'Next', allOption: 'All', totalPaymentsLabel: n => `${n} payment${n === 1 ? '' : 's'}`, totalCenter: 'Payments',
+        statuses: { High: 'High', Medium: 'Medium', Low: 'Low', Reasonable: 'Reasonable', Warning: 'Warning', Unreasonable: 'Unreasonable' }, resultMap: { 'Not Fraud Payment': 'Not Fraud Payment', 'Confirmed Fraud Payment': 'Confirmed Fraud Payment', 'Need More Evidence': 'Need More Evidence', 'Irrelevant / Spurious Trigger': 'Irrelevant / Spurious Trigger' }, recordStatusMap: { 'Model Feedback Pending': 'Model Feedback Pending', 'Model Feedback Incorporated': 'Feedback Incorporated' }, page: 'Page', prev: 'Previous', next: 'Next', allOption: 'All', totalPaymentsLabel: n => `${n} payment${n === 1 ? '' : 's'}`, totalCenter: 'Payments',
         chatTitle: 'AML Risk Assistant', chatSubtitle: 'Ask about vendors, dimensions, or risky payments', chatSend: 'Send', chatPlaceholder: 'Try: "Northstar" or "geographic risk"',
         chatWelcome: "Hi! I'm your AML assistant. I can analyze risky payments across six dimensions or pull payments by vendor name. Try one of these:",
         chatSuggestions: ['Show high-risk payments', 'Analyze geographic risk', 'PEP exposure', 'Find payments for Northstar', 'Time anomaly insights'],
@@ -753,20 +778,20 @@
         signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次"立即复核"提交都会更新这里的数字。一个信号至少需 3 笔已复核付款，其 PPV 才被信任（已验证）；不足则保持候选。已验证且 PPV 高的信号被提升，PPV 低的降级为评分因子。',
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
-        paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
-        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
+        paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '合理性', '总分', '复核状态', '复核人', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
+        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRegion: '地区', filterStatus: '复核状态', rvPending: '待复核', wbFilterTitle: '筛选', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商、品类...', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geo: '地理风险', crime: '刑事、民事或监管诉讼', pep: '负面媒体（PEP）', docgap: '单据缺失', vague: '模糊描述', timing: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
         investigateNow: '立即调查', investigateReviewNow: '调查并复核', reviewBtnLabel: '复核', addTag: '添加', addTagPlaceholder: '手动添加标签…', reviewDecisionLabel: '法务结论', heldTag: '已冻结', reviewSavedHeld: '复核已提交 · 付款已置为冻结', investigateEyebrow: 'AML 调查 Agent', investigateSubtitle: '自动多源取证 + AI 综合结论，然后由你定论', investSteps: '调查步骤', investEvidence: '收集到的证据', investPackage: '调查结论', investRunning: '调查中...', investHint: '可选 —— 运行 Agent 自动取证并预填下方结论。', investNotRun: 'Agent 尚未运行。点击上方"立即调查"，或直接手动填写结论。', recLabels: { escalate: '升级 / 暂停付款', investigate: '需进一步调查', clear: '可能合规' },
         alertTierLabel: '告警等级', triggerReason: '触发规则（为何是该等级）', tierScoreNote: '该告警由高精度规则触发，与加权评分无关。加权欺诈评分仅用于对 T3 灰色地带付款排序。',
-        caseEyebrow: '欺诈案例详情', caseSubtitle: '总分 = 供应商分 × 权重 + 付款（等级）分 × 权重。', paymentScoreNotice: '付款分 = 本笔命中规则的权重之和。总分 = 供应商 × 40% + 付款 × 60%。', sdHitSum: '命中规则合计', sdVendorNote: '供应商分来自供应商层名单筛查。上方为配置的因子、权重，以及本笔触发的项。', tuneWeights: '调整权重', paymentSnapshot: '付款概览', overallFraudRisk: '总体欺诈风险分', reasonableNotice: '付款合理性映射：合理 = 0，警告 = 60，不合理 = 100。分数越高代表风险越高。',
+        caseEyebrow: '欺诈案例详情', caseSubtitle: '总分 = 供应商分 × 权重 + 付款（等级）分 × 权重。', paymentScoreNotice: '付款分 = 本笔命中规则的权重之和。总分 = 供应商 × 40% + 付款 × 60%。', sdHitSum: '命中规则合计', vfContrib: '贡献', vfTotal: '供应商分（各项贡献之和）', sdVendorNote: '供应商分 = Σ(因子强度 × 权重)。● 表示本笔付款触发的因子。', tuneWeights: '调整权重', paymentSnapshot: '付款概览', overallFraudRisk: '总体欺诈风险分', reasonableNotice: '付款合理性映射：合理 = 0，警告 = 60，不合理 = 100。分数越高代表风险越高。',
         paymentId: '付款编号', sourceSystem: '来源系统', amount: '金额', category: '采购品类', riskLevel: '风险等级', date: '日期', vendorScoreLabel: '供应商分', mlPaymentScore: '付款分', reasonablePaymentScore: '付款合理性分', vendorScoreDesc: '外部名单筛查与国家 / 实体风险指标。', mlPaymentDesc: '本笔命中的付款类规则的权重之和。', reasonableDesc: '供应商经验范围与采购品类匹配情况。', procTitle: '采购项目标题', l1Commodity: 'L1 品类', l2Commodity: 'L2 品类', finalCommodity: '最终品类', lgapCategory: '分类', lgapSubCategory: '子分类', hitRulesLabel: '命中规则与细节', noRuleHitDetail: '未触发任何规则 — 仅出现在全量列表。', ruleDetail: { cpi: '供应商 / 发票 / 银行国别的 CPI 低于高风险阈值。', fatf: '三个国别之一在 FATF 黑名单或灰名单上。', offshore: '收款银行所在国属离岸 / 避税天堂辖区。', criminal: '交易对手涉及刑事、民事或监管诉讼。', pep: '受益人 / 董事为政治敏感人物（PEP）。', fourCountry: '付款方、供应商、发票开具地与收款银行四个国别不完全一致。', bigCategory: '敏感采购品类，且付款金额达到大额阈值。', capital: '付款金额超过注册资本，且供应商成立不足 12 个月。', scope: '供应商经营范围与采购品类不符。', surge: '本笔付款超过该供应商近 24 个月均值的 500%。', holderName: '收款账户户名与供应商名称显著不一致。', fakeInvoice: '经 OCR + LLM 识别，发票存在虚假特征。', acctChange: '未登记收款账户在 12 个月内变更两次及以上。' },
         configEyebrow: '风险模型配置', configTitle: '评分权重配置', configSubtitle: '三组权重均合计 100%。付款分 = 命中规则的权重之和。', publishConfig: '发布配置', overallWeights: '总分权重', vendorWeights: '供应商分权重', paymentScore: '付款分', paymentTierDesc: '每条规则默认权重按其 Tier 分配（可调整）；付款分 = 命中规则的权重之和（合计 100%）。', paymentPointsNote: '每条规则的分值 · 付款分 = 命中规则分值之和，上限 100', mlRiskScore: '机器学习风险分', mlRiskDesc: '频率、节假日付款频率、金额时点及其他学习到的异常信号。', reasonableMapping: '付款合理性映射', validConfig: '配置有效', mustEqual100: '必须等于 100%',
         legalEyebrow: '复核工作流', legalTitle: '法务工作台', legalSubtitle: '待复核告警与已复核案例审计轨迹，合并在一处。', wbPending: '待复核队列', wbReviewed: '已复核案例', legalRecords: '法务复核记录', legalRecordsDesc: '已复核案例列表，用于审计追踪与模型反馈。', noReviewed: '暂无已复核案例。从风险总览点击"标记已复核"后，记录会显示在这里。', reviewedCases: n => `${n} 个已复核案例`,
-        reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', syncedTag: '服务器同步', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
+        reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', spurious: '无关 / 误触发', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', syncedTag: '服务器同步', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
         tags: ['供应商风险被高估', '付款模式正常', '采购品类匹配有效', '已知业务例外'],
-        statuses: { High: '高', Medium: '中', Low: '低', Reasonable: '合理', Warning: '警告', Unreasonable: '不合理' }, resultMap: { 'Not Fraud Payment': '非欺诈付款', 'Confirmed Fraud Payment': '确认欺诈付款', 'Need More Evidence': '需要更多证据' }, recordStatusMap: { 'Model Feedback Pending': '待模型反馈', 'Model Feedback Incorporated': '已反馈' }, page: '第', prev: '上一页', next: '下一页', allOption: '全部', totalPaymentsLabel: n => `${n} 笔付款`, totalCenter: '付款',
+        statuses: { High: '高', Medium: '中', Low: '低', Reasonable: '合理', Warning: '警告', Unreasonable: '不合理' }, resultMap: { 'Not Fraud Payment': '非欺诈付款', 'Confirmed Fraud Payment': '确认欺诈付款', 'Need More Evidence': '需要更多证据', 'Irrelevant / Spurious Trigger': '无关 / 误触发' }, recordStatusMap: { 'Model Feedback Pending': '待模型反馈', 'Model Feedback Incorporated': '已反馈' }, page: '第', prev: '上一页', next: '下一页', allOption: '全部', totalPaymentsLabel: n => `${n} 笔付款`, totalCenter: '付款',
         chatTitle: 'AML 风险助手', chatSubtitle: '可询问供应商、维度或可疑付款', chatSend: '发送', chatPlaceholder: '试试："Northstar" 或 "地理风险"',
         chatWelcome: '你好！我是 AML 风险助手，可对六大风险维度做分析，也能按供应商名查询相关付款。试试这些：',
         chatSuggestions: ['显示高风险付款', '分析地理风险', 'PEP 暴露', '查找 Northstar 相关付款', '时间异常洞察'],
@@ -927,15 +952,18 @@
       return 'reinforced';
     }
 
+    // Vendor score is COMPUTED, not stored: three factors come straight from the public
+    // lists (FATF / CPI / offshore) via the vendor's registration country, two come from
+    // D&B (criminal proceedings, adverse media). `delta` = month-over-month change.
     const vendors = [
-      { name: 'Northstar Trading Ltd.', country: 'BVI', score: 88, previous: 71, change: '+17', hits: [['Offshore List', 100, 18, 'Registered in an offshore jurisdiction with limited beneficial ownership visibility.', '注册于离岸司法辖区，受益所有人透明度有限。'], ['Watchlist', 90, 20, 'Potential match found during latest screening cycle.', '最新筛查周期发现潜在观察名单匹配。'], ['Adverse Media Sentiment', 84, 17, 'Negative sentiment articles related to procurement irregularities.', '负面媒体情绪与采购异常相关。'], ['Basel AML Index', 76, 14, 'Country-level AML risk is above internal threshold.', '国家层面的反洗钱风险高于内部阈值。'], ['FATF', 65, 10, 'Enhanced monitoring indicator contributes to elevated score.', '强化监控指标推高评分。'], ['Transparency International CPI', 70, 11, 'Country corruption perception risk is elevated.', '国家腐败感知风险较高。'], ['State-owned Corporation', 0, 10, 'No state-owned corporation signal.', '未发现国有企业信号。']] },
-      { name: 'Eastern Harbor Services', country: 'SG', score: 74, previous: 79, change: '-5', hits: [['Adverse Media Sentiment', 72, 25, 'Mild negative sentiment in recent media monitoring.', '近期媒体监控中存在轻微负面情绪。'], ['Basel AML Index', 58, 18, 'Moderate jurisdiction risk.', '司法辖区风险中等。'], ['Transparency International CPI', 42, 12, 'Low corruption risk, limited contribution.', '腐败风险较低，贡献有限。'], ['Watchlist', 0, 20, 'No watchlist hit.', '未命中观察名单。'], ['Offshore List', 0, 15, 'No offshore hit.', '未命中离岸名单。']] },
-      { name: 'Aster Global Procurement', country: 'MY', score: 69, previous: 69, change: '0', hits: [['FATF', 64, 20, 'Jurisdiction indicator under monitoring.', '司法辖区指标处于监控状态。'], ['State-owned Corporation', 80, 15, 'Ownership profile includes state-linked entity.', '股权结构包含国有关联实体。'], ['Basel AML Index', 60, 20, 'Moderate AML risk contribution.', '反洗钱风险贡献中等。'], ['Adverse Media Sentiment', 38, 20, 'Limited negative media signal.', '负面媒体信号有限。']] },
-      { name: 'Blue Meridian FZE', country: 'AE', score: 83, previous: 66, change: '+17', hits: [['Offshore List', 88, 18, 'Free-zone structure requires enhanced due diligence.', '自由区结构需要强化尽调。'], ['Watchlist', 76, 20, 'Partial entity-name similarity requires manual review.', '实体名称存在部分相似，需要人工复核。'], ['Adverse Media Sentiment', 81, 17, 'Recent negative media sentiment detected.', '检测到近期负面媒体情绪。'], ['Transparency International CPI', 67, 11, 'Country CPI contribution is above threshold.', '国家 CPI 风险贡献超过阈值。']] },
-      { name: 'Silverline Industrial Co.', country: 'CN', score: 62, previous: 55, change: '+7', hits: [['Basel AML Index', 52, 18, 'Moderate country-level AML exposure.', '国家层面的反洗钱暴露中等。'], ['Adverse Media Sentiment', 66, 20, 'Supplier dispute coverage increased this month.', '本月供应商纠纷报道增加。'], ['Watchlist', 0, 20, 'No watchlist hit.', '未命中观察名单。']] },
-      { name: 'Caspian Field Services', country: 'TR', score: 77, previous: 81, change: '-4', hits: [['FATF', 70, 20, 'Jurisdiction indicator remains above threshold.', '司法辖区指标仍高于阈值。'], ['Transparency International CPI', 62, 15, 'CPI contribution is moderate.', 'CPI 贡献中等。'], ['State-owned Corporation', 75, 10, 'Ownership includes state-linked minority interest.', '股权包含国有关联少数权益。']] },
-      { name: 'Vertex Marine Supply', country: 'PA', score: 86, previous: 73, change: '+13', hits: [['Offshore List', 95, 18, 'Offshore registration requires enhanced diligence.', '离岸注册需要强化尽调。'], ['Adverse Media Sentiment', 79, 17, 'Negative logistics fraud articles detected.', '检测到物流欺诈相关负面报道。'], ['Watchlist', 68, 20, 'Partial address match requires review.', '地址存在部分匹配，需要复核。']] },
-      { name: 'Pacific Alloy Works', country: 'KZ', score: 71, previous: 78, change: '-7', hits: [['Basel AML Index', 64, 18, 'Country-level AML risk is moderate-high.', '国家层面反洗钱风险中等偏高。'], ['FATF', 60, 20, 'Jurisdiction monitoring indicator.', '司法辖区监控指标。'], ['Adverse Media Sentiment', 50, 17, 'Limited negative media coverage.', '负面媒体报道有限。'], ['Transparency International CPI', 58, 11, 'Moderate corruption perception.', '腐败感知中等。']] }
+      { name: 'Northstar Trading Ltd.',    country: 'BVI', delta: 17, dnb: { criminals: 95, adverseMedia: 84 } },
+      { name: 'Eastern Harbor Services',   country: 'SG',  delta: -5, dnb: { criminals: 20, adverseMedia: 72 } },
+      { name: 'Aster Global Procurement',  country: 'MY',  delta: 0,  dnb: { criminals: 35, adverseMedia: 38 } },
+      { name: 'Blue Meridian FZE',         country: 'AE',  delta: 17, dnb: { criminals: 70, adverseMedia: 72 } },
+      { name: 'Silverline Industrial Co.', country: 'CN',  delta: 7,  dnb: { criminals: 30, adverseMedia: 66 } },
+      { name: 'Caspian Field Services',    country: 'TR',  delta: -4, dnb: { criminals: 60, adverseMedia: 45 } },
+      { name: 'Vertex Marine Supply',      country: 'PA',  delta: 13, dnb: { criminals: 80, adverseMedia: 60 } },
+      { name: 'Pacific Alloy Works',       country: 'KZ',  delta: -7, dnb: { criminals: 40, adverseMedia: 50 } }
     ];
 
     const payments = [
@@ -982,27 +1010,91 @@
       return Math.min(100, s);
     }
     function overallScore(p) {
-      return Math.round(p.vendorScore * weights.overall.Vendor / 100 + paymentScoreOf(p) * weights.overall.Payment / 100);
+      return Math.round(vendorScoreFor(p) * weights.overall.Vendor / 100 + paymentScoreOf(p) * weights.overall.Payment / 100);
     }
-    function levelOf(s) { return s >= 48 ? 'High' : s >= 38 ? 'Medium' : 'Low'; }
+    function levelOf(s) { return s >= 40 ? 'High' : s >= 24 ? 'Medium' : 'Low'; }
     // Which vendor-watchlist rule backs each Vendor Score factor (Categories I = Vendor watchlist).
     const VENDOR_FACTOR_RULE = { Criminals: 'criminal', FATF: 'fatf', CPI: 'cpi', 'Offshore List': 'offshore', 'Adverse Media': 'pep' };
+    // Vendor factor strengths (0-100). FATF / CPI / offshore are read live off the public
+    // lists, so the vendor score and the Public Data Sources page can never disagree.
+    function vendorFactors(v) {
+      const c = v.country === 'BVI' ? 'VG' : v.country;
+      const cpiVal = cpiOf(c);
+      return {
+        'Criminals': v.dnb.criminals,
+        'FATF': isFatf(c) ? 100 : 0,
+        'CPI': cpiVal === null ? 50 : Math.max(0, 100 - cpiVal),
+        'Offshore List': isOffshore(c) ? 100 : 0,
+        'Adverse Media': v.dnb.adverseMedia
+      };
+    }
+    function vendorScoreOf(v) { if (!v) return 0; const f = vendorFactors(v); return Math.round(Object.entries(weights.vendor).reduce((a, [k, w]) => a + (f[k] || 0) * w / 100, 0)); }
+    function vendorByName(n) { return vendors.find(v => v.name === n); }
+    // Region = the GEO of the vendor's registration country, per docs/zcot_hierarchy 0728.xlsx
+    // (Sheet1: GEO / Region-Market / Country-HQ).
+    const GEO_OF = {
+      SG: 'AP', MY: 'AP', HK: 'AP', VN: 'AP', MM: 'AP', JP: 'AP', KR: 'AP', TH: 'AP', ID: 'AP', IN: 'AP', AU: 'AP', NZ: 'AP', TW: 'AP', PH: 'AP',
+      CN: 'PRC',
+      KZ: 'EUROPE', DE: 'EUROPE', GB: 'EUROPE', NL: 'EUROPE', CH: 'EUROPE', CZ: 'EUROPE', BE: 'EUROPE', LU: 'EUROPE', RU: 'EUROPE',
+      AE: 'META', TR: 'META', SA: 'META', QA: 'META', ZA: 'META', NG: 'META',
+      PA: 'LA', KY: 'LA', VG: 'LA', BM: 'LA', BS: 'LA', BZ: 'LA', BR: 'LA', CO: 'LA', MX: 'LA',
+      US: 'NA', CA: 'NA'
+    };
+    const GEO_KEYS = ['AP', 'PRC', 'EUROPE', 'META', 'LA', 'NA'];
+    const GEO_LABEL = { AP: { en: 'AP · Asia Pacific', zh: 'AP · 亚太' }, PRC: { en: 'PRC · China', zh: 'PRC · 中国' }, EUROPE: { en: 'EUROPE', zh: 'EUROPE · 欧洲' }, META: { en: 'META · Middle East / Turkey / Africa', zh: 'META · 中东与非洲' }, LA: { en: 'LA · Latin America', zh: 'LA · 拉美' }, NA: { en: 'NA · North America', zh: 'NA · 北美' }, other: { en: 'Other', zh: '其他' } };
+    function geoOfCountry(c) { return GEO_OF[c === 'BVI' ? 'VG' : c] || 'other'; }
+    function geoLabel(k) { const m = GEO_LABEL[k]; return m ? (lang === 'zh' ? m.zh : m.en) : k; }
+    function paymentGeo(p) { return geoOfCountry(vendorCountry(p.vendor) || ''); }
+    // Review status: pending until a review exists, then the review's conclusion.
+    const STATUS_KEYS = ['pending', 'confirmedFraud', 'needEvidence', 'notFraud', 'spurious'];
+    function reviewOf(p) { return reviewedCases.find(r => r.paymentId === p.id) || null; }
+    function reviewStatusKey(p) { const r = reviewOf(p); return r ? (r.conclusion || 'notFraud') : 'pending'; }
+    function statusKeyLabel(k) { return k === 'pending' ? t('rvPending') : t(k); }
+    function reviewStatusChip(p) {
+      const k = reviewStatusKey(p);
+      const cls = k === 'confirmedFraud' ? 'tag-red' : k === 'needEvidence' ? 'tag-amber' : k === 'spurious' ? 'tag-blue' : k === 'notFraud' ? 'tag-green' : 'tag-gray';
+      return `<span class="tag ${cls}">${statusKeyLabel(k)}</span>`;
+    }
+    function reviewerOf(p) { const r = reviewOf(p); return r ? (lang === 'zh' ? t('legalTeam') : r.by) : '<span class="small-muted">—</span>'; }
+    function vendorScoreFor(p) { return vendorScoreOf(vendorByName(p.vendor)); }
+    function vendorChangeOf(v) { return (v.delta > 0 ? '+' : '') + v.delta; }
+    function vendorFactorDesc(label, v) {
+      const c = v.country === 'BVI' ? 'VG' : v.country;
+      const zh = lang === 'zh';
+      const cpiVal = cpiOf(c);
+      if (label === 'FATF') return isFatf(c) ? (zh ? `${ctry(c)} 在 FATF 黑 / 灰名单上。` : `${ctry(c)} is on the FATF black / grey list.`) : (zh ? `${ctry(c)} 不在 FATF 名单上。` : `${ctry(c)} is not on the FATF list.`);
+      if (label === 'CPI') return cpiVal === null ? (zh ? `${ctry(c)} 无 CPI 数据，按中性强度计。` : `No CPI data for ${ctry(c)} — neutral strength applied.`) : (zh ? `${ctry(c)} CPI ${cpiVal} → 风险强度 ${100 - cpiVal}。` : `${ctry(c)} CPI ${cpiVal} → risk strength ${100 - cpiVal}.`);
+      if (label === 'Offshore List') return isOffshore(c) ? (zh ? `${ctry(c)} 命中离岸 / 避税天堂名单。` : `${ctry(c)} is on the offshore / tax-haven list.`) : (zh ? `${ctry(c)} 不在离岸名单上。` : `${ctry(c)} is not on the offshore list.`);
+      if (label === 'Criminals') return zh ? 'D&B 刑事 / 民事 / 监管诉讼信号强度。' : 'D&B criminal / civil / regulatory proceedings signal.';
+      return zh ? 'D&B 负面媒体情绪强度。' : 'D&B adverse-media sentiment.';
+    }
+    // ONE renderer, used by both the vendor profile page and the payment detail expansion.
+    // Pass a payment to additionally mark the factors that this payment's rules triggered.
+    function vendorFactorHtml(v, payment) {
+      if (!v) return '';
+      const f = vendorFactors(v);
+      const hitIds = payment ? new Set(computeRuleHits(payment).map(r => r.id)) : null;
+      const rows = Object.entries(weights.vendor).map(([label, w]) => {
+        const strength = f[label] || 0;
+        return { label, w, strength, contrib: Math.round(strength * w / 100 * 10) / 10, hit: hitIds ? hitIds.has(VENDOR_FACTOR_RULE[label]) : false };
+      });
+      const body = rows.map(r => `<div class="driver${r.hit ? ' vf-on' : ''}"><div class="driver-top"><span class="driver-title">${r.label}${r.hit ? ' <span class="vf-hit">●</span>' : ''}</span><span class="tag ${r.strength > 75 ? 'tag-red' : r.strength > 50 ? 'tag-amber' : 'tag-gray'}">${r.strength}</span></div><div class="bar"><span style="width:${r.strength}%"></span></div><p class="driver-meta">${t('weight')} ${r.w}% · ${t('vfContrib')} ${r.contrib} · ${vendorFactorDesc(r.label, v)}</p></div>`).join('');
+      const total = rows.reduce((a, r) => a + r.contrib, 0);
+      return body + `<div class="vf-total"><span>${t('vfTotal')}</span><strong>${Math.round(total)}</strong></div>`;
+    }
     // Expandable breakdown on the case detail page: every configured factor / rule, its
     // weight, whether this payment triggered it, and the concrete evidence when it did.
     function scoreDetail(payment, kind) {
       const hit = new Set(computeRuleHits(payment).map(r => r.id));
-      const rows = kind === 'vendor'
-        ? Object.entries(weights.vendor).map(([label, w]) => ({ id: VENDOR_FACTOR_RULE[label], label, w }))
-        : Object.entries(weights.payment).map(([id, w]) => ({ id, label: t('ruleNames')[id] || id, w }));
+      if (kind === 'vendor') return `<div class="sd-list">${vendorFactorHtml(vendorByName(payment.vendor), payment)}<p class="sd-note">${t('sdVendorNote')}</p></div>`;
+      const rows = Object.entries(weights.payment).map(([id, w]) => ({ id, label: t('ruleNames')[id] || id, w }));
       const body = rows.map(r => {
         const on = hit.has(r.id);
         return `<div class="sd-row${on ? ' sd-on' : ''}"><span class="sd-dot">${on ? '●' : '○'}</span><span class="sd-name">${r.label}</span><span class="sd-w">${r.w}%</span></div>` +
           (on ? `<p class="sd-ev">${ruleEvidence(r.id, payment)}</p>` : '');
       }).join('');
       const sum = rows.filter(r => hit.has(r.id)).reduce((a, r) => a + r.w, 0);
-      const foot = kind === 'payment'
-        ? `<div class="sd-sum"><span>${t('sdHitSum')}</span><strong>${Math.min(100, sum)}</strong></div>`
-        : `<p class="sd-note">${t('sdVendorNote')}</p>`;
+      const foot = `<div class="sd-sum"><span>${t('sdHitSum')}</span><strong>${Math.min(100, sum)}</strong></div>`;
       return `<div class="sd-list">${body}${foot}</div>`;
     }
     let lang = 'en';
@@ -1018,15 +1110,45 @@
     ];
     function payingEntity(p) { const n = parseInt((p.id.match(/\d+$/) || ['0'])[0], 10); return LENOVO_ENTITIES[n % LENOVO_ENTITIES.length]; }
     function entityLabel(e) { return lang === 'zh' ? e.zh : e.en; }
-    const filters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', riskLevel: '', dateFrom: '', dateTo: '' };
-    const draftFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', riskLevel: '', dateFrom: '', dateTo: '' };
+    const filters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', riskLevel: '', dateFrom: '', dateTo: '' };
+    const draftFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', riskLevel: '', dateFrom: '', dateTo: '' };
     let listPage = 1;
     const listPerPage = 8;
     let sortBy = 'date';
     let sortDir = 'desc';
-    let reviewedFilter = '';
-    let queueTier = '';
-    let reviewedTier = '';
+    // Legal Workbench shares the payment-list filter shape; it applies to BOTH the pending
+    // queue and the reviewed-case list.
+    const wbFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    const wbDraft = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    function renderWbFilterControls() {
+      if (!document.getElementById('wbTier')) return;
+      const set = (id, html, val) => { const el = document.getElementById(id); el.innerHTML = html; el.value = val; };
+      set('wbTier', `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''), wbDraft.tier);
+      set('wbRiskType', `<option value="">${t('filterRiskType')} · ${t('allOption')}</option>` + RISK_TYPE_KEYS.map(k => `<option value="${k}">${t('riskTypes')[k]}</option>`).join(''), wbDraft.riskType);
+      set('wbSource', `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`, wbDraft.source);
+      set('wbPayingEntity', `<option value="">${t('filterPayingEntity')} · ${t('allOption')}</option>` + LENOVO_ENTITIES.map(e => `<option value="${e.code}">${entityLabel(e)}</option>`).join(''), wbDraft.payingEntity);
+      set('wbRegion', `<option value="">${t('filterRegion')} · ${t('allOption')}</option>` + GEO_KEYS.map(k => `<option value="${k}">${geoLabel(k)}</option>`).join(''), wbDraft.region);
+      set('wbStatus', `<option value="">${t('filterStatus')} · ${t('allOption')}</option>` + STATUS_KEYS.map(k => `<option value="${k}">${statusKeyLabel(k)}</option>`).join(''), wbDraft.status);
+      document.getElementById('wbKeyword').value = wbDraft.keyword;
+      document.getElementById('wbKeyword').placeholder = t('searchPlaceholder');
+      setDateInput(document.getElementById('wbDateFrom'), wbDraft.dateFrom);
+      setDateInput(document.getElementById('wbDateTo'), wbDraft.dateTo);
+    }
+    function wbMatch(p) {
+      if (!p) return false;
+      const f = wbFilters;
+      if (f.tier && paymentTier(p) !== f.tier) return false;
+      if (f.riskType && !paymentRTKeys(p).includes(f.riskType)) return false;
+      if (f.source && p.source !== f.source) return false;
+      if (f.payingEntity && payingEntity(p).code !== f.payingEntity) return false;
+      if (f.region && paymentGeo(p) !== f.region) return false;
+      if (f.status && reviewStatusKey(p) !== f.status) return false;
+      if (f.dateFrom && p.date < f.dateFrom) return false;
+      if (f.dateTo && p.date > f.dateTo) return false;
+      const kw = f.keyword.trim().toLowerCase();
+      if (kw && !`${p.id} ${p.vendor} ${p.category} ${p.categoryZh} ${p.source}`.toLowerCase().includes(kw)) return false;
+      return true;
+    }
     // Agent/LLM features — the detail-page investigation entry + its display in the
     // review modal, the "Run agent self-learning" entry, and the agent-discovered
     // rules in monthly calibration — are hidden unless the URL carries ?agent=1.
@@ -1047,7 +1169,7 @@
     // Single source of truth for reviews. Each carries `conclusion` (drives signal-ledger PPV)
     // plus the rich display fields for the audit table — so dashboard count, the reviewed list,
     // and the PPV calc all agree.
-    function resultFromConclusion(c) { return c === 'confirmedFraud' ? 'Confirmed Fraud Payment' : c === 'needEvidence' ? 'Need More Evidence' : 'Not Fraud Payment'; }
+    function resultFromConclusion(c) { return c === 'confirmedFraud' ? 'Confirmed Fraud Payment' : c === 'needEvidence' ? 'Need More Evidence' : c === 'spurious' ? 'Irrelevant / Spurious Trigger' : 'Not Fraud Payment'; }
     const SEED_REVIEWS = [
       ['PAY-2409-0187', 'confirmedFraud'], ['PAY-2407-0432', 'notFraud'], ['PAY-2409-0345', 'confirmedFraud'],
       ['PAY-2409-0388', 'notFraud'], ['PAY-2409-0302', 'notFraud'], ['PAY-2407-0551', 'confirmedFraud'],
@@ -1325,8 +1447,8 @@
       } else {
         const names = [...new Set(dp.map(p => p.vendor))];
         rows = names.map(n => vendors.find(v => v.name === n)).filter(Boolean)
-          .sort((a, b) => b.score - a.score).slice(0, 10)
-          .map(v => ({ main: v.name, sub: v.country, score: v.score, act: () => openVendor(v) }));
+          .sort((a, b) => vendorScoreOf(b) - vendorScoreOf(a)).slice(0, 10)
+          .map(v => ({ main: v.name, sub: v.country, score: vendorScoreOf(v), act: () => openVendor(v) }));
       }
       const list = document.getElementById('rankList');
       if (!rows.length) { list.innerHTML = `<div class="todo-empty">${t('todoEmpty')}</div>`; return; }
@@ -1408,9 +1530,9 @@
 
     function renderVendors() {
       document.getElementById('vendorList').innerHTML = vendors.map((v, i) => {
-        const cls = v.change.startsWith('+') ? 'up' : v.change.startsWith('-') ? 'down' : 'flat';
-        const symbol = v.change.startsWith('+') ? '↑' : v.change.startsWith('-') ? '↓' : '—';
-        return `<button class="vendor-row" data-vendor="${i}"><span><span class="vendor-name">${v.name}</span><span class="small-muted">${v.country} · ${t('clickHitLists')}</span></span><span class="score">${v.score}</span><span class="change ${cls}">${symbol} ${v.change}</span></button>`;
+        const cls = v.delta > 0 ? 'up' : v.delta < 0 ? 'down' : 'flat';
+        const symbol = v.delta > 0 ? '↑' : v.delta < 0 ? '↓' : '—';
+        return `<button class="vendor-row" data-vendor="${i}"><span><span class="vendor-name">${v.name}</span><span class="small-muted">${v.country} · ${t('clickHitLists')}</span></span><span class="score">${vendorScoreOf(v)}</span><span class="change ${cls}">${symbol} ${vendorChangeOf(v)}</span></button>`;
       }).join('');
       document.querySelectorAll('[data-vendor]').forEach(btn => btn.addEventListener('click', () => openVendor(vendors[Number(btn.dataset.vendor)])));
     }
@@ -1645,6 +1767,12 @@
       const entSel = document.getElementById('filterPayingEntity');
       entSel.innerHTML = `<option value="">${t('filterPayingEntity')} · ${t('allOption')}</option>` + LENOVO_ENTITIES.map(e => `<option value="${e.code}">${entityLabel(e)}</option>`).join('');
       entSel.value = draftFilters.payingEntity;
+      const regSel = document.getElementById('filterRegion');
+      regSel.innerHTML = `<option value="">${t('filterRegion')} · ${t('allOption')}</option>` + GEO_KEYS.map(k => `<option value="${k}">${geoLabel(k)}</option>`).join('');
+      regSel.value = draftFilters.region;
+      const stSel = document.getElementById('filterStatus');
+      stSel.innerHTML = `<option value="">${t('filterStatus')} · ${t('allOption')}</option>` + STATUS_KEYS.map(k => `<option value="${k}">${statusKeyLabel(k)}</option>`).join('');
+      stSel.value = draftFilters.status;
       document.getElementById('filterKeyword').value = draftFilters.keyword;
       setDateInput(document.getElementById('filterDateFrom'), draftFilters.dateFrom);
       setDateInput(document.getElementById('filterDateTo'), draftFilters.dateTo);
@@ -1695,11 +1823,10 @@
     }
 
     function renderUnifiedQueue() {
-      const tierSel = document.getElementById('queueTierFilter');
-      if (tierSel) { tierSel.innerHTML = `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''); tierSel.value = queueTier; }
+      renderWbFilterControls();
       const all = buildUnifiedQueue();
       document.getElementById('wbPendingCount').textContent = all.length;
-      const queue = queueTier ? all.filter(it => it.tier === queueTier) : all;
+      const queue = all.filter(it => wbMatch(payments[it.idx]));
       document.getElementById('unifiedQueue').innerHTML = queue.map((it, i) => {
         return `<div class="queue-row${it.overdue ? ' overdue' : ''}"><span class="tier-badge tier-${it.tier}">${it.tier}</span><span class="queue-main"><span class="queue-name">${it.name}${it.overdue ? ' ' + overdueTag() : ''}</span><span class="small-muted">${it.sub}</span></span><span class="queue-reason">${it.reason || '—'}</span><button class="btn btn-soft queue-view" data-queue="${i}">${t('queueView')}</button></div>`;
       }).join('');
@@ -1939,6 +2066,8 @@
       if (filters.riskType) items.push({ key: 'riskType', label: t('filterRiskType'), value: t('riskTypes')[filters.riskType] });
       if (filters.source) items.push({ key: 'source', label: t('filterSource'), value: filters.source });
       if (filters.payingEntity) { const e = LENOVO_ENTITIES.find(x => x.code === filters.payingEntity); items.push({ key: 'payingEntity', label: t('filterPayingEntity'), value: e ? entityLabel(e) : filters.payingEntity }); }
+      if (filters.region) items.push({ key: 'region', label: t('filterRegion'), value: geoLabel(filters.region) });
+      if (filters.status) items.push({ key: 'status', label: t('filterStatus'), value: statusKeyLabel(filters.status) });
       if (filters.riskLevel) items.push({ key: 'riskLevel', label: t('filterRiskLevel'), value: statusLabel(filters.riskLevel) });
       if (filters.dateFrom) items.push({ key: 'dateFrom', label: t('filterFrom'), value: fmtDate(filters.dateFrom) });
       if (filters.dateTo) items.push({ key: 'dateTo', label: t('filterTo'), value: fmtDate(filters.dateTo) });
@@ -1961,6 +2090,8 @@
         if (filters.riskType && !paymentRTKeys(p).includes(filters.riskType)) return false;
         if (filters.source && p.source !== filters.source) return false;
         if (filters.payingEntity && payingEntity(p).code !== filters.payingEntity) return false;
+        if (filters.region && paymentGeo(p) !== filters.region) return false;
+        if (filters.status && reviewStatusKey(p) !== filters.status) return false;
         if (filters.riskLevel && p.status !== filters.riskLevel) return false;
         if (filters.dateFrom && p.date < filters.dateFrom) return false;
         if (filters.dateTo && p.date > filters.dateTo) return false;
@@ -1994,7 +2125,7 @@
       document.getElementById('paymentListRows').innerHTML = visible.map(p => {
         const i = payments.indexOf(p);
         const sc = html => html; // every payment is scored, regardless of tier
-        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(paymentRTKeys(p))}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${p.vendorScore}</strong>`)}</td><td>${sc(`<strong>${paymentScoreOf(p)}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(levelOf(overallScore(p)))}">${overallScore(p)}</span>`)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
+        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(paymentRTKeys(p))}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${vendorScoreFor(p)}</strong>`)}</td><td>${sc(`<strong>${paymentScoreOf(p)}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(p.reasonable)}">${statusLabel(p.reasonable)}</span>`)}</td><td>${sc(`<span class="tag ${tagClass(levelOf(overallScore(p)))}">${overallScore(p)}</span>`)}</td><td>${reviewStatusChip(p)}</td><td>${reviewerOf(p)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
       }).join('');
       const empty = document.getElementById('paymentListEmpty');
       empty.textContent = t('noPaymentsMatch');
@@ -2010,10 +2141,11 @@
     function openVendor(vendor = currentVendor) {
       currentVendor = vendor;
       document.getElementById('vendorTitle').textContent = vendor.name;
-      document.getElementById('vendorScorePill').textContent = `${t('vendorScore')} ${vendor.score}`;
-      document.getElementById('vendorBigScore').textContent = vendor.score;
-      document.getElementById('vendorKv').innerHTML = `<div><span>${t('countryRegion')}</span><strong>${vendor.country}</strong></div><div><span>${t('currentVendorScore')}</span><strong>${vendor.score}</strong></div><div><span>${t('previousVendorScore')}</span><strong>${vendor.previous}</strong></div><div><span>${t('scoreChange')}</span><strong>${vendor.change}</strong></div>`;
-      document.getElementById('vendorDrivers').innerHTML = vendor.hits.map(hit => `<div class="driver"><div class="driver-top"><span class="driver-title">${hit[0]}</span><span class="tag ${hit[1] > 75 ? 'tag-red' : hit[1] > 50 ? 'tag-amber' : 'tag-gray'}">${hit[1]}</span></div><div class="bar"><span style="width:${hit[1]}%"></span></div><p class="driver-meta">${t('weight')} ${hit[2]}% · ${lang === 'zh' ? hit[4] : hit[3]}</p></div>`).join('');
+      const vScore = vendorScoreOf(vendor);
+      document.getElementById('vendorScorePill').textContent = `${t('vendorScore')} ${vScore}`;
+      document.getElementById('vendorBigScore').textContent = vScore;
+      document.getElementById('vendorKv').innerHTML = `<div><span>${t('countryRegion')}</span><strong>${vendor.country}</strong></div><div><span>${t('currentVendorScore')}</span><strong>${vScore}</strong></div><div><span>${t('previousVendorScore')}</span><strong>${vScore - vendor.delta}</strong></div><div><span>${t('scoreChange')}</span><strong>${vendorChangeOf(vendor)}</strong></div>`;
+      document.getElementById('vendorDrivers').innerHTML = vendorFactorHtml(vendor, null);
       showScreen('vendor');
     }
 
@@ -2030,9 +2162,10 @@
 
       // Every payment is scored, regardless of tier.
       const pmtScore = paymentScoreOf(payment);
-      const formula = `${payment.vendorScore}×${weights.overall.Vendor}% + ${pmtScore}×${weights.overall.Payment}%`;
+      const vScoreP = vendorScoreFor(payment);
+      const formula = `${vScoreP}×${weights.overall.Vendor}% + ${pmtScore}×${weights.overall.Payment}%`;
       const scoreRows = [
-        { kind: 'vendor', label: t('vendorScoreLabel'), value: payment.vendorScore, w: weights.overall.Vendor, desc: t('vendorScoreDesc') },
+        { kind: 'vendor', label: t('vendorScoreLabel'), value: vScoreP, w: weights.overall.Vendor, desc: t('vendorScoreDesc') },
         { kind: 'payment', label: t('mlPaymentScore'), value: pmtScore, w: weights.overall.Payment, desc: t('mlPaymentDesc') }
       ];
       const breakdown = scoreRows.map(r => `<details class="break-row"><summary><div class="break-top"><span>${r.label}</span><span>${r.value} · ${t('weight')} ${r.w}% <span class="sd-chev">⌄</span></span></div><div class="bar"><span style="width:${r.value}%"></span></div></summary><p class="driver-meta">${r.desc}</p>${scoreDetail(payment, r.kind)}</details>`).join('');
@@ -2064,14 +2197,8 @@
     }
 
     function renderLegal() {
-      const sel = document.getElementById('reviewedFilter');
-      const opts = [['', t('allOption')], ['Not Fraud Payment', t('notFraud')], ['Confirmed Fraud Payment', t('confirmedFraud')], ['Need More Evidence', t('needEvidence')]];
-      sel.innerHTML = opts.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('');
-      sel.value = reviewedFilter;
-      const tierSel = document.getElementById('reviewedTierFilter');
-      if (tierSel) { tierSel.innerHTML = `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''); tierSel.value = reviewedTier; }
-      let list = reviewedFilter ? reviewedCases.filter(r => r.result === reviewedFilter) : reviewedCases;
-      if (reviewedTier) list = list.filter(r => { const p = payments.find(x => x.id === r.paymentId); return p && paymentTier(p) === reviewedTier; });
+      renderWbFilterControls();
+      const list = reviewedCases.filter(r => { const p = payments.find(x => x.id === r.paymentId); return p ? wbMatch(p) : true; });
       document.getElementById('wbReviewedCount').textContent = reviewedCases.length;
       document.getElementById('legalEmpty').textContent = t('noReviewed');
       document.getElementById('legalEmpty').style.display = list.length ? 'none' : 'block';
@@ -2101,6 +2228,7 @@
       select.options[0].textContent = t('notFraud');
       select.options[1].textContent = t('confirmedFraud');
       select.options[2].textContent = t('needEvidence');
+      select.options[3].textContent = t('spurious');
       if (!document.getElementById('reviewReason').dataset.touched) document.getElementById('reviewReason').value = t('defaultReason');
       const base = t('tags').map((tag, i) => `<label class="check"><input type="checkbox" value="${i18n.en.tags[i]}" ${i < 2 ? 'checked' : ''}> ${tag}</label>`).join('');
       const custom = customTags.map(tag => `<label class="check"><input type="checkbox" value="${escapeHtml(tag)}" checked> ${escapeHtml(tag)}</label>`).join('');
@@ -2641,9 +2769,17 @@
       document.getElementById('wbPending').style.display = tab === 'pending' ? '' : 'none';
       document.getElementById('wbReviewed').style.display = tab === 'reviewed' ? '' : 'none';
     }));
-    document.getElementById('reviewedFilter').addEventListener('change', e => { reviewedFilter = e.target.value; renderLegal(); });
-    document.getElementById('reviewedTierFilter').addEventListener('change', e => { reviewedTier = e.target.value; renderLegal(); });
-    document.getElementById('queueTierFilter').addEventListener('change', e => { queueTier = e.target.value; renderUnifiedQueue(); });
+    [['wbTier', 'tier'], ['wbRiskType', 'riskType'], ['wbSource', 'source'], ['wbPayingEntity', 'payingEntity'], ['wbRegion', 'region'], ['wbStatus', 'status']]
+      .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { wbDraft[key] = e.target.value; }));
+    document.getElementById('wbKeyword').addEventListener('input', e => { wbDraft.keyword = e.target.value; });
+    document.getElementById('wbKeyword').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('wbApply').click(); });
+    document.getElementById('wbDateFrom').addEventListener('change', e => { wbDraft.dateFrom = commitDateInput(e.target); });
+    document.getElementById('wbDateTo').addEventListener('change', e => { wbDraft.dateTo = commitDateInput(e.target); });
+    document.getElementById('wbApply').addEventListener('click', () => { Object.assign(wbFilters, wbDraft); renderUnifiedQueue(); renderLegal(); });
+    document.getElementById('wbReset').addEventListener('click', () => {
+      Object.keys(wbFilters).forEach(k => { wbFilters[k] = ''; wbDraft[k] = ''; });
+      renderWbFilterControls(); renderUnifiedQueue(); renderLegal();
+    });
     document.getElementById('runCalibBtn').addEventListener('click', openCalibration);
     document.getElementById('runDiscoveryBtn').addEventListener('click', openDiscovery);
     document.getElementById('closeDiscovery').addEventListener('click', () => document.getElementById('discoveryModal').classList.remove('open'));
@@ -2659,6 +2795,8 @@
     document.getElementById('filterRiskType').addEventListener('change', e => { draftFilters.riskType = e.target.value; });
     document.getElementById('filterSource').addEventListener('change', e => { draftFilters.source = e.target.value; });
     document.getElementById('filterPayingEntity').addEventListener('change', e => { draftFilters.payingEntity = e.target.value; });
+    document.getElementById('filterRegion').addEventListener('change', e => { draftFilters.region = e.target.value; });
+    document.getElementById('filterStatus').addEventListener('change', e => { draftFilters.status = e.target.value; });
     document.getElementById('filterDateFrom').addEventListener('change', e => { draftFilters.dateFrom = commitDateInput(e.target); });
     document.getElementById('filterDateTo').addEventListener('change', e => { draftFilters.dateTo = commitDateInput(e.target); });
     document.getElementById('applyFiltersBtn').addEventListener('click', () => {
