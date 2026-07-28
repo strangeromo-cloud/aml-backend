@@ -811,8 +811,6 @@
       { id: 'payerA2',   tier: 'T1', rt: 'geo',      predicate: p => p.riskTypes.includes('geographic') && p.reasonable === 'Unreasonable' },
       { id: 'criminal',  tier: 'T1', rt: 'crime',    predicate: p => p.riskTypes.includes('adverseMedia') && p.total >= 80 },
       { id: 'pep',       tier: 'T3', rt: 'pep',      predicate: p => p.riskTypes.includes('pep') },
-      { id: 'noPO',      tier: 'T3', rt: 'docgap',   predicate: p => p.riskTypes.includes('docMissing') && p.source === 'LGAP' },
-      { id: 'resources', tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore < 60 },
       { id: 'bgA3',      tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
       { id: 'surge',     tier: 'T2', rt: 'timing',   predicate: p => p.riskTypes.includes('timeAnomaly') },
       { id: 'unconn',    tier: 'T3', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore < 60 },
@@ -926,7 +924,7 @@
       { id: 'PAY-2409-0538', caseId: 'CASE-AML-1122', date: '2024-09-29', source: 'Ariba', vendor: 'Caspian Field Services', amountNum: 47800, amount: '$47,800', category: 'Consulting', categoryZh: '咨询服务', vendorScore: 60, paymentScore: 52, reasonable: 'Reasonable', reasonableScore: 0, total: 44, status: 'Low', riskTypes: ['docMissing'] }
     ];
 
-    const weights = { overall: { Vendor: 40, Payment: 60 }, vendor: { Criminals: 45, FATF: 15, CPI: 15, 'Offshore List': 15, 'Adverse Media': 10 }, payment: { payerA2: 17, criminal: 17, geoWatch: 12, surge: 12, fakeA4: 12, pep: 6, noPO: 6, resources: 6, bgA3: 6, unconn: 6 } };
+    const weights = { overall: { Vendor: 40, Payment: 60 }, vendor: { Criminals: 45, FATF: 15, CPI: 15, 'Offshore List': 15, 'Adverse Media': 10 }, payment: { payerA2: 20, criminal: 20, geoWatch: 14, surge: 14, fakeA4: 14, pep: 6, bgA3: 6, unconn: 6 } };
     // Live scoring: the payment-dimension score comes from the payment's alert Tier
     // (highest-weight tier → 100); overall = Vendor×w + Payment×w. The Reasonable
     // dimension is removed (its weight folded into Payment). Everything recomputes from
