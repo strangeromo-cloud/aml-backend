@@ -654,7 +654,7 @@
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Hits any T1 rule', T2: 'Highest hit is a T2 rule', T3: 'Only T3 rules — scored' },
         tierSla: { T1: '5 work days', T2: '10 work days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
-        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { geoWatch: 'High-risk jurisdiction (CPI / FATF / offshore)', payerA2: 'Payer / vendor / invoice / bank country not all the same', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', noPO: 'No linked PO / contract', resources: 'Resources not commensurate', bgA3: 'Business scope ≠ commodity / category', surge: 'Payment surge > 500% vs 24-month average', unconn: 'Account holder name ≠ vendor name', fakeA4: 'Fake invoice (OCR + LLM)' },
+        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { cpi: 'High-risk jurisdiction · CPI ≤ 40', fatf: 'FATF black / grey list', offshore: 'Offshore / tax-haven bank country', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', fourCountry: 'Payer / vendor / invoice / bank country not all the same', bigCategory: 'Sensitive category & large amount', capital: 'Payment > registered capital & established ≤ 12 months', scope: 'Business scope ≠ commodity / category', surge: 'Payment surge > 500% vs 24-month average', holderName: 'Account holder name ≠ vendor name', fakeInvoice: 'Fake invoice (OCR + LLM)', acctChange: 'Bank account changed ≥ 2× within 12 months' },
         filterTier: 'Tier',
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
         signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal. Validated signals are promoted; unproven ones stay in candidate status.',
@@ -684,7 +684,7 @@
         investigateNow: 'Investigate', investigateReviewNow: 'Investigate & Review', reviewBtnLabel: 'Review', addTag: 'Add', addTagPlaceholder: 'Add a custom tag…', reviewDecisionLabel: 'Legal decision', heldTag: 'Held', reviewSavedHeld: 'Review submitted · payment placed on Hold', investigateEyebrow: 'AML Investigation Agent', investigateSubtitle: 'Auto multi-source evidence gathering + AI synthesis, then your decision', investSteps: 'Investigation steps', investEvidence: 'Gathered evidence', investPackage: 'Investigation package', investRunning: 'Investigating...', investHint: 'Optional — run the agent to auto-gather evidence and pre-fill the decision below.', investNotRun: 'Agent not run yet. Click Investigate above, or fill the decision manually.', recLabels: { escalate: 'Escalate / hold payment', investigate: 'Investigate further', clear: 'Likely benign' },
         alertTierLabel: 'Alert Tier', triggerReason: 'Trigger rules (why this tier)', tierScoreNote: 'This alert is driven by high-precision rules, not the weighted score. The weighted fraud score is only used to rank T3 gray-zone payments.',
         caseEyebrow: 'Fraud Case Detail', caseSubtitle: 'Overall score = Vendor Score × weight + Payment (tier) Score × weight.', paymentScoreNotice: 'Payment score = sum of the weights of the rules this payment hits. Overall = Vendor × 40% + Payment × 60%.', tuneWeights: 'Tune Weights', paymentSnapshot: 'Payment Snapshot', overallFraudRisk: 'Overall Fraud Risk Score', reasonableNotice: 'Reasonable Payment mapping: Reasonable = 0, Warning = 60, Unreasonable = 100. Higher score means higher risk.',
-        paymentId: 'Payment ID', sourceSystem: 'Source System', amount: 'Amount', category: 'Category', riskLevel: 'Risk Level', date: 'Date', vendorScoreLabel: 'Vendor Score', mlPaymentScore: 'ML Payment Score', reasonablePaymentScore: 'Reasonable Payment Score', vendorScoreDesc: 'External list screening and country/entity indicators.', mlPaymentDesc: 'Machine learning anomaly score from payment behavior.', reasonableDesc: 'vendor experience range and procurement category alignment.', procTitle: 'Procurement title', l1Commodity: 'L1 Commodity', l2Commodity: 'L2 Commodity', finalCommodity: 'Final Commodity', lgapCategory: 'Category', lgapSubCategory: 'Sub Category', hitRulesLabel: 'Rules hit & details', noRuleHitDetail: 'No rule hit — appears in the full list only.', ruleDetail: { geoWatch: 'Vendor / invoice / bank country matches a high-risk or offshore jurisdiction list.', payerA2: 'Paying-entity country differs from the invoice origin country.', criminal: 'Counterparty is linked to criminal, civil or regulatory proceedings.', pep: 'A beneficial owner / director is a politically exposed person.', noPO: 'Payment has no linked PO, contract or remittance detail (LGAP).', resources: 'Vendor resources / scale are not commensurate with the activity.', bgA3: "Vendor's main business does not match the PO category.", surge: 'Sudden surge in payments to a newly-onboarded vendor.', unconn: 'Funds routed to an account with no apparent link to the counterparty.', fakeA4: 'Invoice shows fake-invoice indicators (duplicate / template anomaly).' },
+        paymentId: 'Payment ID', sourceSystem: 'Source System', amount: 'Amount', category: 'Category', riskLevel: 'Risk Level', date: 'Date', vendorScoreLabel: 'Vendor Score', mlPaymentScore: 'Payment Score', reasonablePaymentScore: 'Reasonable Payment Score', vendorScoreDesc: 'External list screening and country/entity indicators.', mlPaymentDesc: 'Sum of the weights of the payment-activity rules this payment hits.', reasonableDesc: 'vendor experience range and procurement category alignment.', procTitle: 'Procurement title', l1Commodity: 'L1 Commodity', l2Commodity: 'L2 Commodity', finalCommodity: 'Final Commodity', lgapCategory: 'Category', lgapSubCategory: 'Sub Category', hitRulesLabel: 'Rules hit & details', noRuleHitDetail: 'No rule hit — appears in the full list only.', ruleDetail: { cpi: 'Vendor / invoice / bank country scores at or below the CPI high-risk threshold.', fatf: 'One of the three countries is on the FATF black or grey list.', offshore: 'The receiving-bank country is an offshore / tax-haven jurisdiction.', criminal: 'Counterparty is linked to criminal, civil or regulatory proceedings.', pep: 'A beneficial owner / director is a politically exposed person.', fourCountry: 'Payer, vendor, invoice-issuing and receiving-bank countries are not all the same.', bigCategory: 'Sensitive procurement category combined with a large payment amount.', capital: 'Payment exceeds registered capital and the vendor was established within 12 months.', scope: "Vendor's business scope does not match the commodity / category.", surge: 'Payment exceeds 500% of the 24-month average for this vendor.', holderName: 'The receiving account holder name differs significantly from the vendor name.', fakeInvoice: 'OCR + LLM found fake-invoice indicators on the invoice.', acctChange: 'The unregistered receiving account changed twice or more within 12 months.' },
         configEyebrow: 'Risk Model Config', configTitle: 'Scoring Weights Configuration', configSubtitle: 'All three weight groups total 100%. Payment score = sum of the weights of the rules a payment hits.', publishConfig: 'Publish Configuration', overallWeights: 'Overall Score Weights', vendorWeights: 'Vendor Score Weights', paymentScore: 'Payment Score', paymentTierDesc: 'Default weight per rule follows its Tier (adjustable); payment score = sum of the weights of the rules a payment hits (weights total 100%).', paymentPointsNote: 'Points per rule · payment score = sum of hit rules, capped at 100', mlRiskScore: 'ML-based risk score', mlRiskDesc: 'Frequency, holiday frequency, amount timing, and other learned anomaly signals.', reasonableMapping: 'Reasonable Payment Mapping', validConfig: 'Valid configuration', mustEqual100: 'Must equal 100%',
         legalEyebrow: 'Review Workflow', legalTitle: 'Legal Workbench', legalSubtitle: 'Pending alerts to review and the reviewed-case audit trail, in one place.', wbPending: 'Pending Queue', wbReviewed: 'Reviewed Cases', legalRecords: 'Legal Review Records', legalRecordsDesc: 'Reviewed case list for audit trail and model feedback.', noReviewed: 'No reviewed cases yet. After Mark Reviewed from Dashboard, records will appear here.', reviewedCases: n => `${n} reviewed case${n === 1 ? '' : 's'}`,
         reviewFormEyebrow: 'Legal Review Form', reviewFormSubtitle: 'Legal explains why the payment is not fraud so the system can improve.', close: 'Close', reviewResult: 'Review Result', legalComment: 'Reason / Legal Comment', modelFeedbackTags: 'Model Feedback Tags', cancel: 'Cancel', submitReview: 'Submit Review', notFraud: 'Not Fraud Payment', confirmedFraud: 'Confirmed Fraud Payment', needEvidence: 'Need More Evidence', defaultReason: 'Vendor has an approved procurement history for this category, and the payment amount is within the agreed service range.', legalTeam: 'Legal Team', modelFeedbackPending: 'Model Feedback Pending', noFeedbackTag: 'No feedback tag', syncedTag: 'Synced from server', legalReviewCompleted: 'Legal review completed.', reviewSaved: 'Legal review submitted and added to Legal Workbench', configSaved: 'Configuration saved as prototype state',
@@ -715,7 +715,7 @@
         tierLabels: { T1: '紧急', T2: '告警', T3: '评分' }, noTierLabel: '未触发规则 · 仅全量列表',
         tierDesc: { T1: '命中任意 T1 规则', T2: '最高命中为 T2 规则', T3: '仅命中 T3 规则 · 评分' },
         tierSla: { T1: '5 个工作日', T2: '10 个工作日', T3: '批量 / 评分排序' }, overdueTag: '已超时',
-        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { geoWatch: '高风险辖区（CPI / FATF / 离岸）', payerA2: '付款方 / 供应商 / 发票 / 银行 四国不一致', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', noPO: '无关联 PO / 合同', resources: '资源与活动规模不相称', bgA3: '主营业务 ≠ 采购品类', surge: '付款突增（> 24 个月均值 500%）', unconn: '收款户名 ≠ 供应商名', fakeA4: '虚假发票（OCR + LLM）' },
+        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { cpi: '高风险辖区 · CPI ≤ 40', fatf: 'FATF 黑 / 灰名单', offshore: '离岸 / 避税天堂银行国', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', fourCountry: '付款方 / 供应商 / 发票 / 银行 四国不一致', bigCategory: '敏感品类 且 大额付款', capital: '付款 > 注册资本 且 成立 ≤ 12 个月', scope: '主营业务 ≠ 采购品类', surge: '付款突增（> 24 个月均值 500%）', holderName: '收款户名 ≠ 供应商名', fakeInvoice: '虚假发票（OCR + LLM）', acctChange: '收款账户 12 个月内变更 ≥ 2 次' },
         filterTier: '告警等级',
         signalsEyebrow: '策略 4 · 反馈闭环', signalsTitle: '信号台账', signalsSubtitle: '每个检测信号都根据「实测 PPV（确认数 ÷ 触发数）」获得自己的告警等级。这张表是法务反馈与告警分级之间的桥梁。',
         signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV。已验证的信号被提升，未验证的保持候选状态。',
@@ -745,7 +745,7 @@
         investigateNow: '立即调查', investigateReviewNow: '调查并复核', reviewBtnLabel: '复核', addTag: '添加', addTagPlaceholder: '手动添加标签…', reviewDecisionLabel: '法务结论', heldTag: '已冻结', reviewSavedHeld: '复核已提交 · 付款已置为冻结', investigateEyebrow: 'AML 调查 Agent', investigateSubtitle: '自动多源取证 + AI 综合结论，然后由你定论', investSteps: '调查步骤', investEvidence: '收集到的证据', investPackage: '调查结论', investRunning: '调查中...', investHint: '可选 —— 运行 Agent 自动取证并预填下方结论。', investNotRun: 'Agent 尚未运行。点击上方"立即调查"，或直接手动填写结论。', recLabels: { escalate: '升级 / 暂停付款', investigate: '需进一步调查', clear: '可能合规' },
         alertTierLabel: '告警等级', triggerReason: '触发规则（为何是该等级）', tierScoreNote: '该告警由高精度规则触发，与加权评分无关。加权欺诈评分仅用于对 T3 灰色地带付款排序。',
         caseEyebrow: '欺诈案例详情', caseSubtitle: '总分 = 供应商分 × 权重 + 付款（等级）分 × 权重。', paymentScoreNotice: '付款分 = 本笔命中规则的权重之和。总分 = 供应商 × 40% + 付款 × 60%。', tuneWeights: '调整权重', paymentSnapshot: '付款概览', overallFraudRisk: '总体欺诈风险分', reasonableNotice: '付款合理性映射：合理 = 0，警告 = 60，不合理 = 100。分数越高代表风险越高。',
-        paymentId: '付款编号', sourceSystem: '来源系统', amount: '金额', category: '采购品类', riskLevel: '风险等级', date: '日期', vendorScoreLabel: '供应商分', mlPaymentScore: '机器学习付款分', reasonablePaymentScore: '付款合理性分', vendorScoreDesc: '外部名单筛查与国家 / 实体风险指标。', mlPaymentDesc: '基于付款行为的机器学习异常评分。', reasonableDesc: '供应商经验范围与采购品类匹配情况。', procTitle: '采购项目标题', l1Commodity: 'L1 品类', l2Commodity: 'L2 品类', finalCommodity: '最终品类', lgapCategory: '分类', lgapSubCategory: '子分类', hitRulesLabel: '命中规则与细节', noRuleHitDetail: '未触发任何规则 — 仅出现在全量列表。', ruleDetail: { geoWatch: '供应商 / 发票 / 银行国别命中高风险或离岸辖区名单。', payerA2: '付款主体国别与发票开具地国别不一致。', criminal: '交易对手涉及刑事、民事或监管诉讼。', pep: '受益人 / 董事为政治敏感人物（PEP）。', noPO: '付款无关联 PO、合同或汇款明细（LGAP）。', resources: '供应商资源 / 规模与活动水平不相称。', bgA3: '供应商主营业务与采购品类不符。', surge: '对新入库供应商的付款突然激增。', unconn: '资金汇入与交易对手无明显关联的账户。', fakeA4: '发票存在虚假特征（重复 / 模板异常）。' },
+        paymentId: '付款编号', sourceSystem: '来源系统', amount: '金额', category: '采购品类', riskLevel: '风险等级', date: '日期', vendorScoreLabel: '供应商分', mlPaymentScore: '付款分', reasonablePaymentScore: '付款合理性分', vendorScoreDesc: '外部名单筛查与国家 / 实体风险指标。', mlPaymentDesc: '本笔命中的付款类规则的权重之和。', reasonableDesc: '供应商经验范围与采购品类匹配情况。', procTitle: '采购项目标题', l1Commodity: 'L1 品类', l2Commodity: 'L2 品类', finalCommodity: '最终品类', lgapCategory: '分类', lgapSubCategory: '子分类', hitRulesLabel: '命中规则与细节', noRuleHitDetail: '未触发任何规则 — 仅出现在全量列表。', ruleDetail: { cpi: '供应商 / 发票 / 银行国别的 CPI 低于高风险阈值。', fatf: '三个国别之一在 FATF 黑名单或灰名单上。', offshore: '收款银行所在国属离岸 / 避税天堂辖区。', criminal: '交易对手涉及刑事、民事或监管诉讼。', pep: '受益人 / 董事为政治敏感人物（PEP）。', fourCountry: '付款方、供应商、发票开具地与收款银行四个国别不完全一致。', bigCategory: '敏感采购品类，且付款金额达到大额阈值。', capital: '付款金额超过注册资本，且供应商成立不足 12 个月。', scope: '供应商经营范围与采购品类不符。', surge: '本笔付款超过该供应商近 24 个月均值的 500%。', holderName: '收款账户户名与供应商名称显著不一致。', fakeInvoice: '经 OCR + LLM 识别，发票存在虚假特征。', acctChange: '未登记收款账户在 12 个月内变更两次及以上。' },
         configEyebrow: '风险模型配置', configTitle: '评分权重配置', configSubtitle: '三组权重均合计 100%。付款分 = 命中规则的权重之和。', publishConfig: '发布配置', overallWeights: '总分权重', vendorWeights: '供应商分权重', paymentScore: '付款分', paymentTierDesc: '每条规则默认权重按其 Tier 分配（可调整）；付款分 = 命中规则的权重之和（合计 100%）。', paymentPointsNote: '每条规则的分值 · 付款分 = 命中规则分值之和，上限 100', mlRiskScore: '机器学习风险分', mlRiskDesc: '频率、节假日付款频率、金额时点及其他学习到的异常信号。', reasonableMapping: '付款合理性映射', validConfig: '配置有效', mustEqual100: '必须等于 100%',
         legalEyebrow: '复核工作流', legalTitle: '法务工作台', legalSubtitle: '待复核告警与已复核案例审计轨迹，合并在一处。', wbPending: '待复核队列', wbReviewed: '已复核案例', legalRecords: '法务复核记录', legalRecordsDesc: '已复核案例列表，用于审计追踪与模型反馈。', noReviewed: '暂无已复核案例。从风险总览点击"标记已复核"后，记录会显示在这里。', reviewedCases: n => `${n} 个已复核案例`,
         reviewFormEyebrow: '法务复核表单', reviewFormSubtitle: '法务说明为什么该付款不是欺诈付款，以便系统后续改进。', close: '关闭', reviewResult: '复核结论', legalComment: '原因 / 法务说明', modelFeedbackTags: '模型反馈标签', cancel: '取消', submitReview: '提交复核', notFraud: '非欺诈付款', confirmedFraud: '确认欺诈付款', needEvidence: '需要更多证据', defaultReason: '该供应商在此采购品类下有已批准的采购历史，且付款金额在约定服务范围内。', legalTeam: '法务团队', modelFeedbackPending: '待模型反馈', noFeedbackTag: '无反馈标签', syncedTag: '服务器同步', legalReviewCompleted: '法务复核已完成。', reviewSaved: '法务复核已提交，并加入法务工作台', configSaved: '配置已保存为原型状态',
@@ -806,15 +806,61 @@
     // Tier and Risk Type. A payment's Tier = the highest tier among the rules it hits;
     // its risk types = the risk types of those rules. Predicates are approximated from
     // the synthetic fields (production would use the real bank/invoice/registry data).
+    // ── Country context per payment ──────────────────────────────────────────────
+    // Demo-only: the receiving-bank country and invoice-issuing country don't exist in
+    // the synthetic dataset, so they're derived deterministically from the payment id.
+    // In production these come from vendor_bank.bank_country and the Ariba/LGAP invoice.
+    function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+    const BANK_POOL = ['KY', 'PA', 'VG', 'VN', 'MM', 'AE', 'SG', 'CN', 'US', 'DE', 'TR', 'VN', 'MM', 'HK'];
+    const INV_POOL = ['CN', 'HK', 'SG', 'PA', 'AE', 'DE', 'US', 'TR', 'VN', 'MM'];
+    // Most payments are domestic to the vendor: the invoice and the receiving bank sit in
+    // the vendor's own country. Only a minority route elsewhere — those are the interesting ones.
+    function bankCountryOf(p) { const h = hashStr(p.id); return (h % 100) < 86 ? vendorCountryOf(p) : BANK_POOL[h % BANK_POOL.length]; }
+    function invoiceCountryOf(p) { const h = hashStr(p.id + 'inv'); return (h % 100) < 91 ? vendorCountryOf(p) : INV_POOL[h % INV_POOL.length]; }
+    function payerCountryOf(p) { return payingEntity(p).code.slice(0, 2); }
+    function vendorCountryOf(p) { const c = vendorCountry(p.vendor) || 'CN'; return c === 'BVI' ? 'VG' : c; }
+    function paymentCountries(p) { return { payer: payerCountryOf(p), vendor: vendorCountryOf(p), invoice: invoiceCountryOf(p), bank: bankCountryOf(p) }; }
+    // The three public lists are the same data the "Public Data Sources" page shows.
+    const CPI_NAME = { SG: 'Singapore', MY: 'Malaysia', CN: 'China', TR: 'Turkey', KZ: 'Kazakhstan', PA: 'Panama', AE: 'United Arab Emirates', DE: 'Germany', US: 'United States', HK: 'Hong Kong', VN: 'Viet Nam', MM: 'Myanmar' };
+    function cpiOf(code) {
+      const n = CPI_NAME[code]; if (!n) return null;
+      const rows = PUBLIC_SOURCES.cpi.rows;
+      const r = rows.find(x => x.c === n) || rows.find(x => x.c.indexOf(n) === 0);
+      return r ? r.v : null;
+    }
+    function isFatf(code) { return PUBLIC_SOURCES.fatf.rows.some(r => r.code === code); }
+    function isOffshore(code) { return PUBLIC_SOURCES.offshore.rows.some(r => r.code === code); }
+    const CPI_THRESHOLD = 40;
+    // 0727 sensitive categories (PRC Service / Legal / Consulting / Transportation …)
+    // mapped onto the demo's category vocabulary.
+    const SENSITIVE_CATEGORIES = ['Consulting', 'Professional Services', 'Logistics'];
+    const BIG_AMOUNT = 200000; // demo-scaled stand-in for the 10M USD threshold
+
+    // Rule table = docs Payment Monitoring Scenarios-0727.xlsx → Updated-BSR →
+    // "Final Confirmed Logic-ECO" (13 rules: T1×3, T2×6, T3×4). Geographic rules run
+    // against the real public lists; D&B-dependent rules are approximated over the
+    // synthetic fields until the D&B feed is connected.
+    // `cat` = the sheet's "Categories I": vendor-watchlist rules feed the Vendor Score,
+    // payment-activity / reasonable-payment rules feed the Payment Score.
     const RULES = [
-      { id: 'geoWatch',  tier: 'T2', rt: 'geo',      predicate: p => p.riskTypes.includes('geographic') },
-      { id: 'payerA2',   tier: 'T1', rt: 'geo',      predicate: p => p.riskTypes.includes('geographic') && p.reasonable === 'Unreasonable' },
-      { id: 'criminal',  tier: 'T1', rt: 'crime',    predicate: p => p.riskTypes.includes('adverseMedia') && p.total >= 80 },
-      { id: 'pep',       tier: 'T3', rt: 'pep',      predicate: p => p.riskTypes.includes('pep') },
-      { id: 'bgA3',      tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
-      { id: 'surge',     tier: 'T2', rt: 'timing',   predicate: p => p.riskTypes.includes('timeAnomaly') },
-      { id: 'unconn',    tier: 'T3', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore < 60 },
-      { id: 'fakeA4',    tier: 'T2', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore >= 60 }
+      { id: 'cpi',         cat: 'vendor',  tier: 'T2', rt: 'geo',      predicate: p => { const c = paymentCountries(p); return [c.vendor, c.invoice, c.bank].some(x => { const v = cpiOf(x); return v !== null && v <= CPI_THRESHOLD; }); } },
+      { id: 'fatf',        cat: 'vendor',  tier: 'T2', rt: 'geo',      predicate: p => { const c = paymentCountries(p); return [c.vendor, c.invoice, c.bank].some(isFatf); } },
+      { id: 'offshore',    cat: 'vendor',  tier: 'T2', rt: 'geo',      predicate: p => isOffshore(bankCountryOf(p)) },
+      { id: 'criminal',    cat: 'vendor',  tier: 'T1', rt: 'crime',    predicate: p => p.riskTypes.includes('adverseMedia') && p.amountNum >= 180000 },
+      { id: 'pep',         cat: 'vendor',  tier: 'T3', rt: 'pep',      predicate: p => p.riskTypes.includes('pep') },
+      // The paying Lenovo entity is routinely in a different country than the vendor, so a
+      // plain "not identical" test would flag every cross-border payment. Flag a *material*
+      // mismatch instead: 3 or more distinct countries across payer / vendor / invoice / bank.
+      { id: 'fourCountry', cat: 'payment', tier: 'T1', rt: 'geo',      predicate: p => { const c = paymentCountries(p); return new Set([c.payer, c.vendor, c.invoice, c.bank]).size >= 3; } },
+      { id: 'bigCategory', cat: 'payment', tier: 'T3', rt: 'docgap',   predicate: p => SENSITIVE_CATEGORIES.includes(p.category) && p.amountNum >= BIG_AMOUNT },
+      { id: 'capital',     cat: 'payment', tier: 'T1', rt: 'timing',   predicate: p => p.riskTypes.includes('docMissing') && p.amountNum >= 150000 },
+      { id: 'scope',       cat: 'payment', tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
+      { id: 'surge',       cat: 'payment', tier: 'T2', rt: 'timing',   predicate: p => p.riskTypes.includes('timeAnomaly') },
+      // No account-holder name exists in the source data (vendor_bank.bankn_n is empty),
+      // so the demo stands in a deterministic subset until that field is sourced.
+      { id: 'holderName',  cat: 'payment', tier: 'T3', rt: 'behavior', predicate: p => hashStr(p.id + 'holder') % 100 < 14 },
+      { id: 'fakeInvoice', cat: 'payment', tier: 'T2', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore >= 60 },
+      { id: 'acctChange',  cat: 'payment', tier: 'T2', rt: 'behavior', predicate: p => hashStr(p.vendor) % 4 === 1 }
     ];
     function computeRuleHits(p) { return RULES.filter(r => { try { return r.predicate(p); } catch (_) { return false; } }); }
     function paymentTier(p) {
@@ -827,24 +873,8 @@
     // Full rule catalogue matching docs Updated-0714 (14 rules), used for the
     // "what enters the queue" tier breakdown. Detection RULES above are an
     // approximation over synthetic fields; this catalogue is the Legal-facing list.
-    // Legal-facing rule catalogue — matches docs Payment Monitoring Scenarios-0727.xlsx
-    // → Updated-BSR tab → Final Confirmed Logic-ECO (13 rules). Detection RULES above are
-    // an approximation over synthetic fields; this catalogue is the authoritative list.
-    const RULE_CATALOG = [
-      { tier: 'T2', rt: 'geo',      en: 'High-risk jurisdiction / CPI ≤ 40',                        zh: '高风险辖区 / CPI ≤ 40' },
-      { tier: 'T2', rt: 'geo',      en: 'FATF black / grey list',                                   zh: 'FATF 黑 / 灰名单' },
-      { tier: 'T2', rt: 'geo',      en: 'Offshore / tax-haven (receiving-bank country)',            zh: '离岸 / 避税天堂（收款银行国）' },
-      { tier: 'T1', rt: 'crime',    en: 'Criminal / civil / regulatory proceedings (D&B)',          zh: '刑事 / 民事 / 监管诉讼（D&B）' },
-      { tier: 'T3', rt: 'pep',      en: 'PEP-owned or -operated (D&B)',                             zh: 'PEP 拥有或经营（D&B）' },
-      { tier: 'T1', rt: 'geo',      en: 'Payer / vendor / invoice / bank country not all the same', zh: '付款方 / 供应商 / 发票 / 银行 四国不一致' },
-      { tier: 'T3', rt: 'docgap',   en: 'Sensitive category & amount ≥ 10M USD',                    zh: '敏感品类 且 金额 ≥ 1,000 万美元' },
-      { tier: 'T1', rt: 'timing',   en: 'Payment > registered capital & established ≤ 12 months (D&B)', zh: '付款 > 注册资本 且 成立 ≤ 12 个月（D&B）' },
-      { tier: 'T3', rt: 'vague',    en: 'Business scope ≠ commodity / category (D&B + LLM)',        zh: '主营业务 ≠ 采购品类（D&B + LLM）' },
-      { tier: 'T2', rt: 'timing',   en: 'Payment surge > 500% vs 24-month average',                 zh: '付款突增（> 24 个月均值 500%）' },
-      { tier: 'T3', rt: 'behavior', en: 'Account holder name ≠ vendor name',                        zh: '收款户名 ≠ 供应商名' },
-      { tier: 'T2', rt: 'behavior', en: 'Fake invoice (OCR + LLM)',                                 zh: '虚假发票（OCR + LLM）' },
-      { tier: 'T2', rt: 'behavior', en: 'Bank account changed ≥ 2× within 12 months',              zh: '收款账户 12 个月内变更 ≥ 2 次' }
-    ];
+    // (RULE_CATALOG removed — `RULES` above is now the single source of truth and already
+    // mirrors all 13 rules of Updated-BSR → Final Confirmed Logic-ECO.)
     function assignPrecisionHits() {
       payments.forEach(p => {
         const hits = [];
@@ -924,14 +954,15 @@
       { id: 'PAY-2409-0538', caseId: 'CASE-AML-1122', date: '2024-09-29', source: 'Ariba', vendor: 'Caspian Field Services', amountNum: 47800, amount: '$47,800', category: 'Consulting', categoryZh: '咨询服务', vendorScore: 60, paymentScore: 52, reasonable: 'Reasonable', reasonableScore: 0, total: 44, status: 'Low', riskTypes: ['docMissing'] }
     ];
 
-    const weights = { overall: { Vendor: 40, Payment: 60 }, vendor: { Criminals: 45, FATF: 15, CPI: 15, 'Offshore List': 15, 'Adverse Media': 10 }, payment: { payerA2: 20, criminal: 20, geoWatch: 14, surge: 14, fakeA4: 14, pep: 6, bgA3: 6, unconn: 6 } };
+    const weights = { overall: { Vendor: 40, Payment: 60 }, vendor: { Criminals: 45, FATF: 15, CPI: 15, 'Offshore List': 15, 'Adverse Media': 10 }, payment: { fourCountry: 26, capital: 26, surge: 10, fakeInvoice: 10, acctChange: 10, bigCategory: 6, scope: 6, holderName: 6 } };
     // Live scoring: the payment-dimension score comes from the payment's alert Tier
     // (highest-weight tier → 100); overall = Vendor×w + Payment×w. The Reasonable
     // dimension is removed (its weight folded into Payment). Everything recomputes from
     // `weights` — no hardcoded totals.
     function paymentScoreOf(p) {
-      // Each hit rule contributes its own configurable weight; payment score = sum, capped at 100.
-      const s = computeRuleHits(p).reduce((a, r) => a + (weights.payment[r.id] || 0), 0);
+      // Payment-dimension rules only (Categories I = Payment Activity / Reasonable payment).
+      // Vendor-watchlist rules feed the Vendor Score instead. Sum of hit weights, capped at 100.
+      const s = computeRuleHits(p).filter(r => r.cat === 'payment').reduce((a, r) => a + (weights.payment[r.id] || 0), 0);
       return Math.min(100, s);
     }
     function overallScore(p) {
@@ -1139,26 +1170,27 @@
     function riskTypePill(key) { return `<span class="risk-type-pill" style="background:${RISK_COLORS[key]}">${t('riskTypes')[key]}</span>`; }
     // Concrete hit evidence per rule (mock fields derived from the vendor country /
     // source), so the detail reads e.g. "Payer SG ≠ invoice origin PA → mismatch".
-    const CTRY = { CN: ['中国', 'China'], SG: ['新加坡', 'Singapore'], DE: ['德国', 'Germany'], BVI: ['英属维尔京群岛', 'British Virgin Islands'], KY: ['开曼群岛', 'Cayman Islands'], PA: ['巴拿马', 'Panama'], AE: ['阿联酋', 'UAE'], TR: ['土耳其', 'Turkey'], MY: ['马来西亚', 'Malaysia'], HK: ['香港', 'Hong Kong'] };
+    const CTRY = { CN: ['中国', 'China'], SG: ['新加坡', 'Singapore'], DE: ['德国', 'Germany'], BVI: ['英属维尔京群岛', 'British Virgin Islands'], KY: ['开曼群岛', 'Cayman Islands'], PA: ['巴拿马', 'Panama'], AE: ['阿联酋', 'UAE'], TR: ['土耳其', 'Turkey'], MY: ['马来西亚', 'Malaysia'], HK: ['香港', 'Hong Kong'], VG: ['英属维尔京群岛', 'British Virgin Islands'], VN: ['越南', 'Viet Nam'], MM: ['缅甸', 'Myanmar'], US: ['美国', 'United States'], KZ: ['哈萨克斯坦', 'Kazakhstan'] };
     function ctry(code) { const c = CTRY[code]; return `${c ? (lang === 'zh' ? c[0] : c[1]) : code} (${code})`; }
     function ruleEvidence(id, p) {
-      const vc = vendorCountry(p.vendor) || 'CN';
-      const off = ['BVI', 'PA', 'KY', 'AE'];
-      const bank = off.includes(vc) ? vc : 'KY';
-      const payer = p.source === 'LGAP' ? 'CN' : 'SG';
-      const invoice = vc === 'CN' ? 'HK' : (off.includes(vc) ? 'PA' : vc);
+      const c = paymentCountries(p);
       const zh = lang === 'zh';
+      const cpiHit = [c.vendor, c.invoice, c.bank].map(x => ({ x, v: cpiOf(x) })).filter(o => o.v !== null && o.v <= CPI_THRESHOLD);
+      const fatfHit = [c.vendor, c.invoice, c.bank].filter(isFatf);
       const M = {
-        geoWatch: zh ? `供应商营业地 ${ctry(vc)}、收款银行 ${ctry(bank)} 命中高风险 / 离岸辖区名单。` : `Vendor place of business ${ctry(vc)} and receiving bank ${ctry(bank)} are on the high-risk / offshore list.`,
-        payerA2: zh ? `付款方 ${ctry(payer)} / 发票开具地 ${ctry(invoice)} / 收款银行 ${ctry(bank)} / 供应商 ${ctry(vc)} 四国不一致 → 触发。` : `Payer ${ctry(payer)} / invoice ${ctry(invoice)} / bank ${ctry(bank)} / vendor ${ctry(vc)} countries are not all the same → flag.`,
-        criminal: zh ? `交易对手在天眼查 / Dow Jones 命中刑事 / 民事 / 监管诉讼记录。` : `Counterparty matched criminal / civil / regulatory proceedings in Tianyancha / Dow Jones.`,
-        pep: zh ? `股权穿透发现受益人 / 董事为政治敏感人物（PEP）。` : `Ownership penetration found a beneficial owner / director who is a PEP.`,
-        noPO: zh ? `付款来源为 LGAP，无关联 PO / 合同，缺少三单匹配锚点。` : `Source is LGAP with no linked PO / contract — the 3-way-match anchor is missing.`,
-        resources: zh ? `供应商注册资本明显低于近 12 个月累计付款，规模与活动不相称。` : `Vendor's registered capital is well below its 12-month cumulative payments.`,
-        bgA3: zh ? `供应商主营业务与采购品类「${categoryLabel(p)}」严重脱节。` : `Vendor's main business does not align with the PO category "${categoryLabel(p)}".`,
-        surge: zh ? `供应商入库不足 1 年，本笔付款金额相对基线突增。` : `Vendor onboarded < 1 year and this payment surged vs the baseline.`,
-        unconn: zh ? `收款账户户名与供应商名显著不一致 → 触发。` : `The account holder name differs significantly from the vendor name → flag.`,
-        fakeA4: zh ? `发票号重复 / 连号 / 模板异常，命中虚假发票特征。` : `Invoice number is duplicated / sequential / template-anomalous — fake-invoice indicators.`
+        cpi: zh ? `${cpiHit.map(o => `${ctry(o.x)} CPI ${o.v}`).join('、')} ≤ ${CPI_THRESHOLD} → 命中高风险辖区。` : `${cpiHit.map(o => `${ctry(o.x)} CPI ${o.v}`).join(', ')} ≤ ${CPI_THRESHOLD} → high-risk jurisdiction.`,
+        fatf: zh ? `${fatfHit.map(ctry).join('、')} 在 FATF 黑 / 灰名单上。` : `${fatfHit.map(ctry).join(', ')} is on the FATF black / grey list.`,
+        offshore: zh ? `收款银行所在国 ${ctry(c.bank)} 命中离岸 / 避税天堂名单。` : `Receiving-bank country ${ctry(c.bank)} is on the offshore / tax-haven list.`,
+        criminal: zh ? `交易对手在 D&B 命中刑事 / 民事 / 监管诉讼记录（金额 ${p.amount}）。` : `Counterparty matched criminal / civil / regulatory proceedings in D&B (amount ${p.amount}).`,
+        pep: zh ? `D&B 股权穿透发现受益人 / 董事为政治敏感人物（PEP）。` : `D&B ownership penetration found a beneficial owner / director who is a PEP.`,
+        fourCountry: zh ? `付款方 ${ctry(c.payer)} / 供应商 ${ctry(c.vendor)} / 发票开具地 ${ctry(c.invoice)} / 收款银行 ${ctry(c.bank)} 四国不一致 → 触发。` : `Payer ${ctry(c.payer)} / vendor ${ctry(c.vendor)} / invoice ${ctry(c.invoice)} / bank ${ctry(c.bank)} are not all the same country → flag.`,
+        bigCategory: zh ? `采购品类「${categoryLabel(p)}」属敏感类别，且金额 ${p.amount} 达到大额阈值。` : `Category "${categoryLabel(p)}" is sensitive and the amount ${p.amount} reaches the large-payment threshold.`,
+        capital: zh ? `本笔付款 ${p.amount} 超过 D&B 登记的注册资本，且供应商成立不足 12 个月。` : `This payment of ${p.amount} exceeds the registered capital on file at D&B, and the vendor was established < 12 months ago.`,
+        scope: zh ? `D&B 经营范围与采购品类「${categoryLabel(p)}」经 LLM 比对严重脱节。` : `LLM comparison shows the D&B business scope does not align with the PO category "${categoryLabel(p)}".`,
+        surge: zh ? `本笔金额 ${p.amount} 超过该供应商近 24 个月均值的 500%。` : `This payment of ${p.amount} exceeds 500% of the vendor's 24-month average.`,
+        holderName: zh ? `收款账户户名与供应商名「${p.vendor}」显著不一致 → 触发。` : `The account holder name differs significantly from the vendor name "${p.vendor}" → flag.`,
+        fakeInvoice: zh ? `发票经 OCR + LLM 识别，描述 / 地址与采购品类不符，命中虚假发票特征。` : `OCR + LLM on the invoice found the description / address inconsistent with the procurement category — fake-invoice indicators.`,
+        acctChange: zh ? `该供应商的未登记收款账户在过去 12 个月内变更 ≥ 2 次。` : `This vendor's unregistered receiving account changed 2 or more times in the past 12 months.`
       };
       return M[id] || t('ruleNames')[id] || '';
     }
