@@ -191,6 +191,22 @@
     .breakdown { display: grid; gap: 12px; }
     .break-row { background: #f8fbfc; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
     .break-top { display: flex; justify-content: space-between; margin-bottom: 9px; font-weight: 700; gap: 12px; }
+    details.break-row > summary { cursor: pointer; list-style: none; }
+    details.break-row > summary::-webkit-details-marker { display: none; }
+    details.break-row > summary:hover .sd-chev { color: var(--primary); }
+    .sd-chev { display: inline-block; margin-left: 4px; color: var(--muted); font-weight: 700; transition: transform .18s ease; }
+    details.break-row[open] .sd-chev { transform: rotate(180deg); }
+    .sd-list { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); display: grid; gap: 4px; }
+    .sd-row { display: grid; grid-template-columns: 16px 1fr auto; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); padding: 3px 0; }
+    .sd-row.sd-on { color: var(--ink); font-weight: 700; }
+    .sd-dot { font-size: 10px; }
+    .sd-row.sd-on .sd-dot { color: var(--danger, #d84b4b); }
+    .sd-name { overflow: hidden; text-overflow: ellipsis; }
+    .sd-w { font-variant-numeric: tabular-nums; }
+    .sd-ev { margin: 0 0 6px 24px; font-size: 11px; line-height: 1.45; color: var(--muted); }
+    .sd-sum { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink); }
+    .sd-sum strong { font-size: 15px; }
+    .sd-note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; color: var(--muted); }
     .bar { height: 9px; border-radius: 999px; background: #e5eef2; overflow: hidden; }
     .bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--teal), var(--primary)); }
     .driver-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -683,7 +699,7 @@
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
         investigateNow: 'Investigate', investigateReviewNow: 'Investigate & Review', reviewBtnLabel: 'Review', addTag: 'Add', addTagPlaceholder: 'Add a custom tag…', reviewDecisionLabel: 'Legal decision', heldTag: 'Held', reviewSavedHeld: 'Review submitted · payment placed on Hold', investigateEyebrow: 'AML Investigation Agent', investigateSubtitle: 'Auto multi-source evidence gathering + AI synthesis, then your decision', investSteps: 'Investigation steps', investEvidence: 'Gathered evidence', investPackage: 'Investigation package', investRunning: 'Investigating...', investHint: 'Optional — run the agent to auto-gather evidence and pre-fill the decision below.', investNotRun: 'Agent not run yet. Click Investigate above, or fill the decision manually.', recLabels: { escalate: 'Escalate / hold payment', investigate: 'Investigate further', clear: 'Likely benign' },
         alertTierLabel: 'Alert Tier', triggerReason: 'Trigger rules (why this tier)', tierScoreNote: 'This alert is driven by high-precision rules, not the weighted score. The weighted fraud score is only used to rank T3 gray-zone payments.',
-        caseEyebrow: 'Fraud Case Detail', caseSubtitle: 'Overall score = Vendor Score × weight + Payment (tier) Score × weight.', paymentScoreNotice: 'Payment score = sum of the weights of the rules this payment hits. Overall = Vendor × 40% + Payment × 60%.', tuneWeights: 'Tune Weights', paymentSnapshot: 'Payment Snapshot', overallFraudRisk: 'Overall Fraud Risk Score', reasonableNotice: 'Reasonable Payment mapping: Reasonable = 0, Warning = 60, Unreasonable = 100. Higher score means higher risk.',
+        caseEyebrow: 'Fraud Case Detail', caseSubtitle: 'Overall score = Vendor Score × weight + Payment (tier) Score × weight.', paymentScoreNotice: 'Payment score = sum of the weights of the rules this payment hits. Overall = Vendor × 40% + Payment × 60%.', sdHitSum: 'Sum of rules hit', sdVendorNote: 'Vendor score comes from vendor-level list screening. Listed above are the configured factors, their weights, and the ones this payment triggered.', tuneWeights: 'Tune Weights', paymentSnapshot: 'Payment Snapshot', overallFraudRisk: 'Overall Fraud Risk Score', reasonableNotice: 'Reasonable Payment mapping: Reasonable = 0, Warning = 60, Unreasonable = 100. Higher score means higher risk.',
         paymentId: 'Payment ID', sourceSystem: 'Source System', amount: 'Amount', category: 'Category', riskLevel: 'Risk Level', date: 'Date', vendorScoreLabel: 'Vendor Score', mlPaymentScore: 'Payment Score', reasonablePaymentScore: 'Reasonable Payment Score', vendorScoreDesc: 'External list screening and country/entity indicators.', mlPaymentDesc: 'Sum of the weights of the payment-activity rules this payment hits.', reasonableDesc: 'vendor experience range and procurement category alignment.', procTitle: 'Procurement title', l1Commodity: 'L1 Commodity', l2Commodity: 'L2 Commodity', finalCommodity: 'Final Commodity', lgapCategory: 'Category', lgapSubCategory: 'Sub Category', hitRulesLabel: 'Rules hit & details', noRuleHitDetail: 'No rule hit — appears in the full list only.', ruleDetail: { cpi: 'Vendor / invoice / bank country scores at or below the CPI high-risk threshold.', fatf: 'One of the three countries is on the FATF black or grey list.', offshore: 'The receiving-bank country is an offshore / tax-haven jurisdiction.', criminal: 'Counterparty is linked to criminal, civil or regulatory proceedings.', pep: 'A beneficial owner / director is a politically exposed person.', fourCountry: 'Payer, vendor, invoice-issuing and receiving-bank countries are not all the same.', bigCategory: 'Sensitive procurement category combined with a large payment amount.', capital: 'Payment exceeds registered capital and the vendor was established within 12 months.', scope: "Vendor's business scope does not match the commodity / category.", surge: 'Payment exceeds 500% of the 24-month average for this vendor.', holderName: 'The receiving account holder name differs significantly from the vendor name.', fakeInvoice: 'OCR + LLM found fake-invoice indicators on the invoice.', acctChange: 'The unregistered receiving account changed twice or more within 12 months.' },
         configEyebrow: 'Risk Model Config', configTitle: 'Scoring Weights Configuration', configSubtitle: 'All three weight groups total 100%. Payment score = sum of the weights of the rules a payment hits.', publishConfig: 'Publish Configuration', overallWeights: 'Overall Score Weights', vendorWeights: 'Vendor Score Weights', paymentScore: 'Payment Score', paymentTierDesc: 'Default weight per rule follows its Tier (adjustable); payment score = sum of the weights of the rules a payment hits (weights total 100%).', paymentPointsNote: 'Points per rule · payment score = sum of hit rules, capped at 100', mlRiskScore: 'ML-based risk score', mlRiskDesc: 'Frequency, holiday frequency, amount timing, and other learned anomaly signals.', reasonableMapping: 'Reasonable Payment Mapping', validConfig: 'Valid configuration', mustEqual100: 'Must equal 100%',
         legalEyebrow: 'Review Workflow', legalTitle: 'Legal Workbench', legalSubtitle: 'Pending alerts to review and the reviewed-case audit trail, in one place.', wbPending: 'Pending Queue', wbReviewed: 'Reviewed Cases', legalRecords: 'Legal Review Records', legalRecordsDesc: 'Reviewed case list for audit trail and model feedback.', noReviewed: 'No reviewed cases yet. After Mark Reviewed from Dashboard, records will appear here.', reviewedCases: n => `${n} reviewed case${n === 1 ? '' : 's'}`,
@@ -744,7 +760,7 @@
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
         investigateNow: '立即调查', investigateReviewNow: '调查并复核', reviewBtnLabel: '复核', addTag: '添加', addTagPlaceholder: '手动添加标签…', reviewDecisionLabel: '法务结论', heldTag: '已冻结', reviewSavedHeld: '复核已提交 · 付款已置为冻结', investigateEyebrow: 'AML 调查 Agent', investigateSubtitle: '自动多源取证 + AI 综合结论，然后由你定论', investSteps: '调查步骤', investEvidence: '收集到的证据', investPackage: '调查结论', investRunning: '调查中...', investHint: '可选 —— 运行 Agent 自动取证并预填下方结论。', investNotRun: 'Agent 尚未运行。点击上方"立即调查"，或直接手动填写结论。', recLabels: { escalate: '升级 / 暂停付款', investigate: '需进一步调查', clear: '可能合规' },
         alertTierLabel: '告警等级', triggerReason: '触发规则（为何是该等级）', tierScoreNote: '该告警由高精度规则触发，与加权评分无关。加权欺诈评分仅用于对 T3 灰色地带付款排序。',
-        caseEyebrow: '欺诈案例详情', caseSubtitle: '总分 = 供应商分 × 权重 + 付款（等级）分 × 权重。', paymentScoreNotice: '付款分 = 本笔命中规则的权重之和。总分 = 供应商 × 40% + 付款 × 60%。', tuneWeights: '调整权重', paymentSnapshot: '付款概览', overallFraudRisk: '总体欺诈风险分', reasonableNotice: '付款合理性映射：合理 = 0，警告 = 60，不合理 = 100。分数越高代表风险越高。',
+        caseEyebrow: '欺诈案例详情', caseSubtitle: '总分 = 供应商分 × 权重 + 付款（等级）分 × 权重。', paymentScoreNotice: '付款分 = 本笔命中规则的权重之和。总分 = 供应商 × 40% + 付款 × 60%。', sdHitSum: '命中规则合计', sdVendorNote: '供应商分来自供应商层名单筛查。上方为配置的因子、权重，以及本笔触发的项。', tuneWeights: '调整权重', paymentSnapshot: '付款概览', overallFraudRisk: '总体欺诈风险分', reasonableNotice: '付款合理性映射：合理 = 0，警告 = 60，不合理 = 100。分数越高代表风险越高。',
         paymentId: '付款编号', sourceSystem: '来源系统', amount: '金额', category: '采购品类', riskLevel: '风险等级', date: '日期', vendorScoreLabel: '供应商分', mlPaymentScore: '付款分', reasonablePaymentScore: '付款合理性分', vendorScoreDesc: '外部名单筛查与国家 / 实体风险指标。', mlPaymentDesc: '本笔命中的付款类规则的权重之和。', reasonableDesc: '供应商经验范围与采购品类匹配情况。', procTitle: '采购项目标题', l1Commodity: 'L1 品类', l2Commodity: 'L2 品类', finalCommodity: '最终品类', lgapCategory: '分类', lgapSubCategory: '子分类', hitRulesLabel: '命中规则与细节', noRuleHitDetail: '未触发任何规则 — 仅出现在全量列表。', ruleDetail: { cpi: '供应商 / 发票 / 银行国别的 CPI 低于高风险阈值。', fatf: '三个国别之一在 FATF 黑名单或灰名单上。', offshore: '收款银行所在国属离岸 / 避税天堂辖区。', criminal: '交易对手涉及刑事、民事或监管诉讼。', pep: '受益人 / 董事为政治敏感人物（PEP）。', fourCountry: '付款方、供应商、发票开具地与收款银行四个国别不完全一致。', bigCategory: '敏感采购品类，且付款金额达到大额阈值。', capital: '付款金额超过注册资本，且供应商成立不足 12 个月。', scope: '供应商经营范围与采购品类不符。', surge: '本笔付款超过该供应商近 24 个月均值的 500%。', holderName: '收款账户户名与供应商名称显著不一致。', fakeInvoice: '经 OCR + LLM 识别，发票存在虚假特征。', acctChange: '未登记收款账户在 12 个月内变更两次及以上。' },
         configEyebrow: '风险模型配置', configTitle: '评分权重配置', configSubtitle: '三组权重均合计 100%。付款分 = 命中规则的权重之和。', publishConfig: '发布配置', overallWeights: '总分权重', vendorWeights: '供应商分权重', paymentScore: '付款分', paymentTierDesc: '每条规则默认权重按其 Tier 分配（可调整）；付款分 = 命中规则的权重之和（合计 100%）。', paymentPointsNote: '每条规则的分值 · 付款分 = 命中规则分值之和，上限 100', mlRiskScore: '机器学习风险分', mlRiskDesc: '频率、节假日付款频率、金额时点及其他学习到的异常信号。', reasonableMapping: '付款合理性映射', validConfig: '配置有效', mustEqual100: '必须等于 100%',
         legalEyebrow: '复核工作流', legalTitle: '法务工作台', legalSubtitle: '待复核告警与已复核案例审计轨迹，合并在一处。', wbPending: '待复核队列', wbReviewed: '已复核案例', legalRecords: '法务复核记录', legalRecordsDesc: '已复核案例列表，用于审计追踪与模型反馈。', noReviewed: '暂无已复核案例。从风险总览点击"标记已复核"后，记录会显示在这里。', reviewedCases: n => `${n} 个已复核案例`,
@@ -969,6 +985,26 @@
       return Math.round(p.vendorScore * weights.overall.Vendor / 100 + paymentScoreOf(p) * weights.overall.Payment / 100);
     }
     function levelOf(s) { return s >= 48 ? 'High' : s >= 38 ? 'Medium' : 'Low'; }
+    // Which vendor-watchlist rule backs each Vendor Score factor (Categories I = Vendor watchlist).
+    const VENDOR_FACTOR_RULE = { Criminals: 'criminal', FATF: 'fatf', CPI: 'cpi', 'Offshore List': 'offshore', 'Adverse Media': 'pep' };
+    // Expandable breakdown on the case detail page: every configured factor / rule, its
+    // weight, whether this payment triggered it, and the concrete evidence when it did.
+    function scoreDetail(payment, kind) {
+      const hit = new Set(computeRuleHits(payment).map(r => r.id));
+      const rows = kind === 'vendor'
+        ? Object.entries(weights.vendor).map(([label, w]) => ({ id: VENDOR_FACTOR_RULE[label], label, w }))
+        : Object.entries(weights.payment).map(([id, w]) => ({ id, label: t('ruleNames')[id] || id, w }));
+      const body = rows.map(r => {
+        const on = hit.has(r.id);
+        return `<div class="sd-row${on ? ' sd-on' : ''}"><span class="sd-dot">${on ? '●' : '○'}</span><span class="sd-name">${r.label}</span><span class="sd-w">${r.w}%</span></div>` +
+          (on ? `<p class="sd-ev">${ruleEvidence(r.id, payment)}</p>` : '');
+      }).join('');
+      const sum = rows.filter(r => hit.has(r.id)).reduce((a, r) => a + r.w, 0);
+      const foot = kind === 'payment'
+        ? `<div class="sd-sum"><span>${t('sdHitSum')}</span><strong>${Math.min(100, sum)}</strong></div>`
+        : `<p class="sd-note">${t('sdVendorNote')}</p>`;
+      return `<div class="sd-list">${body}${foot}</div>`;
+    }
     let lang = 'en';
     let currentPayment = payments[0];
     let currentVendor = vendors[0];
@@ -1995,8 +2031,11 @@
       // Every payment is scored, regardless of tier.
       const pmtScore = paymentScoreOf(payment);
       const formula = `${payment.vendorScore}×${weights.overall.Vendor}% + ${pmtScore}×${weights.overall.Payment}%`;
-      const scoreRows = [[t('vendorScoreLabel'), payment.vendorScore, weights.overall.Vendor, t('vendorScoreDesc')], [t('mlPaymentScore'), pmtScore, weights.overall.Payment, t('mlPaymentDesc')]];
-      const breakdown = scoreRows.map(r => `<div class="break-row"><div class="break-top"><span>${r[0]}</span><span>${r[1]} · ${t('weight')} ${r[2]}%</span></div><div class="bar"><span style="width:${r[1]}%"></span></div><p class="driver-meta">${r[3]}</p></div>`).join('');
+      const scoreRows = [
+        { kind: 'vendor', label: t('vendorScoreLabel'), value: payment.vendorScore, w: weights.overall.Vendor, desc: t('vendorScoreDesc') },
+        { kind: 'payment', label: t('mlPaymentScore'), value: pmtScore, w: weights.overall.Payment, desc: t('mlPaymentDesc') }
+      ];
+      const breakdown = scoreRows.map(r => `<details class="break-row"><summary><div class="break-top"><span>${r.label}</span><span>${r.value} · ${t('weight')} ${r.w}% <span class="sd-chev">⌄</span></span></div><div class="bar"><span style="width:${r.value}%"></span></div></summary><p class="driver-meta">${r.desc}</p>${scoreDetail(payment, r.kind)}</details>`).join('');
       const body = `<div class="score-hero"><div><div class="eyebrow">${t('overallFraudRisk')}</div><strong>${formula}</strong></div><div class="big">${overallScore(payment)}</div></div><div class="breakdown">${breakdown}</div><div class="notice">${t('paymentScoreNotice')}</div>`;
 
       // Right = rules hit + concrete details, then the score.
