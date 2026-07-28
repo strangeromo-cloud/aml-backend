@@ -654,7 +654,7 @@
         tierLabels: { T1: 'Critical', T2: 'Alert', T3: 'Scored' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Hits any T1 rule', T2: 'Highest hit is a T2 rule', T3: 'Only T3 rules — scored' },
         tierSla: { T1: '5 work days', T2: '10 work days', T3: 'Batch / scored ranking' }, overdueTag: 'Overdue',
-        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { geoWatch: 'High-risk jurisdiction / CPI', payerA2: 'Payer ≠ invoice origin country', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', noPO: 'No linked PO / contract', resources: 'Resources not commensurate', bgA3: 'Questionable background (scope ≠ business)', surge: 'Surge in payments to new vendor', unconn: 'Funds to an unconnected account', fakeA4: 'Fake invoice' },
+        hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { geoWatch: 'High-risk jurisdiction (CPI / FATF / offshore)', payerA2: 'Payer / vendor / invoice / bank country not all the same', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', noPO: 'No linked PO / contract', resources: 'Resources not commensurate', bgA3: 'Business scope ≠ commodity / category', surge: 'Payment surge > 500% vs 24-month average', unconn: 'Account holder name ≠ vendor name', fakeA4: 'Fake invoice (OCR + LLM)' },
         filterTier: 'Tier',
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
         signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal. Validated signals are promoted; unproven ones stay in candidate status.',
@@ -715,7 +715,7 @@
         tierLabels: { T1: '紧急', T2: '告警', T3: '评分' }, noTierLabel: '未触发规则 · 仅全量列表',
         tierDesc: { T1: '命中任意 T1 规则', T2: '最高命中为 T2 规则', T3: '仅命中 T3 规则 · 评分' },
         tierSla: { T1: '5 个工作日', T2: '10 个工作日', T3: '批量 / 评分排序' }, overdueTag: '已超时',
-        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { geoWatch: '高风险辖区 / CPI', payerA2: '付款方与发票开具地不一致', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', noPO: '无关联 PO / 合同', resources: '资源与活动规模不相称', bgA3: '背景可疑（主营≠业务）', surge: '对新供应商付款突增', unconn: '汇入无关联账户', fakeA4: '虚假发票' },
+        hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { geoWatch: '高风险辖区（CPI / FATF / 离岸）', payerA2: '付款方 / 供应商 / 发票 / 银行 四国不一致', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', noPO: '无关联 PO / 合同', resources: '资源与活动规模不相称', bgA3: '主营业务 ≠ 采购品类', surge: '付款突增（> 24 个月均值 500%）', unconn: '收款户名 ≠ 供应商名', fakeA4: '虚假发票（OCR + LLM）' },
         filterTier: '告警等级',
         signalsEyebrow: '策略 4 · 反馈闭环', signalsTitle: '信号台账', signalsSubtitle: '每个检测信号都根据「实测 PPV（确认数 ÷ 触发数）」获得自己的告警等级。这张表是法务反馈与告警分级之间的桥梁。',
         signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV。已验证的信号被提升，未验证的保持候选状态。',
@@ -1150,14 +1150,14 @@
       const zh = lang === 'zh';
       const M = {
         geoWatch: zh ? `供应商营业地 ${ctry(vc)}、收款银行 ${ctry(bank)} 命中高风险 / 离岸辖区名单。` : `Vendor place of business ${ctry(vc)} and receiving bank ${ctry(bank)} are on the high-risk / offshore list.`,
-        payerA2: zh ? `付款方国别 ${ctry(payer)} 与发票开具地 ${ctry(invoice)} 不一致 → 触发。` : `Payer country ${ctry(payer)} ≠ invoice origin country ${ctry(invoice)} → mismatch.`,
+        payerA2: zh ? `付款方 ${ctry(payer)} / 发票开具地 ${ctry(invoice)} / 收款银行 ${ctry(bank)} / 供应商 ${ctry(vc)} 四国不一致 → 触发。` : `Payer ${ctry(payer)} / invoice ${ctry(invoice)} / bank ${ctry(bank)} / vendor ${ctry(vc)} countries are not all the same → flag.`,
         criminal: zh ? `交易对手在天眼查 / Dow Jones 命中刑事 / 民事 / 监管诉讼记录。` : `Counterparty matched criminal / civil / regulatory proceedings in Tianyancha / Dow Jones.`,
         pep: zh ? `股权穿透发现受益人 / 董事为政治敏感人物（PEP）。` : `Ownership penetration found a beneficial owner / director who is a PEP.`,
         noPO: zh ? `付款来源为 LGAP，无关联 PO / 合同，缺少三单匹配锚点。` : `Source is LGAP with no linked PO / contract — the 3-way-match anchor is missing.`,
         resources: zh ? `供应商注册资本明显低于近 12 个月累计付款，规模与活动不相称。` : `Vendor's registered capital is well below its 12-month cumulative payments.`,
         bgA3: zh ? `供应商主营业务与采购品类「${categoryLabel(p)}」严重脱节。` : `Vendor's main business does not align with the PO category "${categoryLabel(p)}".`,
         surge: zh ? `供应商入库不足 1 年，本笔付款金额相对基线突增。` : `Vendor onboarded < 1 year and this payment surged vs the baseline.`,
-        unconn: zh ? `收款账户户名与供应商无股权关联，疑似第三方收款。` : `The receiving-account holder has no ownership link to the vendor.`,
+        unconn: zh ? `收款账户户名与供应商名显著不一致 → 触发。` : `The account holder name differs significantly from the vendor name → flag.`,
         fakeA4: zh ? `发票号重复 / 连号 / 模板异常，命中虚假发票特征。` : `Invoice number is duplicated / sequential / template-anomalous — fake-invoice indicators.`
       };
       return M[id] || t('ruleNames')[id] || '';
@@ -1618,9 +1618,9 @@
     function renderQueueRules() {
       const tierLegend = TIER_KEYS.map(k => `<span class="qr-tier"><span class="tier-badge tier-${k}">${k}</span><span class="qr-tier-cond">${t('tierDesc')[k]}</span>${tierSlaChip(k)}</span>`).join('');
       const groups = TIER_KEYS.map(tk => {
-        const rs = RULE_CATALOG.filter(r => r.tier === tk);
+        const rs = RULES.filter(r => r.tier === tk);
         if (!rs.length) return '';
-        const lis = rs.map(r => `<li>${lang === 'zh' ? r.zh : r.en} <span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></li>`).join('');
+        const lis = rs.map(r => `<li>${t('ruleNames')[r.id]} <span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></li>`).join('');
         return `<div class="qr-entry"><div class="qr-entry-head"><span class="tier-badge tier-${tk}">${tk}</span> ${t('tierLabels')[tk]}</div><ul>${lis}</ul></div>`;
       }).join('');
       document.getElementById('queueRules').innerHTML = `<div class="qr-tiers">${tierLegend}</div><div class="qr-entries">${groups}</div>`;
