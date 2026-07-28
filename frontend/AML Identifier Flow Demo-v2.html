@@ -69,7 +69,6 @@
     .dash-filter .filter-date-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0; }
     .dash-filter .date-input { height: 36px; width: 120px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
     .dash-filter .dash-quick { height: 36px; padding: 0 14px; }
-    .dash-filter #dashRangeReset { height: 36px; padding: 0 14px; margin-left: 2px; }
     .dash-filter .dash-sep { width: 1px; align-self: stretch; background: var(--line); margin: 2px 4px; }
     .rank-row { grid-template-columns: 1fr auto !important; }
     .footer-sep { margin: 0 6px; color: var(--muted); }
@@ -502,14 +501,26 @@
           <div><div class="eyebrow" data-i18n="dashboardEyebrow"></div><h2 class="title" data-i18n="dashboardTitle"></h2><p class="subtitle" data-i18n="dashboardSubtitle"></p></div>
           <div class="status-pill" data-i18n="lastSync"></div>
         </div>
-        <div class="dash-filter">
-          <span class="dash-filter-label" data-i18n="dashWindowLabel"></span>
-          <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="dashDateFrom" autocomplete="off" /></label>
-          <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="dashDateTo" autocomplete="off" /></label>
-          <span class="dash-sep"></span>
-          <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
-          <button class="btn btn-soft dash-quick" data-range="90" data-i18n="rangeLast90"></button>
-          <button class="btn btn-soft" id="dashRangeReset" data-i18n="filterReset"></button>
+        <div class="card" style="margin-bottom:18px">
+          <div class="filter-bar">
+            <div class="filter-row">
+              <input type="search" id="dashKeyword" />
+              <select id="dashTier"></select>
+              <select id="dashRiskType"></select>
+              <select id="dashSource"></select>
+              <select id="dashPayingEntity"></select>
+              <select id="dashRegion"></select>
+              <select id="dashStatus"></select>
+              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="dashDateFrom" autocomplete="off" /></label>
+              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="dashDateTo" autocomplete="off" /></label>
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
+              <button class="btn btn-soft dash-quick" data-range="90" data-i18n="rangeLast90"></button>
+              <button class="btn btn-soft" id="dashReset" data-i18n="filterReset"></button>
+              <button class="btn btn-primary" id="dashApply" data-i18n="filterApply"></button>
+            </div>
+          </div>
         </div>
         <div class="metric-grid" id="metricGrid"></div>
         <div class="dashboard-grid">
@@ -1120,34 +1131,45 @@
     // queue and the reviewed-case list.
     const wbFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
     const wbDraft = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
-    function renderWbFilterControls() {
-      if (!document.getElementById('wbTier')) return;
-      const set = (id, html, val) => { const el = document.getElementById(id); el.innerHTML = html; el.value = val; };
-      set('wbTier', `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''), wbDraft.tier);
-      set('wbRiskType', `<option value="">${t('filterRiskType')} · ${t('allOption')}</option>` + RISK_TYPE_KEYS.map(k => `<option value="${k}">${t('riskTypes')[k]}</option>`).join(''), wbDraft.riskType);
-      set('wbSource', `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`, wbDraft.source);
-      set('wbPayingEntity', `<option value="">${t('filterPayingEntity')} · ${t('allOption')}</option>` + LENOVO_ENTITIES.map(e => `<option value="${e.code}">${entityLabel(e)}</option>`).join(''), wbDraft.payingEntity);
-      set('wbRegion', `<option value="">${t('filterRegion')} · ${t('allOption')}</option>` + GEO_KEYS.map(k => `<option value="${k}">${geoLabel(k)}</option>`).join(''), wbDraft.region);
-      set('wbStatus', `<option value="">${t('filterStatus')} · ${t('allOption')}</option>` + STATUS_KEYS.map(k => `<option value="${k}">${statusKeyLabel(k)}</option>`).join(''), wbDraft.status);
-      document.getElementById('wbKeyword').value = wbDraft.keyword;
-      document.getElementById('wbKeyword').placeholder = t('searchPlaceholder');
-      setDateInput(document.getElementById('wbDateFrom'), wbDraft.dateFrom);
-      setDateInput(document.getElementById('wbDateTo'), wbDraft.dateTo);
-    }
-    function wbMatch(p) {
+    function renderWbFilterControls() { fillFilterRow('wb', wbDraft); }
+    // Shared by all three filter bars (payment list, workbench, dashboard).
+    function matchFilters(p, f) {
       if (!p) return false;
-      const f = wbFilters;
       if (f.tier && paymentTier(p) !== f.tier) return false;
       if (f.riskType && !paymentRTKeys(p).includes(f.riskType)) return false;
       if (f.source && p.source !== f.source) return false;
       if (f.payingEntity && payingEntity(p).code !== f.payingEntity) return false;
       if (f.region && paymentGeo(p) !== f.region) return false;
       if (f.status && reviewStatusKey(p) !== f.status) return false;
+      if (f.riskLevel && levelOf(overallScore(p)) !== f.riskLevel) return false;
       if (f.dateFrom && p.date < f.dateFrom) return false;
       if (f.dateTo && p.date > f.dateTo) return false;
-      const kw = f.keyword.trim().toLowerCase();
+      const kw = (f.keyword || '').trim().toLowerCase();
       if (kw && !`${p.id} ${p.vendor} ${p.category} ${p.categoryZh} ${p.source}`.toLowerCase().includes(kw)) return false;
       return true;
+    }
+    function wbMatch(p) { return matchFilters(p, wbFilters); }
+    // Populates any of the three filter rows — ids are `<prefix>Tier`, `<prefix>Region`, …
+    function fillFilterRow(prefix, draft) {
+      const $ = sfx => document.getElementById(prefix + sfx);
+      const set = (sfx, html, val) => { const el = $(sfx); if (el) { el.innerHTML = html; el.value = val; } };
+      set('Tier', `<option value="">Tier · ${t('allOption')}</option>` + TIER_KEYS.map(k => `<option value="${k}">${k} · ${t('tierLabels')[k]}</option>`).join(''), draft.tier);
+      set('RiskType', `<option value="">${t('filterRiskType')} · ${t('allOption')}</option>` + RISK_TYPE_KEYS.map(k => `<option value="${k}">${t('riskTypes')[k]}</option>`).join(''), draft.riskType);
+      set('Source', `<option value="">${t('filterSource')} · ${t('allOption')}</option><option value="Ariba">Ariba</option><option value="LGAP">LGAP</option>`, draft.source);
+      set('PayingEntity', `<option value="">${t('filterPayingEntity')} · ${t('allOption')}</option>` + LENOVO_ENTITIES.map(e => `<option value="${e.code}">${entityLabel(e)}</option>`).join(''), draft.payingEntity);
+      set('Region', `<option value="">${t('filterRegion')} · ${t('allOption')}</option>` + GEO_KEYS.map(k => `<option value="${k}">${geoLabel(k)}</option>`).join(''), draft.region);
+      set('Status', `<option value="">${t('filterStatus')} · ${t('allOption')}</option>` + STATUS_KEYS.map(k => `<option value="${k}">${statusKeyLabel(k)}</option>`).join(''), draft.status);
+      const kw = $('Keyword'); if (kw) { kw.value = draft.keyword; kw.placeholder = t('searchPlaceholder'); }
+      if ($('DateFrom')) setDateInput($('DateFrom'), draft.dateFrom);
+      if ($('DateTo')) setDateInput($('DateTo'), draft.dateTo);
+    }
+    function bindFilterRow(prefix, draft, onApply) {
+      [['Tier', 'tier'], ['RiskType', 'riskType'], ['Source', 'source'], ['PayingEntity', 'payingEntity'], ['Region', 'region'], ['Status', 'status']]
+        .forEach(([sfx, key]) => { const el = document.getElementById(prefix + sfx); if (el) el.addEventListener('change', e => { draft[key] = e.target.value; }); });
+      const kw = document.getElementById(prefix + 'Keyword');
+      if (kw) { kw.addEventListener('input', e => { draft.keyword = e.target.value; }); kw.addEventListener('keydown', e => { if (e.key === 'Enter') onApply(); }); }
+      const df = document.getElementById(prefix + 'DateFrom'); if (df) df.addEventListener('change', e => { draft.dateFrom = commitDateInput(e.target); });
+      const dt = document.getElementById(prefix + 'DateTo'); if (dt) dt.addEventListener('change', e => { draft.dateTo = commitDateInput(e.target); });
     }
     // Agent/LLM features — the detail-page investigation entry + its display in the
     // review modal, the "Run agent self-learning" entry, and the agent-discovered
@@ -1405,10 +1427,12 @@
       filters.tier = tier; draftFilters.tier = tier;
       listPage = 1; renderPaymentList(); showScreen('paymentList');
     }
-    let dashRange = { from: '', to: '' };
+    const dashFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    const dashDraft = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    function renderDashFilterControls() { fillFilterRow('dash', dashDraft); }
     // Payments inside the dashboard's selected time window (all when unset).
     function dashPayments() {
-      return payments.filter(p => (!dashRange.from || p.date >= dashRange.from) && (!dashRange.to || p.date <= dashRange.to));
+      return payments.filter(p => matchFilters(p, dashFilters));
     }
     function paymentConfirmed(p) { const r = reviewedCases.find(x => x.paymentId === p.id); return r && r.conclusion === 'confirmedFraud'; }
     // 6 summary cards, all scoped to the selected time window.
@@ -1456,7 +1480,7 @@
       list.innerHTML = rows.map((r, i) => `<button class="vendor-row rank-row" data-rank="${i}"><span><span class="vendor-name">${r.main}</span><span class="small-muted">${r.sub}</span></span><span class="score">${r.score}</span></button>`).join('');
       document.querySelectorAll('#rankList [data-rank]').forEach(btn => btn.addEventListener('click', () => rows[Number(btn.dataset.rank)].act()));
     }
-    function renderDashboard() { renderMetrics(); renderTodoQueue(); renderDonut(); renderRankList(); renderDashCharts(); }
+    function renderDashboard() { renderDashFilterControls(); renderMetrics(); renderTodoQueue(); renderDonut(); renderRankList(); renderDashCharts(); }
 
     // Days until (or past) a payment's SLA deadline. <0 overdue, 0 due today, >0 remaining.
     function slaRemainingDays(p) {
@@ -2080,25 +2104,7 @@
       }));
     }
 
-    function applyFilters() {
-      const kw = filters.keyword.trim().toLowerCase();
-      return payments.filter(p => {
-        if (filters.tier && paymentTier(p) !== filters.tier) return false;
-        if (filters.riskType && !paymentRTKeys(p).includes(filters.riskType)) return false;
-        if (filters.source && p.source !== filters.source) return false;
-        if (filters.payingEntity && payingEntity(p).code !== filters.payingEntity) return false;
-        if (filters.region && paymentGeo(p) !== filters.region) return false;
-        if (filters.status && reviewStatusKey(p) !== filters.status) return false;
-        if (filters.riskLevel && p.status !== filters.riskLevel) return false;
-        if (filters.dateFrom && p.date < filters.dateFrom) return false;
-        if (filters.dateTo && p.date > filters.dateTo) return false;
-        if (kw) {
-          const blob = `${p.id} ${p.vendor} ${p.category} ${p.categoryZh} ${p.source}`.toLowerCase();
-          if (!blob.includes(kw)) return false;
-        }
-        return true;
-      });
-    }
+    function applyFilters() { return payments.filter(p => matchFilters(p, filters)); }
 
     function renderPaymentList() {
       renderFilterControls();
@@ -2729,7 +2735,7 @@
     }
 
     function renderAll() {
-      renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderDashCharts(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('payment', 'paymentScoreSliders', 'paymentScoreTotal'); renderLegal(); renderReviewForm(); renderSources();
+      renderDashFilterControls(); renderMetrics(); renderTodoQueue(); renderHeaders(); renderRankList(); renderDonut(); renderDashCharts(); renderPaymentList(); renderQueueRules(); renderUnifiedQueue(); renderSignals(); renderPlaybook(); renderSliders('overall', 'overallSliders', 'overallTotal'); renderSliders('vendor', 'vendorSliders', 'vendorTotal'); renderSliders('payment', 'paymentScoreSliders', 'paymentScoreTotal'); renderLegal(); renderReviewForm(); renderSources();
       resetChat();
       if (document.getElementById('vendor').classList.contains('active')) openVendor(currentVendor);
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
@@ -2741,24 +2747,18 @@
     document.getElementById('collapseBtn').addEventListener('click', () => document.getElementById('appShell').classList.toggle('collapsed'));
     document.querySelectorAll('[data-donutview]').forEach(btn => btn.addEventListener('click', () => { donutView = btn.dataset.donutview; renderDonut(); }));
     document.querySelectorAll('[data-rankview]').forEach(btn => btn.addEventListener('click', () => { rankView = btn.dataset.rankview; renderRankList(); }));
-    function applyDashRange() {
-      dashRange.from = document.getElementById('dashDateFrom').dataset.iso || '';
-      dashRange.to = document.getElementById('dashDateTo').dataset.iso || '';
-      renderDashboard();
-    }
-    document.getElementById('dashDateFrom').addEventListener('change', e => { commitDateInput(e.target); applyDashRange(); });
-    document.getElementById('dashDateTo').addEventListener('change', e => { commitDateInput(e.target); applyDashRange(); });
+    function applyDashFilters() { Object.assign(dashFilters, dashDraft); renderDashboard(); }
+    bindFilterRow('dash', dashDraft, applyDashFilters);
+    document.getElementById('dashApply').addEventListener('click', applyDashFilters);
     document.querySelectorAll('.dash-quick').forEach(btn => btn.addEventListener('click', () => {
-      dashRange.from = addDays(demoNow(), -Number(btn.dataset.range)); dashRange.to = demoNow();
-      setDateInput(document.getElementById('dashDateFrom'), dashRange.from);
-      setDateInput(document.getElementById('dashDateTo'), dashRange.to);
-      renderDashboard();
+      dashDraft.dateFrom = addDays(demoNow(), -Number(btn.dataset.range)); dashDraft.dateTo = demoNow();
+      setDateInput(document.getElementById('dashDateFrom'), dashDraft.dateFrom);
+      setDateInput(document.getElementById('dashDateTo'), dashDraft.dateTo);
+      applyDashFilters();
     }));
-    document.getElementById('dashRangeReset').addEventListener('click', () => {
-      dashRange = { from: '', to: '' };
-      setDateInput(document.getElementById('dashDateFrom'), '');
-      setDateInput(document.getElementById('dashDateTo'), '');
-      renderDashboard();
+    document.getElementById('dashReset').addEventListener('click', () => {
+      Object.keys(dashFilters).forEach(k => { dashFilters[k] = ''; dashDraft[k] = ''; });
+      renderDashFilterControls(); renderDashboard();
     });
     document.querySelectorAll('[data-wbtab]').forEach(btn => btn.addEventListener('click', () => {
       const tab = btn.dataset.wbtab;
@@ -2766,13 +2766,9 @@
       document.getElementById('wbPending').style.display = tab === 'pending' ? '' : 'none';
       document.getElementById('wbReviewed').style.display = tab === 'reviewed' ? '' : 'none';
     }));
-    [['wbTier', 'tier'], ['wbRiskType', 'riskType'], ['wbSource', 'source'], ['wbPayingEntity', 'payingEntity'], ['wbRegion', 'region'], ['wbStatus', 'status']]
-      .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { wbDraft[key] = e.target.value; }));
-    document.getElementById('wbKeyword').addEventListener('input', e => { wbDraft.keyword = e.target.value; });
-    document.getElementById('wbKeyword').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('wbApply').click(); });
-    document.getElementById('wbDateFrom').addEventListener('change', e => { wbDraft.dateFrom = commitDateInput(e.target); });
-    document.getElementById('wbDateTo').addEventListener('change', e => { wbDraft.dateTo = commitDateInput(e.target); });
-    document.getElementById('wbApply').addEventListener('click', () => { Object.assign(wbFilters, wbDraft); renderUnifiedQueue(); renderLegal(); });
+    const applyWbFilters = () => { Object.assign(wbFilters, wbDraft); renderUnifiedQueue(); renderLegal(); };
+    bindFilterRow('wb', wbDraft, applyWbFilters);
+    document.getElementById('wbApply').addEventListener('click', applyWbFilters);
     document.getElementById('wbReset').addEventListener('click', () => {
       Object.keys(wbFilters).forEach(k => { wbFilters[k] = ''; wbDraft[k] = ''; });
       renderWbFilterControls(); renderUnifiedQueue(); renderLegal();
