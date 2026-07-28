@@ -813,10 +813,10 @@
       { id: 'pep',       tier: 'T3', rt: 'pep',      predicate: p => p.riskTypes.includes('pep') },
       { id: 'noPO',      tier: 'T3', rt: 'docgap',   predicate: p => p.riskTypes.includes('docMissing') && p.source === 'LGAP' },
       { id: 'resources', tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore < 60 },
-      { id: 'bgA3',      tier: 'T1', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
+      { id: 'bgA3',      tier: 'T3', rt: 'vague',    predicate: p => p.riskTypes.includes('docMissing') && p.reasonableScore >= 60 },
       { id: 'surge',     tier: 'T2', rt: 'timing',   predicate: p => p.riskTypes.includes('timeAnomaly') },
-      { id: 'unconn',    tier: 'T2', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore < 60 },
-      { id: 'fakeA4',    tier: 'T1', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore >= 60 }
+      { id: 'unconn',    tier: 'T3', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore < 60 },
+      { id: 'fakeA4',    tier: 'T2', rt: 'behavior', predicate: p => p.riskTypes.includes('behavior') && p.reasonableScore >= 60 }
     ];
     function computeRuleHits(p) { return RULES.filter(r => { try { return r.predicate(p); } catch (_) { return false; } }); }
     function paymentTier(p) {
@@ -829,21 +829,23 @@
     // Full rule catalogue matching docs Updated-0714 (14 rules), used for the
     // "what enters the queue" tier breakdown. Detection RULES above are an
     // approximation over synthetic fields; this catalogue is the Legal-facing list.
+    // Legal-facing rule catalogue — matches docs Payment Monitoring Scenarios-0727.xlsx
+    // → Updated-BSR tab → Final Confirmed Logic-ECO (13 rules). Detection RULES above are
+    // an approximation over synthetic fields; this catalogue is the authoritative list.
     const RULE_CATALOG = [
-      { tier: 'T2', rt: 'geo',      en: 'High-risk jurisdiction / CPI',              zh: '高风险辖区 / CPI' },
-      { tier: 'T2', rt: 'geo',      en: 'FATF / sanctioned jurisdiction',            zh: 'FATF / 制裁辖区' },
-      { tier: 'T2', rt: 'geo',      en: 'Tax haven / offshore routing',              zh: '避税天堂 / 离岸中转' },
-      { tier: 'T1', rt: 'crime',    en: 'Criminal / civil / regulatory proceedings', zh: '刑事 / 民事 / 监管诉讼' },
-      { tier: 'T3', rt: 'pep',      en: 'PEP-owned or -operated',                    zh: 'PEP 拥有或经营' },
-      { tier: 'T1', rt: 'geo',      en: 'Bank ≠ principal place of business (A1)',   zh: '银行属地 ≠ 主要经营地 (A1)' },
-      { tier: 'T1', rt: 'geo',      en: 'Payer ≠ invoice origin country (A2)',       zh: '付款方国 ≠ 发票开具地 (A2)' },
-      { tier: 'T3', rt: 'docgap',   en: 'No linked PO / contract',                   zh: '无关联 PO / 合同' },
-      { tier: 'T3', rt: 'vague',    en: 'Resources not commensurate',                zh: '资源与活动规模不相称' },
-      { tier: 'T1', rt: 'vague',    en: 'Questionable background (scope ≠ business, A3)', zh: '背景可疑 / 主营≠业务 (A3)' },
-      { tier: 'T2', rt: 'timing',   en: 'Surge in payments to new vendor',           zh: '对新供应商付款突增' },
-      { tier: 'T2', rt: 'timing',   en: 'Weekend / holiday transaction',             zh: '周末 / 节假日交易' },
-      { tier: 'T2', rt: 'behavior', en: 'Funds to an unconnected account',           zh: '汇入无关联账户' },
-      { tier: 'T1', rt: 'behavior', en: 'Fake invoice (A4)',                         zh: '虚假发票 (A4)' }
+      { tier: 'T2', rt: 'geo',      en: 'High-risk jurisdiction / CPI ≤ 40',                        zh: '高风险辖区 / CPI ≤ 40' },
+      { tier: 'T2', rt: 'geo',      en: 'FATF black / grey list',                                   zh: 'FATF 黑 / 灰名单' },
+      { tier: 'T2', rt: 'geo',      en: 'Offshore / tax-haven (receiving-bank country)',            zh: '离岸 / 避税天堂（收款银行国）' },
+      { tier: 'T1', rt: 'crime',    en: 'Criminal / civil / regulatory proceedings (D&B)',          zh: '刑事 / 民事 / 监管诉讼（D&B）' },
+      { tier: 'T3', rt: 'pep',      en: 'PEP-owned or -operated (D&B)',                             zh: 'PEP 拥有或经营（D&B）' },
+      { tier: 'T1', rt: 'geo',      en: 'Payer / vendor / invoice / bank country not all the same', zh: '付款方 / 供应商 / 发票 / 银行 四国不一致' },
+      { tier: 'T3', rt: 'docgap',   en: 'Sensitive category & amount ≥ 10M USD',                    zh: '敏感品类 且 金额 ≥ 1,000 万美元' },
+      { tier: 'T1', rt: 'timing',   en: 'Payment > registered capital & established ≤ 12 months (D&B)', zh: '付款 > 注册资本 且 成立 ≤ 12 个月（D&B）' },
+      { tier: 'T3', rt: 'vague',    en: 'Business scope ≠ commodity / category (D&B + LLM)',        zh: '主营业务 ≠ 采购品类（D&B + LLM）' },
+      { tier: 'T2', rt: 'timing',   en: 'Payment surge > 500% vs 24-month average',                 zh: '付款突增（> 24 个月均值 500%）' },
+      { tier: 'T3', rt: 'behavior', en: 'Account holder name ≠ vendor name',                        zh: '收款户名 ≠ 供应商名' },
+      { tier: 'T2', rt: 'behavior', en: 'Fake invoice (OCR + LLM)',                                 zh: '虚假发票（OCR + LLM）' },
+      { tier: 'T2', rt: 'behavior', en: 'Bank account changed ≥ 2× within 12 months',              zh: '收款账户 12 个月内变更 ≥ 2 次' }
     ];
     function assignPrecisionHits() {
       payments.forEach(p => {
