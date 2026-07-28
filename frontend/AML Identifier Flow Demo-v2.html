@@ -290,6 +290,15 @@
     .filter-row select { flex: 1 1 104px; min-width: 78px; max-width: 150px; text-overflow: ellipsis; }
     .filter-date-wrap { gap: 5px; font-size: 12px; color: var(--muted); font-weight: 700; padding-left: 0; flex: 0 1 auto; white-space: nowrap; }
     .filter-date-wrap .date-input { font-size: 12px; flex: 1 1 84px; width: 84px; min-width: 68px; padding: 0 7px; }
+    .date-pop { position: relative; flex: 1 1 118px; min-width: 92px; max-width: 160px; }
+    .date-pop > summary { list-style: none; cursor: pointer; height: 38px; width: 100%; box-sizing: border-box; padding: 0 9px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; color: var(--ink); display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .date-pop > summary::-webkit-details-marker { display: none; }
+    .date-pop[open] > summary { border-color: var(--primary); }
+    .date-pop-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .date-pop-caret { color: var(--muted); font-weight: 700; flex: 0 0 auto; }
+    .date-pop-body { position: absolute; top: 44px; left: 0; z-index: 40; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 28px rgba(23,49,63,.16); padding: 12px; display: grid; gap: 10px; }
+    .date-pop-body .filter-date-wrap { display: flex; align-items: center; gap: 8px; height: 38px; }
+    .date-pop-body .date-input { width: 118px; flex: 0 0 118px; }
     .filter-actions { display: flex; justify-content: flex-start; gap: 10px; margin-top: 12px; }
     .filter-actions .btn { padding: 0 18px; height: 38px; min-width: 96px; white-space: nowrap; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
     .filter-active { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
@@ -512,8 +521,7 @@
               <select id="dashPayingEntity"></select>
               <select id="dashRegion"></select>
               <select id="dashStatus"></select>
-              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="dashDateFrom" autocomplete="off" /></label>
-              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="dashDateTo" autocomplete="off" /></label>
+              <details class="date-pop"><summary><span class="date-pop-text" id="dashDateLabel"></span><span class="date-pop-caret">⌄</span></summary><div class="date-pop-body"><label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="dashDateFrom" autocomplete="off" /></label><label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="dashDateTo" autocomplete="off" /></label></div></details>
             </div>
             <div class="filter-actions">
               <button class="btn btn-soft dash-quick" data-range="30" data-i18n="rangeLast30"></button>
@@ -567,8 +575,7 @@
               <select id="filterPayingEntity"></select>
               <select id="filterRegion"></select>
               <select id="filterStatus"></select>
-              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="filterDateFrom" autocomplete="off" /></label>
-              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="filterDateTo" autocomplete="off" /></label>
+              <details class="date-pop"><summary><span class="date-pop-text" id="filterDateLabel"></span><span class="date-pop-caret">⌄</span></summary><div class="date-pop-body"><label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="filterDateFrom" autocomplete="off" /></label><label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="filterDateTo" autocomplete="off" /></label></div></details>
             </div>
             <div class="filter-actions">
               <button class="btn btn-soft" id="resetFilters" data-i18n="filterReset"></button>
@@ -642,8 +649,7 @@
               <select id="wbPayingEntity"></select>
               <select id="wbRegion"></select>
               <select id="wbStatus"></select>
-              <label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="wbDateFrom" autocomplete="off" /></label>
-              <label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="wbDateTo" autocomplete="off" /></label>
+              <details class="date-pop"><summary><span class="date-pop-text" id="wbDateLabel"></span><span class="date-pop-caret">⌄</span></summary><div class="date-pop-body"><label class="filter-date-wrap"><span data-i18n="filterFrom"></span><input type="text" class="date-input" id="wbDateFrom" autocomplete="off" /></label><label class="filter-date-wrap"><span data-i18n="filterTo"></span><input type="text" class="date-input" id="wbDateTo" autocomplete="off" /></label></div></details>
             </div>
             <div class="filter-actions">
               <button class="btn btn-soft" id="wbReset" data-i18n="filterReset"></button>
@@ -730,7 +736,7 @@
         signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Total', 'Review Status', 'Reviewed By', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
-        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRegion: 'Region', filterStatus: 'Status', rvPending: 'Pending review', wbFilterTitle: 'Filters', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search by payment ID, vendor name', noPaymentsMatch: 'No payments match the current filters.',
+        paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRegion: 'Region', filterStatus: 'Status', rvPending: 'Pending review', wbFilterTitle: 'Filters', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', filterDateRange: 'Date range', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search by payment ID, vendor name', noPaymentsMatch: 'No payments match the current filters.',
         riskTypes: { geo: 'Geographic Risks', crime: 'Criminal, Civil or Regulatory Proceedings', pep: 'Adverse Media (PEP)', docgap: 'Documentation Gaps', vague: 'Vague Descriptions', timing: 'Timing Irregularities', behavior: 'Behavioral Indicators' },
         riskTypeDescriptions: { geographic: 'High-risk jurisdictions, offshore entities, country/bank/invoice mismatch.', pep: 'Politically Exposed Person ownership or relationship.', adverseMedia: 'Negative media on corruption, fraud, or sanctions exposure.', docMissing: 'Missing PO, contract, or business mismatch vs. category.', timeAnomaly: 'New vendor surges, weekend/holiday transactions.', behavior: 'Suspicious account routing, fake invoices, irregular pattern.' },
         clickHitLists: 'click for hit lists', review: 'Review', markReviewed: 'Mark Reviewed', reviewNow: 'Review Now', backDashboard: 'Back to Dashboard', vendorProfileEyebrow: 'Vendor Risk Profile', vendorProfileSubtitle: 'See which lists the vendor hit and how each signal contributes to vendor score.', vendorSnapshot: 'Vendor Snapshot', scoreExplanation: 'Score explanation', whyVendorHigh: 'Why this vendor has a high risk score', vendorScore: 'Vendor Score', countryRegion: 'Country / Region', currentVendorScore: 'Current Vendor Score', previousVendorScore: 'Previous Vendor Score', scoreChange: 'Score Change', weight: 'Weight',
@@ -791,7 +797,7 @@
         signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '总分', '复核状态', '复核人', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
-        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRegion: '地区', filterStatus: '复核状态', rvPending: '待复核', wbFilterTitle: '筛选', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商名称', noPaymentsMatch: '没有符合当前筛选条件的付款。',
+        paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRegion: '地区', filterStatus: '复核状态', rvPending: '待复核', wbFilterTitle: '筛选', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', filterDateRange: '日期范围', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商名称', noPaymentsMatch: '没有符合当前筛选条件的付款。',
         riskTypes: { geo: '地理风险', crime: '刑事、民事或监管诉讼', pep: '负面媒体（PEP）', docgap: '单据缺失', vague: '模糊描述', timing: '时间异常', behavior: '行为指标' },
         riskTypeDescriptions: { geographic: '高风险司法管辖区、离岸实体、国家/银行/发票不一致。', pep: '政治公众人物持股或关联关系。', adverseMedia: '腐败、欺诈、制裁相关负面媒体报道。', docMissing: '缺少 PO、合同，或主营业务与品类不匹配。', timeAnomaly: '新供应商付款突增、周末或节假日交易。', behavior: '可疑账户路由、虚假发票、异常付款模式。' },
         clickHitLists: '点击查看命中名单', review: '查看', markReviewed: '标记已复核', reviewNow: '立即复核', backDashboard: '返回风险总览', vendorProfileEyebrow: '供应商风险画像', vendorProfileSubtitle: '查看供应商命中了哪些名单，以及每个信号如何贡献供应商分数。', vendorSnapshot: '供应商概览', scoreExplanation: '评分解释', whyVendorHigh: '为什么该供应商风险分较高', vendorScore: '供应商分', countryRegion: '国家 / 地区', currentVendorScore: '当前供应商分', previousVendorScore: '上次供应商分', scoreChange: '分数变化', weight: '权重',
@@ -1163,6 +1169,8 @@
       const kw = $('Keyword'); if (kw) { kw.value = draft.keyword; kw.placeholder = t('searchPlaceholder'); }
       if ($('DateFrom')) setDateInput($('DateFrom'), draft.dateFrom);
       if ($('DateTo')) setDateInput($('DateTo'), draft.dateTo);
+      const lbl = $('DateLabel');
+      if (lbl) lbl.textContent = (!draft.dateFrom && !draft.dateTo) ? t('filterDateRange') : `${draft.dateFrom ? fmtDate(draft.dateFrom) : '…'} – ${draft.dateTo ? fmtDate(draft.dateTo) : '…'}`;
     }
     function bindFilterRow(prefix, draft, onApply) {
       [['Tier', 'tier'], ['RiskType', 'riskType'], ['Source', 'source'], ['PayingEntity', 'payingEntity'], ['Region', 'region'], ['Status', 'status']]
@@ -2742,6 +2750,7 @@
       if (document.getElementById('case').classList.contains('active')) openCase(currentPayment);
     }
 
+    document.addEventListener('click', e => { document.querySelectorAll('details.date-pop[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
     document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.nav)));
     document.querySelectorAll('#sources [data-srctab]').forEach(btn => btn.addEventListener('click', () => showSourceTab(btn.dataset.srctab)));
     document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => { lang = btn.dataset.lang; applyLanguage(); }));
