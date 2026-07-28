@@ -282,13 +282,14 @@
     .status-pill.title-pill { font-size: 13px; padding: 6px 14px; align-self: center; }
 
     .filter-bar { padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fbfdfe; border-radius: var(--radius) var(--radius) 0 0; }
-    .filter-row { display: flex; column-gap: 14px; row-gap: 10px; align-items: center; flex-wrap: wrap; }
-    .filter-row > * { flex-shrink: 0; height: 38px; box-sizing: border-box; display: inline-flex; align-items: center; vertical-align: middle; margin: 0; }
-    .filter-row select, .filter-row input[type="search"], .filter-row .date-input { height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: white; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
-    .filter-row input[type="search"] { flex: 1 0 180px; min-width: 160px; max-width: 250px; }
-    .filter-row select { min-width: 130px; max-width: 180px; }
-    .filter-date-wrap { gap: 8px; font-size: 12px; color: var(--muted); font-weight: 700; padding-left: 4px; }
-    .filter-date-wrap .date-input { font-size: 12px; width: 120px; padding: 0 10px; }
+    .filter-row { display: flex; column-gap: 8px; row-gap: 10px; align-items: center; flex-wrap: nowrap; }
+    @media (max-width: 1180px) { .filter-row { flex-wrap: wrap; } }
+    .filter-row > * { flex-shrink: 1; min-width: 0; height: 38px; box-sizing: border-box; display: inline-flex; align-items: center; vertical-align: middle; margin: 0; }
+    .filter-row select, .filter-row input[type="search"], .filter-row .date-input { height: 38px; padding: 0 9px; border: 1px solid var(--line); border-radius: 10px; background: white; font-size: 13px; color: var(--ink); font-family: inherit; box-sizing: border-box; }
+    .filter-row input[type="search"] { flex: 1 1 130px; min-width: 96px; max-width: 200px; }
+    .filter-row select { flex: 1 1 104px; min-width: 78px; max-width: 150px; text-overflow: ellipsis; }
+    .filter-date-wrap { gap: 5px; font-size: 12px; color: var(--muted); font-weight: 700; padding-left: 0; flex: 0 1 auto; white-space: nowrap; }
+    .filter-date-wrap .date-input { font-size: 12px; flex: 1 1 84px; width: 84px; min-width: 68px; padding: 0 7px; }
     .filter-actions { display: flex; justify-content: flex-start; gap: 10px; margin-top: 12px; }
     .filter-actions .btn { padding: 0 18px; height: 38px; min-width: 96px; white-space: nowrap; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
     .filter-active { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
