@@ -1628,10 +1628,6 @@
     function ccodeLabel(c) { const m = CCODE[c]; return m ? (lang === 'zh' ? m.zh : m.en) : (c || '—'); }
     // Group counterparty countries into AML-relevant regions so the chart shows a real
     // distribution (each vendor sits in its own country, so raw country counts are flat).
-    const REGION_OF = { SG: 'apac', MY: 'apac', CN: 'apac', HK: 'apac', JP: 'apac', KR: 'apac', TH: 'apac', VN: 'apac', ID: 'apac', KZ: 'casia', UZ: 'casia', AE: 'meast', TR: 'meast', SA: 'meast', QA: 'meast', BVI: 'offshore', PA: 'offshore', KY: 'offshore', SC: 'offshore', DE: 'europe', GB: 'europe', NL: 'europe', US: 'namer', RU: 'eurasia' };
-    const REGION_LABEL = { apac: { en: 'Asia-Pacific', zh: '亚太' }, meast: { en: 'Middle East', zh: '中东' }, offshore: { en: 'Offshore hubs', zh: '离岸中心' }, casia: { en: 'Central Asia', zh: '中亚' }, europe: { en: 'Europe', zh: '欧洲' }, namer: { en: 'North America', zh: '北美' }, eurasia: { en: 'Eurasia', zh: '欧亚' }, other: { en: 'Other', zh: '其他' } };
-    function regionOfCountry(c) { return REGION_OF[c] || 'other'; }
-    function regionLabel(key) { const m = REGION_LABEL[key]; return m ? (lang === 'zh' ? m.zh : m.en) : key; }
     function gradeLabel(k) { const m = { High: { en: 'High', zh: '高风险' }, Medium: { en: 'Medium', zh: '中风险' }, Low: { en: 'Low', zh: '低风险' } }[k]; return lang === 'zh' ? m.zh : m.en; }
     const MON_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     function monthLabel(key) { const [y, m] = key.split('-'); return lang === 'zh' ? (Number(m) + '月') : (MON_EN[Number(m) - 1] + " '" + y.slice(2)); }
@@ -1640,7 +1636,7 @@
       const grade = { T1: 0, T2: 0, T3: 0 };
       ps.forEach(p => { const tr = paymentTier(p); if (tr) grade[tr]++; });
       const region = {};
-      ps.forEach(p => { const tr = paymentTier(p); if (!tr) return; const reg = regionOfCountry(vendorCountry(p.vendor)); (region[reg] = region[reg] || { k: reg, T1: 0, T2: 0, T3: 0, total: 0 }); region[reg][tr]++; region[reg].total++; });
+      ps.forEach(p => { const tr = paymentTier(p); if (!tr) return; const reg = paymentGeo(p); (region[reg] = region[reg] || { k: reg, T1: 0, T2: 0, T3: 0, total: 0 }); region[reg][tr]++; region[reg].total++; });
       const regionArr = Object.values(region).sort((a, b) => b.total - a.total).slice(0, 6);
       const rule = {};
       ps.forEach(p => computeRuleHits(p).forEach(r => { (rule[r.id] = rule[r.id] || { id: r.id, rt: r.rt, v: 0 }).v++; }));
@@ -1738,7 +1734,7 @@
       const gSegs = TIER_KEYS.map(k => ({ value: d.grade[k], color: TIER_BRIGHT[k] }));
       document.getElementById('gradeChart').innerHTML =
         `<div class="mc-donut-wrap">${miniDonut(gSegs, { label: t('mcTotal'), value: flagged })}<div class="mc-vlegend">${TIER_KEYS.map(k => `<span><i style="background:${TIER_BRIGHT[k]}"></i>${k}<b>${d.grade[k]}</b></span>`).join('')}</div></div>`;
-      document.getElementById('regionChart').innerHTML = miniHBarsStacked(d.regionArr.map(r => ({ label: regionLabel(r.k), T1: r.T1, T2: r.T2, T3: r.T3, total: r.total })), TIER_KEYS, TIER_BRIGHT) + tierLegendInline();
+      document.getElementById('regionChart').innerHTML = miniHBarsStacked(d.regionArr.map(r => ({ label: geoLabel(r.k), T1: r.T1, T2: r.T2, T3: r.T3, total: r.total })), TIER_KEYS, TIER_BRIGHT) + tierLegendInline();
       document.getElementById('ruleChart').innerHTML = miniTreemap(d.ruleArr.map(r => ({ label: t('ruleNames')[r.id], value: r.v, color: RT_BRIGHT[r.rt] || '#4dabf7' })));
       document.getElementById('quarterChart').innerHTML = miniColumns(d.quarterArr.map(c => ({ label: monthLabel(c.key), total: c.total, segs: TIER_KEYS.slice().reverse().map(k => ({ color: TIER_BRIGHT[k], value: c[k] })) }))) + tierLegendInline();
       syncDashHeights();
