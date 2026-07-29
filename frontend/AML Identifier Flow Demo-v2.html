@@ -718,7 +718,7 @@
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
         metricQueueTotal: 'Alert Queue', metricQueueTotalNote: 'Any rule hit, pending review', metricT1Note: 'Review within 5 work days', metricT2Note: 'Review within 10 work days', metricVendorAlerts: 'Vendor-level alerts', metricVendorAlertsNote: 'Entry B', metricOverdue: 'Overdue', metricOverdueNote: 'Past SLA, unreviewed', metricReviewed: 'Reviewed', metricReviewedNote: n => `${n} confirmed fraud`,
         vendorPanelTitle: 'Vendor Risk Score Panel', vendorPanelDesc: 'Click a vendor to inspect hit lists and score contribution.',
-        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days', mcTotal: 'Payments', tierNone: 'No tier', ruleNoneNote: n => `${n} payment${n === 1 ? '' : 's'} hit no rule (not shown above)`, distTitle: 'Distribution Analytics', distDesc: 'Flagged payments across tier, region, rule and month.', gradeChartTitle: 'Grade Distribution', gradeChartSub: 'Flagged payments by alert tier.', regionChartTitle: 'Regional Distribution', regionChartSub: 'By counterparty region, stacked by tier.', ruleChartTitle: 'Rule-Based Distribution', ruleChartSub: 'How often each rule is triggered.', quarterChartTitle: 'Monthly Distribution', quarterChartSub: 'Per month, stacked by tier.',
+        riskTypeBreakdownTitle: 'Alert Tier Distribution', riskTypeBreakdownDesc: 'Suspicious payments by alert tier. Click a slice to drill into the list.', viewFullList: 'View Full List', donutInsight: 'Each payment may hit multiple risk dimensions. Slice size reflects how often each dimension contributes to flagged payments this month.', donutInsightLevel: 'Risk level is derived from the total score: High ≥ 70, Medium 50–69, Low < 50.', donutTabByType: 'By Risk Type', donutTabByLevel: 'By Risk Level', donutTabByTier: 'By Alert Tier', donutInsightTier: 'Tier is driven by the Accuracy=100% rules. T1 = hits any 1 rule (a single deterministic hit is enough); T2 = vendor-level signal only (no hard hit); T3 = scored gray zone. High-precision hits jump out of the weighted average rather than being diluted.', highRiskTag: '8 high risk', todoTitle: "Today's Review Queue", todoDesc: 'Sorted by urgency — overdue first, then by SLA deadline. Click Review to open a case directly.', todoEmpty: 'All caught up — no pending reviews.', todoView: 'Review', todoViewAll: n => `View all ${n} in Workbench →`, slaOverdue: n => `${n}d overdue`, slaToday: 'Due today', slaLeft: n => `${n}d left`, rankTitle: 'Top 10 Risk Ranking', rankDesc: 'Highest scores in the selected window. Switch tabs by score type.', rankTabVendor: 'Vendor Score', rankTabPayment: 'Payment Score', rankTabOverall: 'Overall Score', dashWindowLabel: 'Time window', rangeLast30: 'Last 30 days', rangeLast90: 'Last 90 days', mcTotal: 'Payments', tierNone: 'No tier', riskTypesShort: { geo: 'Geographic', crime: 'Criminal', pep: 'PEP', docgap: 'Doc gaps', vague: 'Vague', timing: 'Timing', behavior: 'Behavioral' }, ruleNoneNote: n => `${n} payment${n === 1 ? '' : 's'} hit no rule (not shown above)`, distTitle: 'Distribution Analytics', distDesc: 'Flagged payments across tier, region, rule and month.', gradeChartTitle: 'Grade Distribution', gradeChartSub: 'Flagged payments by alert tier.', regionChartTitle: 'Regional Distribution', regionChartSub: 'By counterparty region, stacked by tier.', ruleChartTitle: 'Rule-Based Distribution', ruleChartSub: 'How often each rule is triggered.', quarterChartTitle: 'Monthly Distribution', quarterChartSub: 'Per month, stacked by tier.',
         navSignals: 'Signal Ledger', navSignalsSub: 'PPV tracking', navAlertQueue: 'Alert Queue', navAlertQueueSub: 'Dual-entry worklist', alertQueueEyebrow: 'Unified Worklist · Two Entry Points',
         tierLabels: { T1: 'High', T2: 'Medium', T3: 'Low' }, noTierLabel: 'No rule hit · full list only',
         tierDesc: { T1: 'Priority Review (5 working days)', T2: 'Standard Review (10 working days)', T3: 'Notification (Informational only)' },
@@ -779,7 +779,7 @@
         metrics: [['受监控付款', '演示数据集']],
         metricQueueTotal: '告警队列', metricQueueTotalNote: '命中任意规则 · 待复核', metricT1Note: '5 个工作日内复核', metricT2Note: '10 个工作日内复核', metricVendorAlerts: '供应商级告警', metricVendorAlertsNote: '入口 B', metricOverdue: '已超时', metricOverdueNote: '超时限未复核', metricReviewed: '已复核', metricReviewedNote: n => `其中 ${n} 确认欺诈`,
         vendorPanelTitle: '供应商风险评分', vendorPanelDesc: '点击供应商查看命中的名单与得分来源。',
-        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天', mcTotal: '付款', tierNone: '未分类', ruleNoneNote: n => `${n} 笔未命中任何规则（未计入上图）`, distTitle: '分布分析', distDesc: '按等级、地区、规则与月份的可疑付款分布。', gradeChartTitle: '评级分布', gradeChartSub: '按告警等级（Tier）划分的可疑付款。', regionChartTitle: '地区分布', regionChartSub: '按交易对手地区，按等级堆叠。', ruleChartTitle: '规则命中分布', ruleChartSub: '各规则被触发的频次。', quarterChartTitle: '月度分布', quarterChartSub: '各月可疑付款，按等级堆叠。',
+        riskTypeBreakdownTitle: '告警等级分布', riskTypeBreakdownDesc: '按告警等级（Tier）的可疑付款构成。点击切片下钻到列表。', viewFullList: '查看完整列表', donutInsight: '每笔付款可能命中多个风险维度。切片大小反映本月每个维度在可疑付款中的出现频次。', donutInsightLevel: '风险等级由总分推导：High ≥ 70，Medium 50–69，Low < 50。', donutTabByType: '按风险维度', donutTabByLevel: '按风险等级', donutTabByTier: '按告警等级', donutInsightTier: '告警等级由「准确率=100%」规则决定。T1 = 命中任意 1 条（单条确定性命中即可）；T2 = 仅命中供应商级信号（无硬规则命中）；T3 = 进入加权评分的灰色地带。高精度命中会「跳出」加权平均，而不是被稀释。', highRiskTag: '8 个高风险', todoTitle: '今日待复核队列', todoDesc: '按紧急度排序 —— 超时优先，其次按 SLA 时限。点击"复核"直接进入该笔处理。', todoEmpty: '已全部处理 —— 暂无待复核。', todoView: '复核', todoViewAll: n => `在工作台查看全部 ${n} 条 →`, slaOverdue: n => `超时 ${n} 天`, slaToday: '今天到期', slaLeft: n => `剩 ${n} 天`, rankTitle: 'Top 10 风险排行', rankDesc: '所选时间窗内评分最高的记录。按评分类型切换标签。', rankTabVendor: '供应商评分', rankTabPayment: '付款评分', rankTabOverall: '综合评分', dashWindowLabel: '时间窗口', rangeLast30: '近 30 天', rangeLast90: '近 90 天', mcTotal: '付款', tierNone: '未分类', riskTypesShort: { geo: '地理', crime: '诉讼', pep: 'PEP', docgap: '文档缺口', vague: '描述模糊', timing: '时序', behavior: '行为' }, ruleNoneNote: n => `${n} 笔未命中任何规则（未计入上图）`, distTitle: '分布分析', distDesc: '按等级、地区、规则与月份的可疑付款分布。', gradeChartTitle: '评级分布', gradeChartSub: '按告警等级（Tier）划分的可疑付款。', regionChartTitle: '地区分布', regionChartSub: '按交易对手地区，按等级堆叠。', ruleChartTitle: '规则命中分布', ruleChartSub: '各规则被触发的频次。', quarterChartTitle: '月度分布', quarterChartSub: '各月可疑付款，按等级堆叠。',
         navSignals: '信号台账', navSignalsSub: 'PPV 追踪', navAlertQueue: '告警队列', navAlertQueueSub: '双入口工作清单', alertQueueEyebrow: '统一工作清单 · 双入口',
         tierLabels: { T1: '高', T2: '中', T3: '低' }, noTierLabel: '未触发规则 · 仅全量列表',
         tierDesc: { T1: '优先复核（5 个工作日）', T2: '标准复核（10 个工作日）', T3: '通知（仅供参考）' },
@@ -1689,7 +1689,7 @@
       const regionArr = Object.values(region);
       const rule = {};
       ps.forEach(p => computeRuleHits(p).forEach(r => { (rule[r.id] = rule[r.id] || { id: r.id, rt: r.rt, v: 0 }).v++; }));
-      const ruleArr = Object.values(rule).sort((a, b) => b.v - a.v).slice(0, 6);
+      const ruleArr = Object.values(rule).sort((a, b) => b.v - a.v);
       const q = {};
       ps.forEach(p => { const tr = paymentTier(p) || 'none'; const key = p.date.slice(0, 7); (q[key] = q[key] || { key, T1: 0, T2: 0, T3: 0, none: 0 }); q[key][tr]++; });
       const quarterArr = Object.values(q).sort((a, b) => a.key < b.key ? -1 : 1);
@@ -1736,6 +1736,7 @@
     const CHART_KEYS = ['T1', 'T2', 'T3', 'none'];
     const CHART_COLORS = { T1: '#ff5d5d', T2: '#ffb02e', T3: '#4dabf7', none: '#b9c7cf' };
     const hiddenSeries = new Set();
+    const hiddenRiskTypes = new Set();
     function chartKeys() { return CHART_KEYS.filter(k => !hiddenSeries.has(k)); }
     function seriesLabel(k) { return k === 'none' ? t('tierNone') : k; }
     const RT_BRIGHT = { geo: '#ff6b6b', crime: '#f06595', pep: '#ffa94d', docgap: '#4dabf7', vague: '#9775fa', timing: '#20c997', behavior: '#5c7cfa' };
@@ -1782,6 +1783,9 @@
         return `<div class="tm-cell" style="left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%;background:${r.color}" title="${r.label}: ${r.value}">${name}${val}</div>`;
       }).join('') + `</div>`;
     }
+    function rtLegendInline(rts) {
+      return `<div class="mc-legend">` + rts.map(rt => `<button class="lg-btn${hiddenRiskTypes.has(rt) ? ' lg-off' : ''}" data-rt="${rt}" title="${t('riskTypes')[rt]}"><i style="background:${RT_BRIGHT[rt] || '#4dabf7'}"></i>${t('riskTypesShort')[rt]}</button>`).join('') + `</div>`;
+    }
     function tierLegendInline() { return `<div class="mc-legend">` + CHART_KEYS.map(k => `<button class="lg-btn${hiddenSeries.has(k) ? ' lg-off' : ''}" data-series="${k}"><i style="background:${CHART_COLORS[k]}"></i>${seriesLabel(k)}</button>`).join('') + `</div>`; }
     function renderDashCharts() {
       if (!document.getElementById('gradeChart')) return;
@@ -1793,12 +1797,20 @@
         `<div class="mc-donut-wrap">${miniDonut(gSegs, { label: t('mcTotal'), value: sum(d.grade) })}<div class="mc-vlegend">${CHART_KEYS.map(k => `<button class="lg-btn${hiddenSeries.has(k) ? ' lg-off' : ''}" data-series="${k}"><i style="background:${CHART_COLORS[k]}"></i>${seriesLabel(k)}<b>${d.grade[k]}</b></button>`).join('')}</div></div>`;
       const regionRows = d.regionArr.map(r => ({ label: geoLabel(r.k), T1: r.T1, T2: r.T2, T3: r.T3, none: r.none, total: sum(r) })).sort((a, b) => b.total - a.total).slice(0, 6);
       document.getElementById('regionChart').innerHTML = miniHBarsStacked(regionRows, keys, CHART_COLORS) + tierLegendInline();
-      document.getElementById('ruleChart').innerHTML = miniTreemap(d.ruleArr.map(r => ({ label: t('ruleNames')[r.id], value: r.v, color: RT_BRIGHT[r.rt] || '#4dabf7' })))
+      const rtsPresent = RISK_TYPE_KEYS.filter(rt => d.ruleArr.some(r => r.rt === rt));
+      const rulesShown = d.ruleArr.filter(r => !hiddenRiskTypes.has(r.rt)).slice(0, 6);
+      document.getElementById('ruleChart').innerHTML = miniTreemap(rulesShown.map(r => ({ label: t('ruleNames')[r.id], value: r.v, color: RT_BRIGHT[r.rt] || '#4dabf7' })))
+        + rtLegendInline(rtsPresent)
         + `<p class="mc-foot">${t('ruleNoneNote')(d.grade.none)}</p>`;
       document.getElementById('quarterChart').innerHTML = miniColumns(d.quarterArr.map(c => ({ label: monthLabel(c.key), total: sum(c), segs: keys.slice().reverse().map(k => ({ color: CHART_COLORS[k], value: c[k] })) }))) + tierLegendInline();
       document.querySelectorAll('#dashboard [data-series]').forEach(btn => btn.addEventListener('click', () => {
         const k = btn.dataset.series;
         hiddenSeries.has(k) ? hiddenSeries.delete(k) : hiddenSeries.add(k);
+        renderDashCharts();
+      }));
+      document.querySelectorAll('#dashboard [data-rt]').forEach(btn => btn.addEventListener('click', () => {
+        const rt = btn.dataset.rt;
+        hiddenRiskTypes.has(rt) ? hiddenRiskTypes.delete(rt) : hiddenRiskTypes.add(rt);
         renderDashCharts();
       }));
       syncDashHeights();
