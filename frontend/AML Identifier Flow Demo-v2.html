@@ -1361,7 +1361,13 @@
       if (p.source === 'LGAP') return `<div><span>${t('lgapCategory')}</span><strong>${c.l2}</strong></div><div><span>${t('lgapSubCategory')}</span><strong>${c.sub}</strong></div>`;
       return `<div><span>${t('l1Commodity')}</span><strong>${c.l1}</strong></div><div><span>${t('l2Commodity')}</span><strong>${c.l2}</strong></div><div><span>${t('finalCommodity')}</span><strong>${c.final}</strong></div>`;
     }
-    function riskTypePill(key) { return `<span class="risk-type-pill" style="background:${RISK_COLORS[key]}">${t('riskTypes')[key]}</span>`; }
+    // A risk type can come from several hit rules; colour it by the highest tier among them.
+    function rtTier(p, rt) {
+      const hits = computeRuleHits(p).filter(r => r.rt === rt);
+      if (!hits.length) return null;
+      return hits.reduce((best, r) => (TIER_RANK[r.tier] < TIER_RANK[best] ? r.tier : best), hits[0].tier);
+    }
+    function riskTypePill(key, tier) { return `<span class="risk-type-pill" style="background:${tier ? TIER_PILL[tier] : RISK_COLORS[key]}">${t('riskTypes')[key]}</span>`; }
     // Concrete hit evidence per rule (mock fields derived from the vendor country /
     // source), so the detail reads e.g. "Payer SG ≠ invoice origin PA → mismatch".
     const CTRY = { CN: ['中国', 'China'], SG: ['新加坡', 'Singapore'], DE: ['德国', 'Germany'], BVI: ['英属维尔京群岛', 'British Virgin Islands'], KY: ['开曼群岛', 'Cayman Islands'], PA: ['巴拿马', 'Panama'], AE: ['阿联酋', 'UAE'], TR: ['土耳其', 'Turkey'], MY: ['马来西亚', 'Malaysia'], HK: ['香港', 'Hong Kong'], VG: ['英属维尔京群岛', 'British Virgin Islands'], VN: ['越南', 'Viet Nam'], MM: ['缅甸', 'Myanmar'], US: ['美国', 'United States'], KZ: ['哈萨克斯坦', 'Kazakhstan'] };
@@ -1411,7 +1417,7 @@
     }
     function overdueTag() { return `<span class="overdue-tag">⚠ ${t('overdueTag')}</span>`; }
     function triggerCell(p) { const hits = computeRuleHits(p); if (!hits.length) return '<span class="small-muted">—</span>'; return `<div class="trigger-pills">${hits.map(r => `<span class="trigger-pill">${t('ruleNames')[r.id]}</span>`).join('')}</div>`; }
-    function riskTypePills(keys) { return `<div class="risk-type-badges">${keys.map(riskTypePill).join('')}</div>`; }
+    function riskTypePills(keys, p) { return `<div class="risk-type-badges">${keys.map(k => riskTypePill(k, p ? rtTier(p, k) : null)).join('')}</div>`; }
 
     // Text date inputs: store ISO (YYYY-MM-DD) in dataset.iso, display per language
     // (EN mm/dd/yyyy, ZH yyyy/mm/dd) so the format never falls back to the browser locale.
@@ -2179,7 +2185,7 @@
       document.getElementById('paymentListRows').innerHTML = visible.map(p => {
         const i = payments.indexOf(p);
         const sc = html => html; // every payment is scored, regardless of tier
-        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(paymentRTKeys(p))}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${vendorScoreFor(p)}</strong>`)}</td><td>${sc(`<strong>${paymentScoreOf(p)}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(levelOf(overallScore(p)))}">${overallScore(p)}</span>`)}</td><td>${reviewStatusChip(p)}</td><td>${reviewerOf(p)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
+        return `<tr${isOverdue(p) ? ' class="row-overdue"' : ''}><td><strong>${p.id}</strong>${p.held ? ' ' + heldTag() : ''}${isOverdue(p) ? ' ' + overdueTag() : ''}</td><td>${p.date}</td><td><span class="tag tag-blue">${p.source}</span></td><td>${p.vendor}</td><td>${p.amount}</td><td>${categoryLabel(p)}</td><td>${riskTypePills(paymentRTKeys(p), p)}</td><td>${triggerCell(p)}</td><td>${sc(`<strong>${vendorScoreFor(p)}</strong>`)}</td><td>${sc(`<strong>${paymentScoreOf(p)}</strong>`)}</td><td>${sc(`<span class="tag ${tagClass(levelOf(overallScore(p)))}">${overallScore(p)}</span>`)}</td><td>${reviewStatusChip(p)}</td><td>${reviewerOf(p)}</td><td><button class="btn btn-soft" data-list-case="${i}">${t('review')}</button></td></tr>`;
       }).join('');
       const empty = document.getElementById('paymentListEmpty');
       empty.textContent = t('noPaymentsMatch');
@@ -2228,7 +2234,7 @@
       // Right = rules hit + concrete details, then the score.
       const hits = computeRuleHits(payment);
       const hitRules = hits.length
-        ? hits.map(r => `<div class="hit-rule"><div class="hit-rule-head"><span class="tier-badge tier-${r.tier}">${r.tier}</span><strong>${t('ruleNames')[r.id]}</strong><span class="risk-type-pill" style="background:${RISK_COLORS[r.rt]}">${t('riskTypes')[r.rt]}</span></div><p class="driver-meta">${ruleEvidence(r.id, payment)}</p></div>`).join('')
+        ? hits.map(r => `<div class="hit-rule"><div class="hit-rule-head"><span class="tier-badge tier-${r.tier}">${r.tier}</span><strong>${t('ruleNames')[r.id]}</strong><span class="risk-type-pill" style="background:${TIER_PILL[r.tier]}">${t('riskTypes')[r.rt]}</span></div><p class="driver-meta">${ruleEvidence(r.id, payment)}</p></div>`).join('')
         : `<p class="driver-meta">${t('noRuleHitDetail')}</p>`;
       const hitSection = `<div class="hit-rules"><div class="eyebrow">${t('hitRulesLabel')}</div>${hitRules}</div>`;
       document.getElementById('caseRiskPanel').innerHTML = tierHero + hitSection + body;
@@ -2399,7 +2405,7 @@
 
     function chatPaymentCard(p) {
       const idx = payments.indexOf(p);
-      return `<div class="chat-result-card"><div class="row1"><span class="pid">${p.id}</span><span class="tag ${tagClass(p.status)}">${p.total}</span></div><div class="row2">${p.date} · ${p.vendor} · ${p.amount}</div><div class="row3">${riskTypePills(paymentRTKeys(p))}<button class="btn btn-soft openbtn" data-chatcase="${idx}">${t('chatOpen')}</button></div></div>`;
+      return `<div class="chat-result-card"><div class="row1"><span class="pid">${p.id}</span><span class="tag ${tagClass(p.status)}">${p.total}</span></div><div class="row2">${p.date} · ${p.vendor} · ${p.amount}</div><div class="row3">${riskTypePills(paymentRTKeys(p), p)}<button class="btn btn-soft openbtn" data-chatcase="${idx}">${t('chatOpen')}</button></div></div>`;
     }
 
     function chatStatsBlock(payments) {
