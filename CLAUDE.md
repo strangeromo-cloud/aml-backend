@@ -34,18 +34,24 @@
 ## 检测模型（前端 HTML 内实现）
 
 **规则表驱动 Tier（2026-07 改，以 Legal 规则表为准）**：
-- 每条规则有**固定的 Tier 和 Risk Type**，来源 = `docs/Payment Monitoring Scenarios-0723.xlsx` 的 `Updated-0714` tab（A 列 Tier、D 列 Risk Type）。前端里是 `RULES` 常量（搜 `const RULES`）。
+- 每条规则有**固定的 Tier、Categories I 和 Risk Type**，来源 = `docs/Payment Monitoring Scenarios-final.xlsx` 的 `Updated-BSR` tab（A 列 Tier、B 列 Categories I、D 列 Risk Type、X/Y/Z 列 = 最终逻辑/触发/评分）。前端里是 `RULES` 常量（搜 `const RULES`），13 条：**5 条 Vendor watchlist（`cat:'vendor'` → 进 Vendor Score）+ 8 条付款类（`cat:'payment'` → 进 Payment Score）**。表里第 15 行（收款银行国 vs 注册国）已标 duplicate 删除、第 16 行（节假日付款）财务已管控 —— 这两条不实现。
 - 一笔 payment 的 **Tier = 它命中的规则里最高等级**（T1>T2>T3）；无命中→T3。**不再是"双入口/付款维度/供应商维度"那套**（旧逻辑已废弃，别改回）。
 - **Risk Type = 命中规则的 Risk Type 集合**，7 类图名称：Geographic Risks / Criminal, Civil or Regulatory Proceedings / Adverse Media (PEP) / Documentation Gaps / Vague Descriptions / Timing Irregularities / Behavioral Indicators（`RISK_TYPE_KEYS` = geo/crime/pep/docgap/vague/timing/behavior）。
 - ⚠️ demo 是合成数据，没有真实"银行国别/发票开具地"等字段，`RULES` 的 predicate 是用旧 `p.riskTypes`（geographic/pep/... 6 个内部信号）+ 条件**近似映射**到图规则。生产化时把 predicate 换成真实字段比对，Tier/RiskType 框架不变。
 - SLA：T1 = 5 个工作日、T2 = 10 个工作日、T3 仅展示不报警（`slaDays()` + `addBusinessDays()`）。
 
-**评分**：每个 payment **不论 Tier 都显示评分**（加权分 = 供应商40%+ML付款35%+合理性25%）。列表页 `sc()` 恒显示、详情页所有 tier 都渲染评分明细（不再只 T3）。
+**评分（2026-07 改，全部实时计算，别再写死字段）**：每个 payment **不论 Tier 都显示评分**。
+- `overallScore(p)` = `vendorScoreFor(p)` × **40%** + `paymentScoreOf(p)` × **60%**（合理性维度已取消，并入 payment）。
+- `paymentScoreOf` = 命中的 8 条付款规则权重之和（`weights.payment`，**必须合计 100**，默认按 Tier 分配：T1 26 / T2 12 / T3 6）。
+- `vendorScoreOf` = Σ(因子强度 × 权重)，`weights.vendor` = Criminals 45 / FATF 15 / CPI 15 / Offshore List 15 / Adverse Media 10。FATF/CPI/Offshore 实时读 `PUBLIC_SOURCES`。
+- `levelOf(s)`：High ≥ 40 / Medium ≥ 24 / 否则 Low。改评分数学后要重新看分布。
+- 列表页 `sc()` 恒显示、详情页所有 tier 都渲染评分明细；排序用 `SORTABLE_COLUMNS` 里的 getter（别回退到 `p.vendorScore` 这类已删字段）。
+- 供应商画像页和付款详情页共用同一个 vendor score 渲染器，两处数字必须一致。
 
 **无命中 → 无 Tier**：`paymentTier` 无命中返回 `null`（不是 T3）。这类 payment **只进全量列表**，不进任何 Tier / 告警队列 / 待办；详情页显示"未触发规则·仅全量列表"（`noTierLabel`）但仍打分。所有用 `paymentTier` 的地方都要容忍 `null`。
 
 **方案 B 已完成（2026-07，全部切到 `RULES` 表）**：
-- **信号台账**：`signalHitMap` / `buildSignalLedger` 的"信号"= 10 条 `RULES`（`t('ruleNames')`），每条显示其固定 tier；`structuralTier` 从 `RULES` 取 tier。候选（`discoveredSignals`）仍走 PPV 分档。
+- **信号台账**：`signalHitMap` / `buildSignalLedger` 的"信号"= 13 条 `RULES`（`t('ruleNames')`），每条显示其固定 tier；`structuralTier` 从 `RULES` 取 tier。候选（`discoveredSignals`）仍走 PPV 分档。
 - **告警队列**：`buildUnifiedQueue` 纯 payment（T1/T2 按新 `paymentTier`），reason = 命中规则名（`paymentRuleNames`）。**已无 vendor-level 条目**。`renderQueueRules` 按 tier 分组列 `RULES`。
 - **触发列**：`triggerCell` 显示命中的新 `RULES` 名。
 - **仍保留但不再驱动检测**：`precisionHits` / `vendorSignalMap` / `computeVendorProfiles` / `HIGH_PRECISION_RULES` 只给供应商画像（`openVendor`）等用；删之前先确认无引用。
