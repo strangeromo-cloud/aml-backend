@@ -346,6 +346,7 @@
     #calibModal .table-wrap { overflow: visible; }
     #calibModal .modal { width: min(860px, 100%); }
     .dir-tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 6px; white-space: nowrap; }
+    .calib-verdict { font-size: 11px; padding: 2px 7px; margin-left: 6px; white-space: nowrap; }
     .dir-up { background: #e7f4ec; color: #1d7a46; }
     .dir-down { background: #fdecec; color: #b3261e; }
     .calib-check { width: 16px; height: 16px; cursor: pointer; }
@@ -728,14 +729,14 @@
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
         signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal — how well each rule is actually performing. Tier and status decisions are made in the monthly calibration.',
         signalHeaders: ['Signal', 'Level', 'Triggers', 'Reviewed', 'Confirmed', 'Measured PPV'],
-        signalLevels: { payment: 'Payment', vendor: 'Vendor' }, signalStatusMap: { validated: 'Validated', candidate: 'Candidate', demoted: 'Demoted' }, scoringFactor: 'Scoring factor', tierObserve: 'Observe',
+        signalLevels: { payment: 'Payment', vendor: 'Vendor' }, signalStatusMap: { validated: 'Validated', candidate: 'Candidate', demoted: 'Demoted' }, calibVerdictMap: { insufficient: 'Not enough samples', validated: 'Evidence holds', demoted: 'Precision too low' }, calibObserve: 'Observe only',
         agentDiscoveredTag: 'Agent-found', runDiscovery: 'Run agent self-learning',
         discoveryEyebrow: 'Hermes Self-Learning', discoveryTitle: 'Agent-discovered candidate signal', discoverySubtitle: 'A recurring pattern the agent learned from confirmed-fraud cases',
         discoveryIntro: n => `Across <strong>${n}</strong> confirmed-fraud cases the agent noticed a recurring pattern not yet in the rule set:`,
         discoveryPatternLabel: 'Discovered pattern', discoveryPatternName: 'Large payment + geographic/behavior risk', discoveryPatternDesc: 'Amount ≥ $200k combined with geographic or behavioral risk signals.',
         discoveryLearnedFrom: 'Learned from (confirmed-fraud payments)', discoveryRec: 'Proposed as a candidate signal — it will be validated at the next monthly calibration (PPV + confidence lower bound), not auto-promoted.', discoveryAdd: 'Add as candidate', discoveryAdded: 'Candidate signal added to the ledger', discoveryAlready: 'Already added as a candidate signal',
         runCalib: 'Run monthly calibration', calibEyebrow: 'Monthly Calibration', calibTitle: 'Proposed signal changes', calibSubtitle: 'Rolling PPV + 95% confidence lower bound. Tier changes need sign-off before they go live.', calibHeaders: ['Signal', 'Reviewed', 'PPV (95% CI)', 'Current → Decision (editable)'], calibCiLegend: 'Bar = 95% confidence interval · dot = PPV point estimate · red dashed line = 8% threshold. A wider bar means fewer samples / more uncertainty.', calibApply: 'Approve & apply selected', calibNoChange: 'no change', applyCol: 'Apply', promoteTag: 'Promote', suggestPromote: 'Suggested promote', demoteTag: 'Demote', suggestDemote: 'Suggested demote', calibNoneSelected: 'Select at least one change to apply.', calibAppliedN: n => `${n} change${n === 1 ? '' : 's'} applied to the signal ledger`, calibApplied: 'Calibration applied to the signal ledger', calibSummary: (now, total, changes) => `Calibration as of <strong>${now}</strong> · ${total} signals evaluated · <strong>${changes}</strong> change${changes === 1 ? '' : 's'} proposed.`,
-        calibRulesTitle: 'Decision rules (applied in order)', calibRuleCandidate: 'Reviewed &lt; 4 samples — too few to judge, keep observing (no verdict). Even a 0% rate here may just be bad luck.', calibRuleValidated: 'Reviewed ≥ 4 AND 95% lower-bound ≥ 8% — trustworthy, kept as a live trigger.', calibRuleDemoted: 'Reviewed ≥ 4 AND 95% lower-bound &lt; 8% — enough data and genuinely not precise → demoted to a scoring factor.', calibRuleNote: 'Sample gate first, then PPV gate. "Demote" is a negative verdict that needs enough evidence — with too few samples we suspend judgment rather than punish a signal for small-sample luck.',
+        calibRulesTitle: 'Decision rules (applied in order)', calibRuleCandidate: 'Reviewed &lt; 4 samples — too few to judge, so the rule keeps its current level (no verdict). Even a 0% rate here may just be bad luck.', calibRuleValidated: 'Reviewed ≥ 4 AND 95% lower-bound ≥ 8% — precise enough, so the rule keeps the Tier Legal assigned it.', calibRuleDemoted: 'Reviewed ≥ 4 AND 95% lower-bound &lt; 8% — enough data and genuinely not precise → one Tier down (T1→T2, T2→T3, and T3→observe only, tracked but no alert).', calibRuleNote: 'Every rule in the Legal sheet carries a Tier, so the ladder is T1 &gt; T2 &gt; T3 &gt; observe only — there is no scoring-factor-only rung. Sample gate first, then PPV gate: "Demote" is a negative verdict that needs enough evidence, so with too few samples we suspend judgment rather than punish a signal for small-sample luck.',
         vendorSignals: { structuring: 'Structuring (split payments)', surge: 'Payment surge (new vendor)', accountChurn: 'Receiving-account churn', cumulativeAlerts: 'Repeated high-precision hits' },
         unifiedQueueTitle: 'Unified Alert Queue', unifiedQueueDesc: 'Payments that hit any rule (T1 / T2 / T3), one worklist sorted by tier.', unifiedQueueCountLabel: n => `${n} alert${n === 1 ? '' : 's'}`, queueKindPayment: 'Payment', queueKindVendor: 'Vendor', queueView: 'View',
         queueRulesTitle: 'What routes an item into this queue', queueRulesDesc: 'Reference for Legal — the rules and signals behind every alert below, and how they map to a tier.',
@@ -789,14 +790,14 @@
         signalsEyebrow: '策略 4 · 反馈闭环', signalsTitle: '信号台账', signalsSubtitle: '每个检测信号都根据「实测 PPV（确认数 ÷ 触发数）」获得自己的告警等级。这张表是法务反馈与告警分级之间的桥梁。',
         signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV —— 反映每条规则的实际表现。等级与状态的决定在月度校准中进行。',
         signalHeaders: ['信号', '层级', '触发次数', '已复核', '确认次数', '实测 PPV'],
-        signalLevels: { payment: '付款层', vendor: '供应商层' }, signalStatusMap: { validated: '已验证', candidate: '待验证', demoted: '已降级' }, scoringFactor: '评分因子', tierObserve: '观察',
+        signalLevels: { payment: '付款层', vendor: '供应商层' }, signalStatusMap: { validated: '已验证', candidate: '待验证', demoted: '已降级' }, calibVerdictMap: { insufficient: '样本不足', validated: '证据支持', demoted: '准确率不足' }, calibObserve: '待观察',
         agentDiscoveredTag: 'Agent 发现', runDiscovery: '运行 Agent 自学习',
         discoveryEyebrow: 'Hermes 自学习', discoveryTitle: 'Agent 发现的候选信号', discoverySubtitle: 'Agent 从已确认欺诈案例中学到的反复出现的新模式',
         discoveryIntro: n => `在 <strong>${n}</strong> 个已确认欺诈案例中，Agent 注意到一个尚未纳入规则集的反复模式：`,
         discoveryPatternLabel: '发现的模式', discoveryPatternName: '大额付款 + 地理/行为风险', discoveryPatternDesc: '金额 ≥ $20 万，且叠加地理或行为风险信号。',
         discoveryLearnedFrom: '学习来源（已确认欺诈付款）', discoveryRec: '建议作为候选信号加入 —— 它会在下次每月校准时按 PPV + 置信下界验证，不会自动转正。', discoveryAdd: '加入候选信号', discoveryAdded: '候选信号已加入台账', discoveryAlready: '已加入为候选信号',
         runCalib: '跑本月校准', calibEyebrow: '每月校准', calibTitle: '本月信号变更建议', calibSubtitle: '基于滚动 PPV + 95% 置信下界。等级变更需审批后才上线。', calibHeaders: ['信号', '已复核', 'PPV（95% 置信区间）', '当前 → 决定（可修改）'], calibCiLegend: '色条 = 95% 置信区间 · 圆点 = PPV 点值 · 红虚线 = 8% 阈值。色条越宽 = 样本越少 / 越不确定。', calibApply: '批准并应用所选', calibNoChange: '无变更', applyCol: '应用', promoteTag: '升级', suggestPromote: '建议升级', demoteTag: '降级', suggestDemote: '建议降级', calibNoneSelected: '请至少勾选一项变更再应用。', calibAppliedN: n => `已应用 ${n} 项变更到信号台账`, calibApplied: '校准已应用到信号台账', calibSummary: (now, total, changes) => `截至 <strong>${now}</strong> 的校准 · 评估 ${total} 个信号 · 建议变更 <strong>${changes}</strong> 项。`,
-        calibRulesTitle: '判定规则（按顺序执行）', calibRuleCandidate: '已复核 &lt; 4 笔 — 样本太少，无法判断，继续观察（不下结论）。此时即便 PPV 为 0% 也可能只是运气差。', calibRuleValidated: '已复核 ≥ 4 且 95% 置信下界 ≥ 8% — 信得过，保留为正式触发器。', calibRuleDemoted: '已复核 ≥ 4 且 95% 置信下界 &lt; 8% — 数据足够且确实不够准 → 降级为评分因子。', calibRuleNote: '先过样本关，再过 PPV 关。"降级"是负面判决，需要足够证据 —— 样本不足时宁可暂缓观察，也不因小样本运气而冤枉一个信号。',
+        calibRulesTitle: '判定规则（按顺序执行）', calibRuleCandidate: '已复核 &lt; 4 笔 — 样本太少，无法判断，维持规则现有等级（不下结论）。此时即便 PPV 为 0% 也可能只是运气差。', calibRuleValidated: '已复核 ≥ 4 且 95% 置信下界 ≥ 8% — 准确率信得过，维持法务规则表给定的 Tier。', calibRuleDemoted: '已复核 ≥ 4 且 95% 置信下界 &lt; 8% — 数据足够且确实不够准 → 下调一级（T1→T2、T2→T3，T3 再降则为「待观察」：继续跟踪但不报警）。', calibRuleNote: '法务规则表里每条规则都有 Tier，所以等级阶梯是 T1 &gt; T2 &gt; T3 &gt; 待观察，不再有「仅评分因子」这一档。先过样本关，再过 PPV 关：「降级」是负面判决，需要足够证据 —— 样本不足时宁可维持现状，也不因小样本运气而冤枉一个信号。',
         vendorSignals: { structuring: '拆分付款（化整为零）', surge: '付款突增（新供应商）', accountChurn: '收款账户频繁变更', cumulativeAlerts: '高精度规则多次命中' },
         unifiedQueueTitle: '统一告警队列', unifiedQueueDesc: '命中任意规则（T1 / T2 / T3）的付款，一份工作清单，按告警等级排序。', unifiedQueueCountLabel: n => `${n} 条告警`, queueKindPayment: '付款', queueKindVendor: '供应商', queueView: '查看',
         queueRulesTitle: '什么会进入告警队列', queueRulesDesc: '供法务参考 —— 下方每条告警背后的规则与信号，以及它们如何对应到告警等级。',
@@ -1201,10 +1202,10 @@
     // rules in monthly calibration — are hidden unless the URL carries ?agent=1.
     const AGENT_UI = new URLSearchParams(location.search).has('agent');
     if (AGENT_UI && document.body) document.body.classList.add('agent-on');
-    // signalId → 'validated' | 'candidate' | 'demoted', set by monthly calibration.
-    // Seed: 'surge' was demoted last month; its PPV has since recovered, so this month's
-    // calibration proposes promoting it back — demonstrates the ↑ Promote path.
-    let signalOverrides = { surge: 'demoted' };
+    // signalId → 'T1' | 'T2' | 'T3' | 'observe', written by monthly calibration once a
+    // Legal admin approves a decision. Empty at start: every rule in the sheet carries a
+    // Tier, so a rule's level IS its Tier until a calibration overrides it.
+    let signalOverrides = {};
     let discoveredSignals = []; // candidate signals the (Hermes-style) self-learning agent surfaces from experience
     const AGENT_DISCOVERY = {
       id: 'agentLargeAmountCombo',
@@ -1962,47 +1963,35 @@
         const reviewed = reviewedPs.length;
         const confirmed = reviewedPs.filter(p => verdict[p.id] === 'confirmedFraud').length;
         const ppv = reviewed ? confirmed / reviewed : null;
-        const ov = signalOverrides[d.id];
-        const status = ov ? overrideStatusOf(ov) : (reviewed >= VALIDATE_MIN_REVIEWS ? 'validated' : 'candidate');
-        return { ...d, triggers: ps.length, reviewed, confirmed, ppv, status };
+        return { ...d, triggers: ps.length, reviewed, confirmed, ppv };
       });
     }
 
-    // Tier eligibility is STRUCTURAL for established signals: high-precision payment
-    // rules are T1 by rule class (the hit is a deterministic fact — expected PPV ~30%),
-    // native vendor signals map to T2. PPV banding is only a reference scale for
-    // agent-discovered candidates; Wilson-based calibration guards validated/demoted.
-    function structuralTier(id, level) {
-      const r = RULES.find(x => x.id === id);
-      return r ? r.tier : null; // established rules carry their fixed tier; candidates fall to PPV banding
-    }
-    function suggestedTier(ppv, id, level) {
-      const forced = overrideTierOf(id);
-      if (forced) return forced;
-      const st = structuralTier(id, level);
-      if (st) return st;
-      if (ppv == null) return null;
-      if (ppv >= 0.5) return 'T1';
-      if (ppv >= 0.15) return 'T2';
-      return 'T3';
-    }
-    // The effective alert tier a signal maps to, given its status + PPV.
-    // A calibration decision is either an explicit tier (implies "validated") or one of
-    // the two non-triggering outcomes. Stored in signalOverrides.
+    // ── Signal levels ────────────────────────────────────────────────
+    // Every rule in the Legal sheet carries a Tier, so there is no "scoring factor only"
+    // rung any more: the ladder is T1 > T2 > T3 > observe, where 'observe' means the
+    // signal is tracked but raises no alert. A rule's CURRENT level is its sheet Tier,
+    // or the level a past calibration overrode it to. Only agent-discovered candidates
+    // start with no Tier and sit at 'observe' until calibration earns them one.
     const TIER_CHOICES = ['T1', 'T2', 'T3'];
-    const CALIB_CHOICES = ['T1', 'T2', 'T3', 'candidate', 'demoted'];
-    function overrideStatusOf(v) { return TIER_CHOICES.includes(v) ? 'validated' : v; }
-    function overrideTierOf(id) { const v = signalOverrides[id]; return TIER_CHOICES.includes(v) ? v : null; }
-    function choiceLabel(c) { return TIER_CHOICES.includes(c) ? c : t('signalStatusMap')[c]; }
-    function choiceTier(c, r) { return c === 'demoted' ? t('scoringFactor') : c === 'candidate' ? t('tierObserve') : c; }
-    // Rank for promote/demote direction: demoted < candidate < T3 < T2 < T1
-    const CHOICE_RANK = { demoted: 0, candidate: 1, T3: 2, T2: 3, T1: 4 };
-    function statusToChoice(st, r) { return st === 'validated' ? (suggestedTier(r.ppv, r.id, r.level) || 'T3') : st; }
-    function effectiveTier(status, ppv, id, level) {
-      if (status === 'demoted') return t('scoringFactor');   // 评分因子
-      if (status === 'candidate') return t('tierObserve');   // 观察，不触发
-      return suggestedTier(ppv, id, level) || t('tierObserve');
+    const CALIB_CHOICES = ['T1', 'T2', 'T3', 'observe'];
+    const CHOICE_RANK = { observe: 0, T3: 1, T2: 2, T1: 3 };
+    function currentChoiceOf(id) {
+      const ov = signalOverrides[id];
+      if (CALIB_CHOICES.includes(ov)) return ov;
+      const r = RULES.find(x => x.id === id);
+      return r ? r.tier : 'observe';
     }
+    // One rung down. T3 → observe (tracked, no alert); observe is the floor.
+    function demoteOne(c) {
+      const i = CALIB_CHOICES.indexOf(c);
+      return i < 0 ? 'observe' : CALIB_CHOICES[Math.min(i + 1, CALIB_CHOICES.length - 1)];
+    }
+    // PPV banding is only a reference scale for agent-discovered candidates — an
+    // established rule that passes calibration simply keeps the Tier Legal assigned it.
+    function ppvBand(ppv) { return ppv == null ? null : ppv >= 0.5 ? 'T1' : ppv >= 0.15 ? 'T2' : 'T3'; }
+    function keepOrEarn(cur, ppv) { return cur === 'observe' ? (ppvBand(ppv) || 'T3') : cur; }
+    function choiceLabel(c) { return TIER_CHOICES.includes(c) ? c : t('calibObserve'); }
 
     function renderSignals() {
       document.getElementById('signalHeader').innerHTML = t('signalHeaders').map(h => `<th>${h}</th>`).join('');
@@ -2045,18 +2034,22 @@
       const margin = z * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n));
       return { lo: Math.max(0, (center - margin) / denom), up: Math.min(1, (center + margin) / denom) };
     }
+    // Sample gate first, then the PPV gate:
+    //   < 4 reviewed        → no verdict, keep the current level (a 0% rate on 3 samples is luck, not evidence)
+    //   ≥ 4 and Wilson ≥ 8% → keep the current level (an established rule holds its sheet Tier)
+    //   ≥ 4 and Wilson < 8% → demote one rung; T3 lands on 'observe'
     function buildCalibration() {
       return buildSignalLedger().map(s => {
         const ci = wilson(s.confirmed, s.reviewed);
-        let proposed;
-        if (s.reviewed < CALIB_MIN_SAMPLES) proposed = 'candidate';
-        else if (ci.lo >= CALIB_PROMOTE) proposed = 'validated';
-        else proposed = 'demoted';
-        return { id: s.id, name: s.name, level: s.level, samples: s.reviewed, ppv: s.ppv, wl: ci.lo, wu: ci.up, current: s.status, proposed, changed: s.status !== proposed };
+        const current = currentChoiceOf(s.id);
+        let verdict, proposed;
+        if (s.reviewed < CALIB_MIN_SAMPLES) { verdict = 'insufficient'; proposed = current; }
+        else if (ci.lo >= CALIB_PROMOTE) { verdict = 'validated'; proposed = keepOrEarn(current, s.ppv); }
+        else { verdict = 'demoted'; proposed = demoteOne(current); }
+        return { id: s.id, name: s.name, level: s.level, samples: s.reviewed, ppv: s.ppv, wl: ci.lo, wu: ci.up, verdict, current, proposed, changed: current !== proposed };
       });
     }
-    // Promote (candidate/demoted → validated) vs demote (→ demoted), for the UI tag.
-    // Second line under the decision: what the currently-selected choice actually does.
+    // Second line under the decision: what the currently-selected level does to this rule.
     function effectHtml(choice, current) {
       if (choice === current) return `<span class="small-muted">· ${t('calibNoChange')}</span>`;
       const up = CHOICE_RANK[choice] > CHOICE_RANK[current];
@@ -2064,10 +2057,8 @@
     }
     function directionTag(r) {
       if (!r.changed) return '';
-      const rank = { demoted: 0, candidate: 1, validated: 2 };
-      if (rank[r.proposed] > rank[r.current]) return `<span class="dir-tag dir-up">↑ ${t('suggestPromote')}</span>`;
-      if (rank[r.proposed] < rank[r.current]) return `<span class="dir-tag dir-down">↓ ${t('suggestDemote')}</span>`;
-      return '';
+      const up = CHOICE_RANK[r.proposed] > CHOICE_RANK[r.current];
+      return `<span class="dir-tag ${up ? 'dir-up' : 'dir-down'}">${up ? '↑ ' + t('suggestPromote') : '↓ ' + t('suggestDemote')}</span>`;
     }
     function renderCalibration() {
       const rows = buildCalibration();
@@ -2076,22 +2067,20 @@
       document.getElementById('calibSummary').innerHTML = `
         <div class="calib-rules">
           <div class="invest-label">${t('calibRulesTitle')}</div>
-          <div class="calib-rule"><span class="tag tag-gray">${t('signalStatusMap').candidate}</span><span>${t('calibRuleCandidate')}</span></div>
-          <div class="calib-rule"><span class="tag tag-green">${t('signalStatusMap').validated}</span><span>${t('calibRuleValidated')}</span></div>
-          <div class="calib-rule"><span class="tag tag-red">${t('signalStatusMap').demoted}</span><span>${t('calibRuleDemoted')}</span></div>
+          <div class="calib-rule"><span class="tag tag-gray">${t('calibVerdictMap').insufficient}</span><span>${t('calibRuleCandidate')}</span></div>
+          <div class="calib-rule"><span class="tag tag-green">${t('calibVerdictMap').validated}</span><span>${t('calibRuleValidated')}</span></div>
+          <div class="calib-rule"><span class="tag tag-red">${t('calibVerdictMap').demoted}</span><span>${t('calibRuleDemoted')}</span></div>
           <p class="driver-meta calib-rule-note">${t('calibRuleNote')}</p>
         </div>
         <div class="notice">${t('calibSummary')(demoNow(), rows.length, changes)}</div>
         <p class="ci-legend">${t('calibCiLegend')}</p>`;
       document.getElementById('calibRows').innerHTML = rows.map(r => {
-        const statusBadge = st => `<span class="tag ${st === 'validated' ? 'tag-green' : st === 'demoted' ? 'tag-red' : 'tag-gray'}">${t('signalStatusMap')[st]}</span>`;
-        const tierMark = et => ['T1', 'T2', 'T3'].includes(et) ? `<span class="tier-badge tier-${et}">${et}</span>` : `<span class="calib-tier-text">${et}</span>`;
-        const curChoice = statusToChoice(r.current, r);
-        const propChoice = statusToChoice(r.proposed, r);
+        const tierMark = c => TIER_CHOICES.includes(c) ? `<span class="tier-badge tier-${c}">${c}</span>` : `<span class="calib-tier-text">${t('calibObserve')}</span>`;
+        const curChoice = r.current, propChoice = r.proposed;
         // Same vocabulary as the dropdown, so current and decision compare directly.
-        const cell = c => `<span class="calib-cell">${tierMark(choiceTier(c, r))}</span>`;
+        const cell = c => `<span class="calib-cell">${tierMark(c)}</span>`;
         // The proposal is the system's recommendation; a Legal admin can override it here —
-        // T1 / T2 / T3 set the tier directly, the other two keep the signal off the queue.
+        // T1 / T2 / T3 set the tier directly, "observe" keeps the signal off the queue.
         const picker = `<select class="calib-pick" data-cid="${r.id}" data-cur="${curChoice}">` +
           CALIB_CHOICES.map(c => `<option value="${c}"${c === propChoice ? ' selected' : ''}>${choiceLabel(c)}</option>`).join('') + `</select>`;
         const arrow = `<div class="calib-decide"><div class="calib-line">${cell(curChoice)} <span class="calib-arrow">→</span> ${picker}</div>` +
@@ -2105,7 +2094,11 @@
           ciCell = `<div class="ci-cell"><div class="ci-track"><div class="ci-threshold"></div><div class="ci-range ${pass ? 'ci-pass' : 'ci-fail'}" style="left:${lo}%;width:${Math.max(up - lo, 1.5)}%"></div><div class="ci-point" style="left:${pt}%"></div></div><div class="ci-nums"><span>PPV <strong>${pt}%</strong></span><span class="${pass ? 'ci-ok' : 'ci-bad'}">95%CI ${lo}–${up}%</span></div></div>`;
         }
         const check = `<input type="checkbox" class="calib-check" data-cid="${r.id}"${r.changed ? ' checked' : ''}>`;
-        return `<tr${r.changed ? ' class="calib-changed"' : ''}><td>${check}</td><td><strong>${r.name}</strong>${directionTag(r)}</td><td>${r.samples}</td><td>${ciCell}</td><td>${arrow}</td></tr>`;
+        // Which gate this row landed on — otherwise "no change" reads the same whether the
+        // evidence backed the rule or there simply wasn't enough of it.
+        const vClass = r.verdict === 'validated' ? 'tag-green' : r.verdict === 'demoted' ? 'tag-red' : 'tag-gray';
+        const vTag = `<span class="tag ${vClass} calib-verdict">${t('calibVerdictMap')[r.verdict]}</span>`;
+        return `<tr${r.changed ? ' class="calib-changed"' : ''}><td>${check}</td><td><strong>${r.name}</strong>${vTag}${directionTag(r)}</td><td>${r.samples}</td><td>${ciCell}</td><td>${arrow}</td></tr>`;
       }).join('');
       document.querySelectorAll('#calibRows .calib-pick').forEach(sel => sel.addEventListener('change', () => {
         const cur = sel.dataset.cur;
