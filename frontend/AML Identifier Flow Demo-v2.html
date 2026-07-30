@@ -522,7 +522,6 @@
         <div class="card" style="margin-bottom:18px">
           <div class="filter-bar">
             <div class="filter-row">
-              <input type="search" id="dashKeyword" />
               <select id="dashTier"></select>
               <select id="dashRiskType"></select>
               <select id="dashSource"></select>
@@ -1471,8 +1470,10 @@
       Object.entries(patch || {}).forEach(([k, v]) => { wbFilters[k] = v; wbDraft[k] = v; });
       renderUnifiedQueue(); renderLegal(); showWbTab(tab || 'pending'); showScreen('legal');
     }
-    const dashFilters = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
-    const dashDraft = { keyword: '', tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    // No keyword here on purpose: the dashboard is an aggregate view, so it carries the
+    // structural filters only — searching a single payment belongs on the list pages.
+    const dashFilters = { tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
+    const dashDraft = { tier: '', riskType: '', source: '', payingEntity: '', region: '', status: '', dateFrom: '', dateTo: '' };
     function renderDashFilterControls() { fillFilterRow('dash', dashDraft); }
     // Payments inside the dashboard's selected time window (all when unset).
     function dashPayments() {
