@@ -727,8 +727,8 @@
         hpRules: { bankCountryMismatch: 'Bank/business country mismatch', payerInvoiceMismatch: 'Payer/invoice origin mismatch', businessScopeMismatch: 'Business scope ≠ PO category', fakeInvoice: 'Fake invoice indicator' }, ruleNames: { cpi: 'High-risk jurisdiction · CPI ≤ 40', fatf: 'FATF black / grey list', offshore: 'Offshore / tax-haven bank country', criminal: 'Criminal / civil / regulatory proceedings', pep: 'PEP-owned or -operated', fourCountry: 'Payer / vendor / invoice / bank country not all the same', bigCategory: 'Sensitive category & large amount', capital: 'Payment > registered capital & established ≤ 12 months', scope: 'Business scope ≠ commodity / category', surge: 'Payment surge > 500% vs 24-month average', holderName: 'Account holder name ≠ vendor name', fakeInvoice: 'Fake invoice (OCR + LLM)', acctChange: 'Bank account changed ≥ 2× within 12 months' },
         filterTier: 'Tier',
         signalsEyebrow: 'Strategy 4 · Feedback Loop', signalsTitle: 'Signal Ledger', signalsSubtitle: 'Every detection signal earns its tier from its measured PPV (confirmed ÷ triggered). This table is the bridge between Legal feedback and alert tiering.',
-        signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal. Validated signals are promoted; unproven ones stay in candidate status.',
-        signalHeaders: ['Signal', 'Level', 'Triggers', 'Reviewed', 'Confirmed', 'Measured PPV', 'Suggested Tier', 'Status'],
+        signalLedgerTitle: 'Signal Performance', signalLedgerDesc: 'Trigger count, confirmed-laundering count, and the resulting measured PPV per signal — how well each rule is actually performing. Tier and status decisions are made in the monthly calibration.',
+        signalHeaders: ['Signal', 'Level', 'Triggers', 'Reviewed', 'Confirmed', 'Measured PPV'],
         signalLevels: { payment: 'Payment', vendor: 'Vendor' }, signalStatusMap: { validated: 'Validated', candidate: 'Candidate', demoted: 'Demoted' }, scoringFactor: 'Scoring factor', tierObserve: 'Observe',
         agentDiscoveredTag: 'Agent-found', runDiscovery: 'Run agent self-learning',
         discoveryEyebrow: 'Hermes Self-Learning', discoveryTitle: 'Agent-discovered candidate signal', discoverySubtitle: 'A recurring pattern the agent learned from confirmed-fraud cases',
@@ -743,8 +743,8 @@
         entryATitle: 'Entry A — Payment-level high-precision rules (100% accuracy)', entryARule: 'Hits ANY 1 rule → T1 (single deterministic hit is enough)',
         entryBTitle: 'Entry B — Vendor-level behavioral signals', entryBRule: 'Any single signal (structuring / surge / repeated hits), no hard hit → T2',
         signalRollupShort: 'Roll-up', signalRollupNote: 'Roll-up = aggregates Entry A hits to the vendor level (not a new signal); native signals (structuring, surge) are only visible across multiple payments.',
-        signalNote: 'PPV is computed live from structured Legal review records — each "Review Now" decision updates the numbers here. A signal needs at least 3 reviewed payments before its PPV is trusted (Validated); below that it stays a Candidate. Validated signals with high PPV are promoted; low-PPV ones are demoted to scoring factors.',
-        signalMetricLabels: ['Validated signals', 'Candidate signals (awaiting PPV)', 'Avg PPV of validated'],
+        signalNote: 'PPV is computed live from structured Legal review records — each review decision updates the numbers here. This page only measures performance; whether a signal is promoted, held or demoted is decided in the monthly calibration, where an administrator approves each change.',
+        signalMetricLabels: ['Signals tracked', 'Reviewed payments behind PPV', 'Average measured PPV'],
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Total', 'Review Status', 'Reviewed By', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
         paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRegion: 'Region', filterStatus: 'Status', filterOverdue: 'Overdue', overdueYes: 'Overdue only', overdueNo: 'Not overdue', rvPending: 'Pending review', wbFilterTitle: 'Filters', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search by payment ID, vendor name', noPaymentsMatch: 'No payments match the current filters.',
@@ -788,8 +788,8 @@
         hpRules: { bankCountryMismatch: '银行与营业地国家不一致', payerInvoiceMismatch: '付款方与发票来源国不一致', businessScopeMismatch: '主营业务与采购品类不符', fakeInvoice: '虚假发票特征' }, ruleNames: { cpi: '高风险辖区 · CPI ≤ 40', fatf: 'FATF 黑 / 灰名单', offshore: '离岸 / 避税天堂银行国', criminal: '刑事 / 民事 / 监管诉讼', pep: 'PEP 拥有或经营', fourCountry: '付款方 / 供应商 / 发票 / 银行 四国不一致', bigCategory: '敏感品类 且 大额付款', capital: '付款 > 注册资本 且 成立 ≤ 12 个月', scope: '主营业务 ≠ 采购品类', surge: '付款突增（> 24 个月均值 500%）', holderName: '收款户名 ≠ 供应商名', fakeInvoice: '虚假发票（OCR + LLM）', acctChange: '收款账户 12 个月内变更 ≥ 2 次' },
         filterTier: '告警等级',
         signalsEyebrow: '策略 4 · 反馈闭环', signalsTitle: '信号台账', signalsSubtitle: '每个检测信号都根据「实测 PPV（确认数 ÷ 触发数）」获得自己的告警等级。这张表是法务反馈与告警分级之间的桥梁。',
-        signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV。已验证的信号被提升，未验证的保持候选状态。',
-        signalHeaders: ['信号', '层级', '触发次数', '已复核', '确认次数', '实测 PPV', '建议等级', '状态'],
+        signalLedgerTitle: '信号表现', signalLedgerDesc: '每个信号的触发次数、确认为洗钱的次数、以及由此得出的实测 PPV —— 反映每条规则的实际表现。等级与状态的决定在月度校准中进行。',
+        signalHeaders: ['信号', '层级', '触发次数', '已复核', '确认次数', '实测 PPV'],
         signalLevels: { payment: '付款层', vendor: '供应商层' }, signalStatusMap: { validated: '已验证', candidate: '待验证', demoted: '已降级' }, scoringFactor: '评分因子', tierObserve: '观察',
         agentDiscoveredTag: 'Agent 发现', runDiscovery: '运行 Agent 自学习',
         discoveryEyebrow: 'Hermes 自学习', discoveryTitle: 'Agent 发现的候选信号', discoverySubtitle: 'Agent 从已确认欺诈案例中学到的反复出现的新模式',
@@ -804,8 +804,8 @@
         entryATitle: '入口 A — 付款级高精度规则（准确率 100%）', entryARule: '命中任意 1 条规则 → T1（单条确定性命中即可）',
         entryBTitle: '入口 B — 供应商级行为信号', entryBRule: '仅命中任一信号（拆分 / 突增 / 高精度多次命中）、无硬规则命中 → T2',
         signalRollupShort: '汇总', signalRollupNote: '汇总 = 把入口 A 的命中累加到供应商层（非新信号）；原生信号（拆分、突增）只有跨多笔付款才看得到。',
-        signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次"立即复核"提交都会更新这里的数字。一个信号至少需 3 笔已复核付款，其 PPV 才被信任（已验证）；不足则保持候选。已验证且 PPV 高的信号被提升，PPV 低的降级为评分因子。',
-        signalMetricLabels: ['已验证信号', '候选信号（待测 PPV）', '已验证信号平均 PPV'],
+        signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次复核提交都会更新这里的数字。本页只度量表现；一个信号是升级、保持还是降级，在月度校准中由管理员逐条审批决定。',
+        signalMetricLabels: ['在跟踪的信号', '支撑 PPV 的已复核付款', '平均实测 PPV'],
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '总分', '复核状态', '复核人', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
         paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRegion: '地区', filterStatus: '复核状态', filterOverdue: '超时', overdueYes: '仅超时', overdueNo: '未超时', rvPending: '待复核', wbFilterTitle: '筛选', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商名称', noPaymentsMatch: '没有符合当前筛选条件的付款。',
@@ -2007,22 +2007,19 @@
       const ledger = buildSignalLedger();
       document.getElementById('signalRows').innerHTML = ledger.map(s => {
         const pct = s.ppv == null ? null : Math.round(s.ppv * 100);
-        const tier = suggestedTier(s.ppv, s.id, s.level);
         const levelTag = s.level === 'payment' ? 'tag-blue' : 'tag-amber';
-        const statusTag = s.status === 'validated' ? 'tag-green' : s.status === 'demoted' ? 'tag-red' : 'tag-gray';
         const ppvCell = pct == null
           ? '<span class="small-muted">—</span>'
           : `<div class="ppv-cell"><div class="ppv-bar"><span style="width:${pct}%"></span></div><span class="ppv-num">${pct}%</span></div>`;
-        const tierMark = s.status === 'demoted' ? `<span class="small-muted">${t('scoringFactor')}</span>` : (tier == null ? '<span class="small-muted">—</span>' : `<span class="tier-badge tier-${tier}">${s.status === 'validated' ? tier : tier + '?'}</span>`);
         const rollup = ROLLUP_SIGNALS.includes(s.id) ? ` <span class="rollup-tag" title="${t('signalRollupNote')}">${t('signalRollupShort')}</span>` : '';
         const agent = s.discovered ? ` <span class="agent-tag">${t('agentDiscoveredTag')}</span>` : '';
-        return `<tr><td><strong>${s.name}</strong>${rollup}${agent}</td><td><span class="tag ${levelTag}">${t('signalLevels')[s.level]}</span></td><td>${s.triggers}</td><td>${s.reviewed}</td><td>${s.confirmed}</td><td>${ppvCell}</td><td>${tierMark}</td><td><span class="tag ${statusTag}">${t('signalStatusMap')[s.status]}</span></td></tr>`;
+        return `<tr><td><strong>${s.name}</strong>${rollup}${agent}</td><td><span class="tag ${levelTag}">${t('signalLevels')[s.level]}</span></td><td>${s.triggers}</td><td>${s.reviewed}</td><td>${s.confirmed}</td><td>${ppvCell}</td></tr>`;
       }).join('');
-      const validated = ledger.filter(s => s.status === 'validated');
-      const candidates = ledger.filter(s => s.status === 'candidate');
-      const avgPpv = validated.length ? Math.round(validated.reduce((a, s) => a + (s.ppv || 0), 0) / validated.length * 100) : 0;
+      const measured = ledger.filter(s => s.ppv != null);
+      const avgPpv = measured.length ? Math.round(measured.reduce((a, s) => a + s.ppv, 0) / measured.length * 100) : 0;
+      const totalReviewed = ledger.reduce((a, s) => a + s.reviewed, 0);
       const labels = t('signalMetricLabels');
-      const vals = [validated.length, candidates.length, avgPpv + '%'];
+      const vals = [ledger.length, totalReviewed, avgPpv + '%'];
       document.getElementById('signalMetrics').innerHTML = vals.map((v, i) => `<div class="card metric"><div class="metric-label">${labels[i]}</div><div class="metric-value">${v}</div></div>`).join('');
     }
 
