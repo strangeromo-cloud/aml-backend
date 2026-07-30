@@ -607,7 +607,6 @@
 
       <section class="screen" id="signals">
         <div class="topbar"><div><div class="eyebrow" data-i18n="signalsEyebrow"></div><h2 class="title" data-i18n="signalsTitle"></h2><p class="subtitle" data-i18n="signalsSubtitle"></p></div><div class="actions"><button class="btn btn-review-cta btn-teal agent-only" id="runDiscoveryBtn">🤖 <span data-i18n="runDiscovery"></span></button><button class="btn btn-primary btn-review-cta" id="runCalibBtn" data-i18n="runCalib"></button></div></div>
-        <div class="metric-grid" id="signalMetrics" style="grid-template-columns:repeat(3,minmax(0,1fr))"></div>
         <div class="card"><div class="section-head"><div><h2 data-i18n="signalLedgerTitle"></h2><p data-i18n="signalLedgerDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="signalHeader"></tr></thead><tbody id="signalRows"></tbody></table></div><div class="notice" data-i18n="signalNote"></div></div>
         <div class="card" id="playbookCard" style="margin-top:18px"><div class="section-head"><div><h2 data-i18n="playbookTitle"></h2><p data-i18n="playbookDesc"></p></div></div><div class="table-wrap"><table><thead><tr id="playbookHeader"></tr></thead><tbody id="playbookRows"></tbody></table></div></div>
       </section>
@@ -744,7 +743,7 @@
         entryBTitle: 'Entry B — Vendor-level behavioral signals', entryBRule: 'Any single signal (structuring / surge / repeated hits), no hard hit → T2',
         signalRollupShort: 'Roll-up', signalRollupNote: 'Roll-up = aggregates Entry A hits to the vendor level (not a new signal); native signals (structuring, surge) are only visible across multiple payments.',
         signalNote: 'PPV is computed live from structured Legal review records — each review decision updates the numbers here. This page only measures performance; whether a signal is promoted, held or demoted is decided in the monthly calibration, where an administrator approves each change.',
-        signalMetricLabels: ['Signals tracked', 'Reviewed payments behind PPV', 'Average measured PPV'],
+       
         investPlaybookApplied: 'Applied investigation playbook', playbookTitle: 'Investigation Playbook (Evolution A)', playbookDesc: 'Reusable "how to dig" routines the agent applies; reinforced each time a confirmed-fraud review used them.', playbookHeaders: ['Routine', 'Action', 'Used', 'Confirmed', 'Confirm rate'], playbookNew: 'New', playbookGrew: 'investigation playbook grew (new routine)', playbookReinforced: 'investigation playbook reinforced',
         paymentHeaders: ['Payment ID', 'Date', 'Source', 'Vendor', 'Amount', 'Category', 'Risk Types', 'Trigger', 'Vendor Score', 'Payment Score', 'Total', 'Review Status', 'Reviewed By', 'Action'], legalHeaders: ['Case ID', 'Payment ID', 'Vendor', 'Original Score', 'Review Result', 'Reviewed By', 'Legal Reason', 'Feedback Tags', 'Status', 'Action'],
         paymentListEyebrow: 'Payment Inventory', paymentListTitle: 'All Payments Under Monitoring', paymentListSubtitle: 'Full payment ledger with filters by date, risk dimension, source, level, and keyword search.', filterRiskType: 'Risk Type', filterSource: 'Source', filterPayingEntity: 'Paying Entity', filterRegion: 'Region', filterStatus: 'Status', filterOverdue: 'Overdue', overdueYes: 'Overdue only', overdueNo: 'Not overdue', rvPending: 'Pending review', wbFilterTitle: 'Filters', filterRiskLevel: 'Risk Level', filterFrom: 'From', filterTo: 'To', clearFilters: 'Clear filters', filterApply: 'Apply', filterReset: 'Reset', exportExcel: 'Export to Excel', exportDemoNote: 'Demo only — export is not wired up.', activeFilters: 'Active', searchKeyword: 'Search', searchPlaceholder: 'Search by payment ID, vendor name', noPaymentsMatch: 'No payments match the current filters.',
@@ -805,7 +804,7 @@
         entryBTitle: '入口 B — 供应商级行为信号', entryBRule: '仅命中任一信号（拆分 / 突增 / 高精度多次命中）、无硬规则命中 → T2',
         signalRollupShort: '汇总', signalRollupNote: '汇总 = 把入口 A 的命中累加到供应商层（非新信号）；原生信号（拆分、突增）只有跨多笔付款才看得到。',
         signalNote: 'PPV 由结构化的法务复核记录实时算出 —— 每次复核提交都会更新这里的数字。本页只度量表现；一个信号是升级、保持还是降级，在月度校准中由管理员逐条审批决定。',
-        signalMetricLabels: ['在跟踪的信号', '支撑 PPV 的已复核付款', '平均实测 PPV'],
+       
         investPlaybookApplied: '已应用调查 Playbook', playbookTitle: '调查 Playbook（进化 A）', playbookDesc: 'Agent 调查时复用的「怎么查」套路；每当某次确认欺诈的复核用到它，就被强化一次。', playbookHeaders: ['套路', '动作', '应用次数', '确认', '确认转化'], playbookNew: '新增', playbookGrew: '调查 Playbook 已成长（新增套路）', playbookReinforced: '调查 Playbook 已强化',
         paymentHeaders: ['付款编号', '日期', '来源', '供应商', '金额', '采购品类', '风险维度', '触发规则', '供应商分', '付款分', '总分', '复核状态', '复核人', '操作'], legalHeaders: ['案例编号', '付款编号', '供应商', '原始分数', '复核结论', '复核人', '法务原因', '反馈标签', '状态', '操作'],
         paymentListEyebrow: '付款台账', paymentListTitle: '所有受监控付款', paymentListSubtitle: '全量付款台账，可按日期、风险维度、来源、等级筛选，并支持关键字搜索。', filterRiskType: '风险维度', filterSource: '来源', filterPayingEntity: '付款主体', filterRegion: '地区', filterStatus: '复核状态', filterOverdue: '超时', overdueYes: '仅超时', overdueNo: '未超时', rvPending: '待复核', wbFilterTitle: '筛选', filterRiskLevel: '风险等级', filterFrom: '起始', filterTo: '截止', clearFilters: '清空筛选', filterApply: '应用', filterReset: '重置', exportExcel: '导出 Excel', exportDemoNote: '仅演示，导出功能未接入。', activeFilters: '已选筛选', searchKeyword: '搜索', searchPlaceholder: '搜索付款编号、供应商名称', noPaymentsMatch: '没有符合当前筛选条件的付款。',
@@ -2015,12 +2014,6 @@
         const agent = s.discovered ? ` <span class="agent-tag">${t('agentDiscoveredTag')}</span>` : '';
         return `<tr><td><strong>${s.name}</strong>${rollup}${agent}</td><td><span class="tag ${levelTag}">${t('signalLevels')[s.level]}</span></td><td>${s.triggers}</td><td>${s.reviewed}</td><td>${s.confirmed}</td><td>${ppvCell}</td></tr>`;
       }).join('');
-      const measured = ledger.filter(s => s.ppv != null);
-      const avgPpv = measured.length ? Math.round(measured.reduce((a, s) => a + s.ppv, 0) / measured.length * 100) : 0;
-      const totalReviewed = ledger.reduce((a, s) => a + s.reviewed, 0);
-      const labels = t('signalMetricLabels');
-      const vals = [ledger.length, totalReviewed, avgPpv + '%'];
-      document.getElementById('signalMetrics').innerHTML = vals.map((v, i) => `<div class="card metric"><div class="metric-label">${labels[i]}</div><div class="metric-value">${v}</div></div>`).join('');
     }
 
     // Evolution A — render the investigation playbook (grows/strengthens from reviews)
