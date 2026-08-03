@@ -34,9 +34,9 @@
 ## 检测模型（前端 HTML 内实现）
 
 **规则表驱动 Tier（2026-07 改，以 Legal 规则表为准）**：
-- 每条规则有**固定的 Tier、Categories I 和 Risk Type**，来源 = `docs/Payment Monitoring Scenarios-final.xlsx` 的 `Updated-BSR` tab（A 列 Tier、B 列 Categories I、D 列 Risk Type、X/Y/Z 列 = 最终逻辑/触发/评分）。前端里是 `RULES` 常量（搜 `const RULES`），14 条（T1×3、T2×5、T3×6）：**6 条 Vendor watchlist（`cat:'vendor'` → 进 Vendor Score）+ 8 条付款类（`cat:'payment'` → 进 Payment Score）**。表里第 15 行（收款银行国 vs 注册国）已标 duplicate 删除、第 16 行（节假日付款）财务已管控 —— 这两条不实现。
+- 每条规则有**固定的 Tier、Categories I 和 Risk Type**，来源 = `docs/Payment Monitoring Scenarios-0803.xlsx` 的 `Updated-BSR` tab（A 列 Tier、B 列 Categories I、D 列 Risk Type、X/Y/Z 列 = 最终逻辑/触发/评分）。前端里是 `RULES` 常量（搜 `const RULES`），14 条（T1×3、T2×5、T3×6）：**6 条 Vendor watchlist（`cat:'vendor'` → 进 Vendor Score）+ 8 条付款类（`cat:'payment'` → 进 Payment Score）**。表里第 15 行（收款银行国 vs 注册国）已标 duplicate 删除、第 16 行（节假日付款）财务已管控 —— 这两条不实现。
 - 一笔 payment 的 **Tier = 它命中的规则里最高等级**（T1>T2>T3）；无命中→T3。**不再是"双入口/付款维度/供应商维度"那套**（旧逻辑已废弃，别改回）。
-- **Risk Type = 命中规则的 Risk Type 集合**，8 类图名称：Geographic Risks / Criminal, Civil or Regulatory Proceedings / Adverse Media (PEP) / State-owned / Documentation Gaps / Vague Descriptions / Timing Irregularities / Behavioral Indicators（`RISK_TYPE_KEYS` = geo/crime/pep/soe/docgap/vague/timing/behavior）。
+- **Risk Type = 命中规则的 Risk Type 集合**，8 类图名称（0803 口径）：Geographic Risks / **Criminal, Civil or Regulatory Proceedings or Terrorism Concerns** / **PEP and Adverse Media** / State-owned / Documentation Gaps / Vague Descriptions / Timing Irregularities / Behavioral Indicators（`RISK_TYPE_KEYS` = geo/crime/pep/soe/docgap/vague/timing/behavior）。**新增 risk type 时必须同时补 `riskTypes` / `riskTypesShort`（双语）+ `RISK_COLORS` + `RT_BRIGHT` 四处**，漏了 `riskTypesShort` 图表图例会显示 `undefined`。
 - ⚠️ demo 是合成数据，没有真实"银行国别/发票开具地"等字段，`RULES` 的 predicate 是用旧 `p.riskTypes`（geographic/pep/... 6 个内部信号）+ 条件**近似映射**到图规则。生产化时把 predicate 换成真实字段比对，Tier/RiskType 框架不变。
 - SLA：T1 = 5 个工作日、T2 = 10 个工作日、T3 仅展示不报警（`slaDays()` + `addBusinessDays()`）。
 
