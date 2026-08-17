@@ -69,6 +69,10 @@ ALIASES = {
     "syrian arab republic": "syria",
     "united republic of tanzania": "tanzania",
     "viet nam": "vietnam",
+    # TI writes the Koreas inverted; the FATF/Legal workbooks do not.
+    "korea north": "north korea",
+    "korea south": "south korea",
+    "republic of korea": "south korea",
 }
 
 
@@ -87,6 +91,10 @@ def require_token(supplied: Optional[str]) -> None:
 def norm(name: str) -> str:
     decomposed = unicodedata.normalize("NFKD", name or "")
     ascii_only = "".join(c for c in decomposed if not unicodedata.combining(c))
+    # Hyphens become spaces before non-letters are stripped, otherwise "Guinea-Bissau"
+    # collapses to "guineabissau" while "Guinea Bissau" keeps its space and the two
+    # spellings of one country read as two different countries.
+    ascii_only = re.sub(r"[-–—/]", " ", ascii_only)
     s = re.sub(r"[^a-z\s]", "", ascii_only.lower()).strip()
     s = re.sub(r"\s+", " ", s)
     s = re.sub(r"^the ", "", s)
@@ -147,6 +155,87 @@ def parse_workbook(data: bytes) -> dict[str, Any]:
 
     return {"listDate": list_date, "black": sorted(black), "grey": sorted(grey),
             "normBlack": nb, "normGrey": ng, "rowCount": len(black) + len(grey)}
+
+
+# ── The other two lists ─────────────────────────────────────────────────
+# CPI and the offshore list are fetched automatically and that fetch is reliable, so a
+# Legal upload must NOT overwrite them — only report where the two disagree. That is a
+# question for a human ("whose CPI edition is this?"), not something to silently adopt.
+# FATF is different: its page is unreachable, so there the uploaded list IS authority.
+CPI_SNAPSHOT = "public/downloads/_snapshots/ti-cpi.json"
+OFFSHORE_SNAPSHOT = "public/downloads/_snapshots/eu-offshore-centres.json"
+
+
+def parse_cpi_sheet(wb) -> Optional[dict[str, Any]]:
+    """{name: score} from whichever sheet is called "CPI <year>"."""
+    title = next((t for t in wb.sheetnames if t.strip().upper().startswith("CPI")), None)
+    if not title:
+        return None
+    ws = wb[title]
+    scores: dict[str, Any] = {}
+    for r in range(3, ws.max_row + 1):
+        country, score = ws.cell(r, 2).value, ws.cell(r, 3).value
+        if not country:
+            continue
+        try:
+            scores[norm(str(country))] = int(round(float(score)))
+        except (TypeError, ValueError):
+            scores[norm(str(country))] = None
+    m = re.search(r"(\d{4})", title)
+    return {"sheet": title, "edition": m.group(1) if m else None, "scores": scores}
+
+
+def parse_offshore_sheet(wb) -> Optional[dict[str, Any]]:
+    title = next((t for t in wb.sheetnames if "Offshore" in t or "离岸" in t), None)
+    if not title:
+        return None
+    ws = wb[title]
+    names = []
+    for r in range(3, ws.max_row + 1):
+        v = ws.cell(r, 2).value
+        if v:
+            names.append(str(v).strip())
+    return {"sheet": title, "names": names, "norm": {norm(n) for n in names} - {""}}
+
+
+async def _snapshot(path: str) -> Optional[list[dict[str, Any]]]:
+    r = await _gh("GET", f"/repos/{GH_REPO}/contents/{path}", params={"ref": GH_BRANCH})
+    if r.status_code == 404:
+        return None
+    if r.status_code >= 400:
+        raise HTTPException(502, f"读取 {path} 失败：{r.status_code}")
+    return json.loads(base64.b64decode(r.json()["content"]))
+
+
+def diff_cpi(fetched: list[dict[str, Any]], up: dict[str, Any]) -> dict[str, Any]:
+    f = {norm(str(r.get("country"))): int(round(float(r["score"])))
+         for r in fetched if r.get("score") is not None}
+    u = up["scores"]
+    only_up = sorted(set(u) - set(f))
+    only_fetched = sorted(set(f) - set(u))
+    changed = sorted(k for k in set(u) & set(f) if u[k] != f[k])
+    return {
+        "sheet": up["sheet"], "uploadEdition": up["edition"],
+        "uploadCount": len(u), "fetchedCount": len(f),
+        "onlyInUpload": only_up, "onlyInFetched": only_fetched,
+        "scoreDiffers": [{"country": k, "upload": u[k], "fetched": f[k]} for k in changed[:60]],
+        "scoreDiffersCount": len(changed),
+        "identical": not (only_up or only_fetched or changed),
+    }
+
+
+def diff_offshore(fetched: list[dict[str, Any]], up: dict[str, Any]) -> dict[str, Any]:
+    f = {norm(str(r.get("jurisdiction"))) for r in fetched} - {""}
+    by_name = {norm(n): n for n in up["names"]}
+    by_fetch = {norm(str(r.get("jurisdiction"))): str(r.get("jurisdiction")) for r in fetched}
+
+    def nm(keys):
+        return sorted(by_name.get(k) or by_fetch.get(k) or k for k in keys)
+
+    only_up, only_f = up["norm"] - f, f - up["norm"]
+    return {"sheet": up["sheet"], "uploadCount": len(up["norm"]), "fetchedCount": len(f),
+            "onlyInUpload": nm(only_up), "onlyInFetched": nm(only_f),
+            "identical": not (only_up or only_f)}
 
 
 # ── GitHub ──────────────────────────────────────────────────────────────
@@ -277,6 +366,24 @@ async def validate(file: UploadFile = File(...),
     require_token(x_upload_token)
     data = await file.read()
     new = parse_workbook(data)
+    # The other two sheets are optional: a workbook holding only the FATF sheet is a
+    # perfectly good baseline upload.
+    others: dict[str, Any] = {}
+    try:
+        wb = load_workbook(BytesIO(data), data_only=True)
+        cpi_up, off_up = parse_cpi_sheet(wb), parse_offshore_sheet(wb)
+        if cpi_up:
+            snap = await _snapshot(CPI_SNAPSHOT)
+            others["cpi"] = (diff_cpi(snap, cpi_up) if snap
+                             else {"sheet": cpi_up["sheet"], "error": "仓库里没有 CPI 抓取快照"})
+        if off_up:
+            snap = await _snapshot(OFFSHORE_SNAPSHOT)
+            others["offshore"] = (diff_offshore(snap, off_up) if snap
+                                  else {"sheet": off_up["sheet"], "error": "仓库里没有离岸抓取快照"})
+    except HTTPException as e:
+        others["error"] = str(e.detail)
+    except Exception as e:
+        others["error"] = f"{type(e).__name__}: {e}"
     try:
         cur_bytes, _ = await fetch_current()
         cur = parse_workbook(cur_bytes) if cur_bytes else None
@@ -293,6 +400,7 @@ async def validate(file: UploadFile = File(...),
         "counts": {"black": len(new["normBlack"]), "grey": len(new["normGrey"])},
         "black": new["black"], "grey": new["grey"],
         "diff": diff(cur, new) if repo_readable else None,
+        "others": others,
         "repoReadable": repo_readable, "repoError": repo_error,
         "note": ("确认后提交，将写入仓库 "
                  f"{GH_REPO}:{GH_BRANCH}/{BASELINE_PATH}，"
