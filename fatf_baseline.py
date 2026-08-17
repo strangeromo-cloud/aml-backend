@@ -211,6 +211,58 @@ class CommitResp(BaseModel):
     message: str
 
 
+@router.get("/status")
+async def status() -> dict[str, Any]:
+    """Is baseline upload actually usable right now?
+
+    The token lives here, not in CI, so CI cannot inspect it — it asks this instead.
+    Reports configuration, repo reachability, whether the token can actually write,
+    and when it expires: a fine-grained PAT expires silently, and "discovered on the
+    day Legal needs to update the baseline" is the failure mode worth avoiding.
+    Returns no secret values.
+    """
+    out: dict[str, Any] = {
+        "uploadTokenConfigured": bool(UPLOAD_TOKEN),
+        "repoTokenConfigured": bool(GH_REPO_TOKEN),
+        "repo": f"{GH_REPO}:{GH_BRANCH}", "path": BASELINE_PATH,
+        "repoReadable": False, "canWrite": None,
+        "tokenExpiresAt": None, "baselineFound": None, "error": None,
+    }
+    if not GH_REPO_TOKEN:
+        out["error"] = "GH_REPO_TOKEN 未配置"
+        out["ready"] = False
+        return out
+    try:
+        r = await _gh("GET", f"/repos/{GH_REPO}")
+    except HTTPException as e:
+        out["error"] = str(e.detail)
+        out["ready"] = False
+        return out
+    # GitHub returns this header for fine-grained tokens; classic tokens omit it.
+    out["tokenExpiresAt"] = r.headers.get("github-authentication-token-expiration")
+    if r.status_code == 401:
+        out["error"] = "GH_REPO_TOKEN 无效或已过期（GitHub 返回 401）"
+        out["ready"] = False
+        return out
+    if r.status_code >= 400:
+        out["error"] = f"读取仓库信息失败：{r.status_code}"
+        out["ready"] = False
+        return out
+    out["repoReadable"] = True
+    # permissions.push is the closest thing to "can write contents" without writing.
+    out["canWrite"] = bool((r.json().get("permissions") or {}).get("push"))
+    try:
+        data, _ = await fetch_current()
+        out["baselineFound"] = data is not None
+        if data:
+            out["listDate"] = parse_workbook(data)["listDate"]
+    except HTTPException as e:
+        out["error"] = str(e.detail)
+    out["ready"] = bool(out["uploadTokenConfigured"] and out["repoReadable"]
+                        and out["canWrite"] and out["baselineFound"])
+    return out
+
+
 @router.get("/auth")
 async def auth(x_upload_token: Optional[str] = Header(None)) -> dict[str, Any]:
     """Lets the page check a token before the user picks a file."""
