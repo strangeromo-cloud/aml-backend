@@ -331,6 +331,10 @@ async def status() -> dict[str, Any]:
     Returns no secret values.
     """
     out: dict[str, Any] = {
+        # Which behaviours this deployment actually has. Without it, "is the feature
+        # live or am I looking at a cached page?" is unanswerable from outside.
+        "features": ["validate", "commit", "history", "status",
+                     "compare-cpi", "compare-offshore", "overrides", "recency-precedence"],
         "uploadTokenConfigured": bool(UPLOAD_TOKEN),
         "repoTokenConfigured": bool(GH_REPO_TOKEN),
         "repo": f"{GH_REPO}:{GH_BRANCH}", "path": BASELINE_PATH,
