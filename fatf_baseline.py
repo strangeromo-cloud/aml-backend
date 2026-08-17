@@ -270,20 +270,53 @@ async def fetch_current() -> tuple[bytes | None, str | None]:
     return base64.b64decode(j["content"]), j["sha"]
 
 
-async def _put_json(path: str, payload: dict[str, Any], message: str) -> None:
-    """Create-or-update a JSON file in the repo."""
-    r = await _gh("GET", f"/repos/{GH_REPO}/contents/{path}", params={"ref": GH_BRANCH})
-    sha = r.json().get("sha") if r.status_code == 200 else None
-    body = {"message": message,
-            "content": base64.b64encode(
-                json.dumps(payload, ensure_ascii=False, indent=1,
-                           sort_keys=True).encode()).decode(),
-            "branch": GH_BRANCH}
-    if sha:
-        body["sha"] = sha
-    rr = await _gh("PUT", f"/repos/{GH_REPO}/contents/{path}", json=body)
+async def _commit_files(files: dict[str, bytes], message: str) -> str:
+    """Commit several files as ONE commit, via the Git data API.
+
+    One submission has to be one version. Writing each file with the contents API
+    produces a separate commit per file, which makes the history incoherent: the list
+    is filtered by the baseline path, so a commit touching only the CPI override never
+    appears, and the baseline commit's parent does not yet contain its sibling changes,
+    so "what changed in this version" comes out wrong.
+
+    Returns the new commit's html_url.
+    """
+    r = await _gh("GET", f"/repos/{GH_REPO}/git/ref/heads/{GH_BRANCH}")
+    if r.status_code >= 400:
+        raise HTTPException(502, f"读取分支 {GH_BRANCH} 失败：{r.status_code}")
+    parent = r.json()["object"]["sha"]
+
+    r = await _gh("GET", f"/repos/{GH_REPO}/git/commits/{parent}")
+    if r.status_code >= 400:
+        raise HTTPException(502, f"读取父提交失败：{r.status_code}")
+    base_tree = r.json()["tree"]["sha"]
+
+    tree_entries = []
+    for path, content in files.items():
+        rb = await _gh("POST", f"/repos/{GH_REPO}/git/blobs",
+                       json={"content": base64.b64encode(content).decode(),
+                             "encoding": "base64"})
+        if rb.status_code >= 400:
+            raise HTTPException(502, f"上传 {path} 内容失败：{rb.status_code} {rb.text[:140]}")
+        tree_entries.append({"path": path, "mode": "100644", "type": "blob",
+                             "sha": rb.json()["sha"]})
+
+    rt = await _gh("POST", f"/repos/{GH_REPO}/git/trees",
+                   json={"base_tree": base_tree, "tree": tree_entries})
+    if rt.status_code >= 400:
+        raise HTTPException(502, f"创建 tree 失败：{rt.status_code} {rt.text[:140]}")
+
+    rc = await _gh("POST", f"/repos/{GH_REPO}/git/commits",
+                   json={"message": message, "tree": rt.json()["sha"], "parents": [parent]})
+    if rc.status_code >= 400:
+        raise HTTPException(502, f"创建提交失败：{rc.status_code} {rc.text[:140]}")
+    new_sha = rc.json()["sha"]
+
+    rr = await _gh("PATCH", f"/repos/{GH_REPO}/git/refs/heads/{GH_BRANCH}",
+                   json={"sha": new_sha})
     if rr.status_code >= 400:
-        raise HTTPException(502, f"写入 {path} 失败：{rr.status_code} {rr.text[:160]}")
+        raise HTTPException(502, f"更新分支失败：{rr.status_code} {rr.text[:140]}")
+    return rc.json().get("html_url") or f"https://github.com/{GH_REPO}/commit/{new_sha}"
 
 
 def diff(cur: dict[str, Any] | None, new: dict[str, Any]) -> dict[str, Any]:
@@ -451,52 +484,34 @@ async def commit(file: UploadFile = File(...),
     if not uploader.strip():
         raise HTTPException(422, "请填写上传人，提交记录需要留痕。")
 
-    _, sha = await fetch_current()
     stamp = datetime.now(TZ_SHANGHAI).strftime("%Y-%m-%d %H:%M")
-    body = {
-        "message": (f"chore(fatf): 基线更新至 {new['listDate']}"
-                    f"（黑 {len(new['normBlack'])} / 灰 {len(new['normGrey'])}）\n\n"
-                    f"由 {uploader.strip()} 于 {stamp} 通过基线上传页提交。\n"
-                    f"次日定时运行的邮件附件将使用此基线。"),
-        "content": base64.b64encode(data).decode(),
-        "branch": GH_BRANCH,
-    }
-    if sha:
-        body["sha"] = sha
-    r = await _gh("PUT", f"/repos/{GH_REPO}/contents/{BASELINE_PATH}", json=body)
-    if r.status_code >= 400:
-        raise HTTPException(502, f"提交仓库失败：{r.status_code} {r.text[:200]}")
-    j = r.json()
-    url = (j.get("commit") or {}).get("html_url")
-
-    # The other two sheets become Legal-confirmed overrides the pipeline prefers. Each
-    # is written only if present in the workbook — omitting a sheet leaves the previous
-    # override alone rather than wiping it.
-    extras = []
+    files: dict[str, bytes] = {BASELINE_PATH: data}
+    extras: list[str] = []
     try:
         wb = load_workbook(BytesIO(data), data_only=True)
         cpi_up, off_up = parse_cpi_sheet(wb), parse_offshore_sheet(wb)
-        if cpi_up:
-            await _put_json(CPI_OVERRIDE_PATH, {
-                "confirmedBy": uploader.strip(), "confirmedAt": stamp,
-                "edition": cpi_up["edition"], "sheet": cpi_up["sheet"],
-                "scores": {k: v for k, v in cpi_up["scores"].items() if v is not None},
-            }, f"chore(cpi): 法务确认版本 {cpi_up['edition'] or ''}（{len(cpi_up['scores'])} 条）"
-               f"，由 {uploader.strip()} 于 {stamp} 提交")
-            extras.append(f"CPI {len(cpi_up['scores'])} 条")
-        if off_up:
-            await _put_json(OFFSHORE_OVERRIDE_PATH, {
-                "confirmedBy": uploader.strip(), "confirmedAt": stamp,
-                "jurisdictions": off_up["names"],
-            }, f"chore(offshore): 法务确认版本（{len(off_up['names'])} 条）"
-               f"，由 {uploader.strip()} 于 {stamp} 提交")
-            extras.append(f"离岸 {len(off_up['names'])} 条")
-    except HTTPException as e:
-        # The FATF baseline is already in; report the partial outcome rather than
-        # pretending the whole submission failed.
-        logger.warning("override write failed: %s", e.detail)
-        extras.append(f"⚠ 另外两个名单写入失败：{e.detail}")
-    logger.info("FATF baseline committed by %s → %s (%s)", uploader, new["listDate"], url)
+    except Exception as e:
+        raise HTTPException(422, f"解析工作簿失败：{type(e).__name__}: {e}")
+    if cpi_up:
+        files[CPI_OVERRIDE_PATH] = json.dumps({
+            "confirmedBy": uploader.strip(), "confirmedAt": stamp,
+            "edition": cpi_up["edition"], "sheet": cpi_up["sheet"],
+            "scores": {k: v for k, v in cpi_up["scores"].items() if v is not None},
+        }, ensure_ascii=False, indent=1, sort_keys=True).encode()
+        extras.append(f"CPI {len(cpi_up['scores'])} 条")
+    if off_up:
+        files[OFFSHORE_OVERRIDE_PATH] = json.dumps({
+            "confirmedBy": uploader.strip(), "confirmedAt": stamp,
+            "jurisdictions": off_up["names"],
+        }, ensure_ascii=False, indent=1, sort_keys=True).encode()
+        extras.append(f"离岸 {len(off_up['names'])} 条")
+
+    parts = [f"FATF 黑 {len(new['normBlack'])} / 灰 {len(new['normGrey'])}"] + extras
+    url = await _commit_files(files, (
+        f"chore(lists): 基线更新至 {new['listDate']}（{'；'.join(parts)}）\n\n"
+        f"由 {uploader.strip()} 于 {stamp} 通过名单维护页提交。\n"
+        f"次日 07:00（北京）定时运行的邮件附件将使用这些内容。"))
+    logger.info("lists committed by %s → %s (%s)", uploader, new["listDate"], url)
     tail = ("　同时以法务版本为准：" + "、".join(extras)) if extras else ""
     return CommitResp(committed=True, commitUrl=url,
                       message=(f"已提交。基线名单日期 {new['listDate']}，"
@@ -512,7 +527,7 @@ async def commit(file: UploadFile = File(...),
 
 _MSG_DATE = re.compile(r"基线更新至\s*(\d{4}-\d{2}-\d{2})")
 _MSG_COUNTS = re.compile(r"黑\s*(\d+)\s*/\s*灰\s*(\d+)")
-_MSG_UPLOADER = re.compile(r"由\s*(.+?)\s*于\s*([\d\-: ]+)\s*通过基线上传页提交")
+_MSG_UPLOADER = re.compile(r"由\s*(.+?)\s*于\s*([\d\-: ]+)\s*通过(?:基线上传页|名单维护页)提交")
 
 
 def _from_message(msg: str) -> dict[str, Any]:
@@ -551,7 +566,8 @@ async def history(limit: int = 30) -> dict[str, Any]:
             "committedAt": ((c.get("commit") or {}).get("committer") or {}).get("date"),
             "author": ((c.get("commit") or {}).get("author") or {}).get("name"),
             "subject": msg.split("\n")[0],
-            "viaUploadPage": "通过基线上传页提交" in msg,
+            "viaUploadPage": ("通过基线上传页提交" in msg
+                              or "通过名单维护页提交" in msg),
             "commitUrl": c.get("html_url"),
             **_from_message(msg),
         })
@@ -573,6 +589,17 @@ async def history_detail(sha: str) -> dict[str, Any]:
         if rr.status_code >= 400:
             raise HTTPException(502, f"读取该版本失败：{rr.status_code} {rr.text[:160]}")
         return parse_workbook(base64.b64decode(rr.json()["content"]))
+
+    async def json_at(path: str, ref: str) -> Optional[dict[str, Any]]:
+        rr = await _gh("GET", f"/repos/{GH_REPO}/contents/{path}", params={"ref": ref})
+        if rr.status_code == 404:
+            return None
+        if rr.status_code >= 400:
+            return None
+        try:
+            return json.loads(base64.b64decode(rr.json()["content"]))
+        except Exception:
+            return None
 
     this = await at(sha)
     if not this:
@@ -600,12 +627,49 @@ async def history_detail(sha: str) -> dict[str, Any]:
     else:
         commit_info = {"sha": sha}
 
+    # The other two lists as they stood at this version, and what this version did to
+    # them. One upload is one commit, so the parent is the right thing to diff against.
+    parent_sha = ((rc.json().get("parents") or [{}])[0].get("sha")
+                  if rc.status_code < 400 else None)
+    others: dict[str, Any] = {}
+    for key, path, field in (("cpi", CPI_OVERRIDE_PATH, "scores"),
+                             ("offshore", OFFSHORE_OVERRIDE_PATH, "jurisdictions")):
+        cur_ov = await json_at(path, sha)
+        if not cur_ov:
+            others[key] = {"present": False}
+            continue
+        prev_ov = await json_at(path, parent_sha) if parent_sha else None
+        vals = cur_ov.get(field) or {}
+        names_now = set(vals.keys() if isinstance(vals, dict) else vals)
+        entry: dict[str, Any] = {
+            "present": True, "count": len(names_now),
+            "confirmedBy": cur_ov.get("confirmedBy"), "confirmedAt": cur_ov.get("confirmedAt"),
+            "edition": cur_ov.get("edition"),
+            "names": sorted(names_now),
+            "downloadUrl": f"https://raw.githubusercontent.com/{GH_REPO}/{sha}/{path}",
+        }
+        if prev_ov:
+            pv = prev_ov.get(field) or {}
+            names_before = set(pv.keys() if isinstance(pv, dict) else pv)
+            entry["added"] = sorted(names_now - names_before)
+            entry["removed"] = sorted(names_before - names_now)
+            if isinstance(vals, dict) and isinstance(pv, dict):
+                ch = [{"name": k, "from": pv[k], "to": vals[k]}
+                      for k in sorted(names_now & names_before) if pv[k] != vals[k]]
+                entry["valueChanged"] = ch[:60]
+                entry["valueChangedCount"] = len(ch)
+            entry["newInThisVersion"] = False
+        else:
+            entry["newInThisVersion"] = True
+        others[key] = entry
+
     return {
         "commit": commit_info,
         "listDate": this["listDate"],
         "counts": {"black": len(this["normBlack"]), "grey": len(this["normGrey"])},
         "black": this["black"], "grey": this["grey"],
         "changeInThisVersion": diff(prev, this) if prev else None,
+        "others": others,
         "downloadUrl": (f"https://raw.githubusercontent.com/{GH_REPO}/{sha}/"
                         f"{BASELINE_PATH}"),
     }
