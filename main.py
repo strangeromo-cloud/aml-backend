@@ -26,6 +26,7 @@ from sqlalchemy import select
 
 import db as dbmod
 from db import DB_ENABLED, init_db, ReviewRecord, PlaybookEntry, SignalRow
+from fatf_baseline import router as fatf_baseline_router
 
 load_dotenv()
 
@@ -205,6 +206,10 @@ def split_ids(text: str) -> tuple[str, list[str]]:
     head, tail = text.rsplit(IDS_MARKER, 1)
     ids = [s.strip() for s in tail.replace("\n", " ").split(",") if s.strip()]
     return head.strip(), ids
+
+
+# Legal-facing upload for the FATF baseline the daily pipeline reads from the repo.
+app.include_router(fatf_baseline_router)
 
 
 @app.get("/api/health")
