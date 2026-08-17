@@ -126,11 +126,23 @@ def parse_workbook(data: bytes) -> dict[str, Any]:
     ws = wb[SHEET_NAME]
 
     note = str(ws.cell(1, 1).value or "")
-    m = re.search(r"(\d{4}-\d{2}-\d{2})", note)
-    if not m:
+    # The note often carries more than one date (a sheet exported from the daily
+    # attachment ends with "抓取: <日期>"), so read the one behind the 名单日期 label
+    # and only fall back to a bare date when the note has exactly one.
+    labelled = re.search(r"(?:名单日期|名單日期|list\s*date)\s*[:：]?\s*(\d{4}-\d{2}-\d{2})",
+                         note, re.I)
+    bare = sorted(set(re.findall(r"\d{4}-\d{2}-\d{2}", note)))
+    if labelled:
+        list_date = labelled.group(1)
+    elif len(bare) == 1:
+        list_date = bare[0]
+    elif len(bare) > 1:
+        raise HTTPException(422, f"第 1 行有多个日期（{'、'.join(bare)}），无法判断哪个是名单日期。"
+                                 f"请写成「名单日期: YYYY-MM-DD」。")
+    else:
         raise HTTPException(422, "第 1 行说明里找不到名单日期。"
-                                 "请在第 1 行写入 FATF 声明日期，格式 YYYY-MM-DD（例如 2026-10-23）。")
-    list_date = m.group(1)
+                                 "请在第 1 行写入 FATF 声明日期，格式「名单日期: YYYY-MM-DD」"
+                                 "（例如 名单日期: 2026-10-23）。")
 
     black: list[str] = []
     grey: list[str] = []
