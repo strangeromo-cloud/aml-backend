@@ -259,6 +259,113 @@ async def commit(file: UploadFile = File(...),
                                f"次日自动邮件的附件将使用此基线。"))
 
 
+# ── Version history ─────────────────────────────────────────────────────
+# The repo IS the history: every commit touching the baseline is a version, and git
+# makes that record tamper-evident for free. The list view is built from commit
+# messages so it costs one API call; the detail view fetches and parses that specific
+# version on demand, which is what "查看当时的记录" needs.
+
+_MSG_DATE = re.compile(r"基线更新至\s*(\d{4}-\d{2}-\d{2})")
+_MSG_COUNTS = re.compile(r"黑\s*(\d+)\s*/\s*灰\s*(\d+)")
+_MSG_UPLOADER = re.compile(r"由\s*(.+?)\s*于\s*([\d\-: ]+)\s*通过基线上传页提交")
+
+
+def _from_message(msg: str) -> dict[str, Any]:
+    """Metadata the upload page wrote into the commit message, when present.
+
+    Commits made directly with git (not through this page) simply have none of it;
+    the detail view still works because it parses the file itself.
+    """
+    out: dict[str, Any] = {}
+    m = _MSG_DATE.search(msg)
+    if m:
+        out["listDate"] = m.group(1)
+    m = _MSG_COUNTS.search(msg)
+    if m:
+        out["counts"] = {"black": int(m.group(1)), "grey": int(m.group(2))}
+    m = _MSG_UPLOADER.search(msg)
+    if m:
+        out["uploader"], out["uploadedAt"] = m.group(1), m.group(2).strip()
+    return out
+
+
+@router.get("/history")
+async def history(limit: int = 30) -> dict[str, Any]:
+    """Every version of the baseline, newest first."""
+    r = await _gh("GET", f"/repos/{GH_REPO}/commits",
+                  params={"path": BASELINE_PATH, "sha": GH_BRANCH,
+                          "per_page": max(1, min(limit, 100))})
+    if r.status_code >= 400:
+        raise HTTPException(502, f"读取版本历史失败：{r.status_code} {r.text[:180]}")
+    items = []
+    for c in r.json():
+        msg = (c.get("commit") or {}).get("message") or ""
+        items.append({
+            "sha": c.get("sha"),
+            "shortSha": (c.get("sha") or "")[:8],
+            "committedAt": ((c.get("commit") or {}).get("committer") or {}).get("date"),
+            "author": ((c.get("commit") or {}).get("author") or {}).get("name"),
+            "subject": msg.split("\n")[0],
+            "viaUploadPage": "通过基线上传页提交" in msg,
+            "commitUrl": c.get("html_url"),
+            **_from_message(msg),
+        })
+    return {"repo": f"{GH_REPO}:{GH_BRANCH}", "path": BASELINE_PATH,
+            "count": len(items), "versions": items}
+
+
+@router.get("/history/{sha}")
+async def history_detail(sha: str) -> dict[str, Any]:
+    """The baseline exactly as it stood at one version, plus what that change did."""
+    if not re.fullmatch(r"[0-9a-fA-F]{7,40}", sha):
+        raise HTTPException(422, "版本号格式不正确")
+
+    async def at(ref: str) -> dict[str, Any] | None:
+        rr = await _gh("GET", f"/repos/{GH_REPO}/contents/{BASELINE_PATH}",
+                       params={"ref": ref})
+        if rr.status_code == 404:
+            return None
+        if rr.status_code >= 400:
+            raise HTTPException(502, f"读取该版本失败：{rr.status_code} {rr.text[:160]}")
+        return parse_workbook(base64.b64decode(rr.json()["content"]))
+
+    this = await at(sha)
+    if not this:
+        raise HTTPException(404, "该版本里没有基线文件")
+
+    # The parent commit of this one gives "what changed in this version".
+    prev = None
+    rc = await _gh("GET", f"/repos/{GH_REPO}/commits/{sha}")
+    if rc.status_code < 400:
+        parents = rc.json().get("parents") or []
+        if parents:
+            try:
+                prev = await at(parents[0]["sha"])
+            except HTTPException:
+                prev = None
+        meta = rc.json()
+        commit_info = {
+            "sha": meta.get("sha"),
+            "committedAt": ((meta.get("commit") or {}).get("committer") or {}).get("date"),
+            "author": ((meta.get("commit") or {}).get("author") or {}).get("name"),
+            "message": (meta.get("commit") or {}).get("message"),
+            "commitUrl": meta.get("html_url"),
+            **_from_message((meta.get("commit") or {}).get("message") or ""),
+        }
+    else:
+        commit_info = {"sha": sha}
+
+    return {
+        "commit": commit_info,
+        "listDate": this["listDate"],
+        "counts": {"black": len(this["normBlack"]), "grey": len(this["normGrey"])},
+        "black": this["black"], "grey": this["grey"],
+        "changeInThisVersion": diff(prev, this) if prev else None,
+        "downloadUrl": (f"https://raw.githubusercontent.com/{GH_REPO}/{sha}/"
+                        f"{BASELINE_PATH}"),
+    }
+
+
 @router.get("/current")
 async def current() -> dict[str, Any]:
     """What the pipeline is using right now, so the page can show it side by side."""
