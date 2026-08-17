@@ -46,6 +46,10 @@ GH_REPO_TOKEN = os.getenv("GH_REPO_TOKEN", "").strip()
 GH_REPO = os.getenv("GH_REPO", "strangeromo-cloud/aml").strip()
 GH_BRANCH = os.getenv("GH_BRANCH", "main").strip()
 BASELINE_PATH = "scripts/data-refresh/seeds/fatf-baseline.xlsx"
+# Legal-confirmed overrides for the two auto-fetched lists. Written only when the
+# uploaded workbook carries that sheet, so an upload cannot blank a list by omission.
+CPI_OVERRIDE_PATH = "scripts/data-refresh/seeds/cpi-override.json"
+OFFSHORE_OVERRIDE_PATH = "scripts/data-refresh/seeds/offshore-override.json"
 SHEET_NAME = "FATF 黑灰名单"
 TZ_SHANGHAI = timezone(timedelta(hours=8))
 
@@ -266,6 +270,22 @@ async def fetch_current() -> tuple[bytes | None, str | None]:
     return base64.b64decode(j["content"]), j["sha"]
 
 
+async def _put_json(path: str, payload: dict[str, Any], message: str) -> None:
+    """Create-or-update a JSON file in the repo."""
+    r = await _gh("GET", f"/repos/{GH_REPO}/contents/{path}", params={"ref": GH_BRANCH})
+    sha = r.json().get("sha") if r.status_code == 200 else None
+    body = {"message": message,
+            "content": base64.b64encode(
+                json.dumps(payload, ensure_ascii=False, indent=1,
+                           sort_keys=True).encode()).decode(),
+            "branch": GH_BRANCH}
+    if sha:
+        body["sha"] = sha
+    rr = await _gh("PUT", f"/repos/{GH_REPO}/contents/{path}", json=body)
+    if rr.status_code >= 400:
+        raise HTTPException(502, f"写入 {path} 失败：{rr.status_code} {rr.text[:160]}")
+
+
 def diff(cur: dict[str, Any] | None, new: dict[str, Any]) -> dict[str, Any]:
     if not cur:
         return {"firstUpload": True, "dateFrom": None, "dateTo": new["listDate"],
@@ -444,11 +464,40 @@ async def commit(file: UploadFile = File(...),
         raise HTTPException(502, f"提交仓库失败：{r.status_code} {r.text[:200]}")
     j = r.json()
     url = (j.get("commit") or {}).get("html_url")
+
+    # The other two sheets become Legal-confirmed overrides the pipeline prefers. Each
+    # is written only if present in the workbook — omitting a sheet leaves the previous
+    # override alone rather than wiping it.
+    extras = []
+    try:
+        wb = load_workbook(BytesIO(data), data_only=True)
+        cpi_up, off_up = parse_cpi_sheet(wb), parse_offshore_sheet(wb)
+        if cpi_up:
+            await _put_json(CPI_OVERRIDE_PATH, {
+                "confirmedBy": uploader.strip(), "confirmedAt": stamp,
+                "edition": cpi_up["edition"], "sheet": cpi_up["sheet"],
+                "scores": {k: v for k, v in cpi_up["scores"].items() if v is not None},
+            }, f"chore(cpi): 法务确认版本 {cpi_up['edition'] or ''}（{len(cpi_up['scores'])} 条）"
+               f"，由 {uploader.strip()} 于 {stamp} 提交")
+            extras.append(f"CPI {len(cpi_up['scores'])} 条")
+        if off_up:
+            await _put_json(OFFSHORE_OVERRIDE_PATH, {
+                "confirmedBy": uploader.strip(), "confirmedAt": stamp,
+                "jurisdictions": off_up["names"],
+            }, f"chore(offshore): 法务确认版本（{len(off_up['names'])} 条）"
+               f"，由 {uploader.strip()} 于 {stamp} 提交")
+            extras.append(f"离岸 {len(off_up['names'])} 条")
+    except HTTPException as e:
+        # The FATF baseline is already in; report the partial outcome rather than
+        # pretending the whole submission failed.
+        logger.warning("override write failed: %s", e.detail)
+        extras.append(f"⚠ 另外两个名单写入失败：{e.detail}")
     logger.info("FATF baseline committed by %s → %s (%s)", uploader, new["listDate"], url)
+    tail = ("　同时以法务版本为准：" + "、".join(extras)) if extras else ""
     return CommitResp(committed=True, commitUrl=url,
                       message=(f"已提交。基线名单日期 {new['listDate']}，"
                                f"黑 {len(new['normBlack'])} / 灰 {len(new['normGrey'])}。"
-                               f"次日自动邮件的附件将使用此基线。"))
+                               f"{tail}　次日 07:00（北京）自动邮件的附件将使用这些内容。"))
 
 
 # ── Version history ─────────────────────────────────────────────────────

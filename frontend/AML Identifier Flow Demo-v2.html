@@ -375,6 +375,7 @@
     .bl-ver-meta { font-size:11px; color:#888; }
     .bl-ver-body { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); font-size:12px; }
     .bl-list { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+    .bl-others { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
     .dir-tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 6px; white-space: nowrap; }
     .calib-verdict { font-size: 11px; padding: 2px 7px; margin-left: 6px; white-space: nowrap; }
     .dir-up { background: #e7f4ec; color: #1d7a46; }
@@ -778,7 +779,7 @@
   <script>
     const i18n = {
       en: {
-        navBaseline: 'FATF Baseline', navBaselineSub: 'Legal-maintained list', blEyebrow: 'Manual Maintenance', blTitle: 'FATF Baseline Maintenance', blSubtitle: 'Upload the workbook Legal maintains. The daily pipeline reads it, so the next run\'s email attachment uses the new list.', blCurrentTitle: 'Currently in use', blCurrentDesc: 'What the pipeline read on its last run.', blReload: 'Refresh', blLoading: 'Loading…', blUploadTitle: 'Upload a new baseline', blUploadDesc: 'Validated and diffed first — nothing is written until you confirm.', blToken: 'Upload password', blUploader: 'Your name (recorded in the commit)', blDropMain: 'Drop the .xlsx here, or click to choose', blDropSub: 'Sheet "FATF 黑灰名单", with the list date in row 1 as YYYY-MM-DD', blValidate: 'Validate & preview', blCommit: 'Confirm & submit', blHistTitle: 'Version history', blHistDesc: 'Every version, newest first. Click one to see the list as it stood then.', blNoFile: 'Choose a file first.', blNotValidated: 'Click “Validate & preview” first — submitting is only allowed for a file that passed validation.', blNoToken: 'Enter the upload password.', blNoUploader: 'Enter your name — the submission is recorded.', blIdentical: 'This file is identical to the baseline in use — nothing to submit.', blBlack: 'Black list', blGrey: 'Grey list', blAdded: 'Added', blRemoved: 'Removed', blListDate: 'List date', blNoChange: 'no change', blVerVia: 'via upload page', blVerGit: 'committed directly', blViewCommit: 'View commit', blDownload: 'Download this version', blChangeInVer: 'Changed in this version', 
+        navBaseline: 'FATF Baseline', navBaselineSub: 'Legal-maintained list', blEyebrow: 'Manual Maintenance', blTitle: 'FATF Baseline Maintenance', blSubtitle: 'Upload the workbook Legal maintains. The daily pipeline reads it, so the next run\'s email attachment uses the new list.', blCurrentTitle: 'Currently in use', blCurrentDesc: 'What the pipeline read on its last run.', blReload: 'Refresh', blLoading: 'Loading…', blUploadTitle: 'Upload a new baseline', blUploadDesc: 'Validated and diffed first — nothing is written until you confirm.', blToken: 'Upload password', blUploader: 'Your name (recorded in the commit)', blDropMain: 'Drop the .xlsx here, or click to choose', blDropSub: 'Sheet "FATF 黑灰名单", with the list date in row 1 as YYYY-MM-DD', blValidate: 'Validate & preview', blCommit: 'Confirm & submit', blHistTitle: 'Version history', blHistDesc: 'Every version, newest first. Click one to see the list as it stood then.', blNoFile: 'Choose a file first.', blNotValidated: 'Click “Validate & preview” first — submitting is only allowed for a file that passed validation.', blNoToken: 'Enter the upload password.', blNoUploader: 'Enter your name — the submission is recorded.', blIdentical: 'This file is identical to the baseline in use — nothing to submit.', blBlack: 'Black list', blGrey: 'Grey list', blAdded: 'Added', blRemoved: 'Removed', blListDate: 'List date', blNoChange: 'no change', blVerVia: 'via upload page', blVerGit: 'committed directly', blViewCommit: 'View commit', blDownload: 'Download this version', blChangeInVer: 'Changed in this version', blOthers: 'Other two lists in this workbook', blCpi: 'CPI', blOffshore: 'Offshore centres', blVsFetched: 'vs what the pipeline fetched', blOnlyUpload: 'only in your file', blOnlyFetched: 'only in the fetched data', blScoreDiff: 'scores differ', blSame: 'identical', blSheetMissing: 'sheet not in this workbook', blOthersNote: 'These two are also taken as authoritative once submitted. Differences against the fetched data keep being reported, so a stale copy cannot freeze the data.', 
         brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', navSources: 'Public Data Sources', navSourcesSub: 'CPI · FATF · Offshore', sourcesEyebrow: 'Reference Data', sourcesTitle: 'Public Data Sources', sourcesSubtitle: 'The three public lists scraped for detection — CPI, FATF black/grey, and the offshore list — each with its last update time.', srcUpdated: 'Last updated', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: 'Offshore', srcRank: 'Rank', srcCountry: 'Country', srcJurisdiction: 'Jurisdiction', srcCode: 'Code', srcStatus: 'Status', srcRisk: 'Risk', srcHigh: 'High-risk', srcOk: 'OK', srcBlack: 'Black list', srcGrey: 'Grey list', srcOffshore: 'Offshore', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score and Payment (tier) Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
@@ -840,7 +841,7 @@
         chatBackendError: 'Backend unreachable — falling back to local rule engine.', chatSettingsPrompt: 'Paste the chatbot backend URL (leave empty to disable and use the local engine).', chatBackendSet: 'Backend URL saved.', chatBackendCleared: 'Backend URL cleared — using local engine.', chatThinking: 'Thinking...', chatSourceLlm: 'GPT', chatSourceLocal: 'Local engine', chatNoResults: 'No matching payments in the current dataset.', chatReasoningTitle: '💭 Reasoning'
       },
       zh: {
-        navBaseline: 'FATF 基线', navBaselineSub: '法务人工维护', blEyebrow: '人工维护', blTitle: 'FATF 基线维护', blSubtitle: '上传法务维护的基线工作簿。每日流水线读取它，因此次日邮件附件即使用新名单。', blCurrentTitle: '当前生效的基线', blCurrentDesc: '流水线上次运行时读到的内容。', blReload: '刷新', blLoading: '加载中…', blUploadTitle: '上传新基线', blUploadDesc: '先校验并比对差异 —— 你确认之前不会写入任何内容。', blToken: '上传口令', blUploader: '上传人（会记入提交记录）', blDropMain: '把 .xlsx 拖到这里，或点击选择', blDropSub: '需含工作表「FATF 黑灰名单」，第 1 行写名单日期，格式 YYYY-MM-DD', blValidate: '校验并预览', blCommit: '确认提交', blHistTitle: '版本历史', blHistDesc: '全部版本，新的在前。点击某一条可查看当时的名单。', blNoFile: '请先选择文件。', blNotValidated: '请先点击「校验并预览」—— 只有通过校验的文件才允许提交。', blNoToken: '请输入上传口令。', blNoUploader: '请填写上传人，提交需要留痕。', blIdentical: '该文件与当前生效的基线完全相同 —— 无需提交。', blBlack: '黑名单', blGrey: '灰名单', blAdded: '新增', blRemoved: '移除', blListDate: '名单日期', blNoChange: '无变化', blVerVia: '经上传页提交', blVerGit: '直接 git 提交', blViewCommit: '查看提交', blDownload: '下载该版本文件', blChangeInVer: '本次版本改动', 
+        navBaseline: 'FATF 基线', navBaselineSub: '法务人工维护', blEyebrow: '人工维护', blTitle: 'FATF 基线维护', blSubtitle: '上传法务维护的基线工作簿。每日流水线读取它，因此次日邮件附件即使用新名单。', blCurrentTitle: '当前生效的基线', blCurrentDesc: '流水线上次运行时读到的内容。', blReload: '刷新', blLoading: '加载中…', blUploadTitle: '上传新基线', blUploadDesc: '先校验并比对差异 —— 你确认之前不会写入任何内容。', blToken: '上传口令', blUploader: '上传人（会记入提交记录）', blDropMain: '把 .xlsx 拖到这里，或点击选择', blDropSub: '需含工作表「FATF 黑灰名单」，第 1 行写名单日期，格式 YYYY-MM-DD', blValidate: '校验并预览', blCommit: '确认提交', blHistTitle: '版本历史', blHistDesc: '全部版本，新的在前。点击某一条可查看当时的名单。', blNoFile: '请先选择文件。', blNotValidated: '请先点击「校验并预览」—— 只有通过校验的文件才允许提交。', blNoToken: '请输入上传口令。', blNoUploader: '请填写上传人，提交需要留痕。', blIdentical: '该文件与当前生效的基线完全相同 —— 无需提交。', blBlack: '黑名单', blGrey: '灰名单', blAdded: '新增', blRemoved: '移除', blListDate: '名单日期', blNoChange: '无变化', blVerVia: '经上传页提交', blVerGit: '直接 git 提交', blViewCommit: '查看提交', blDownload: '下载该版本文件', blChangeInVer: '本次版本改动', blOthers: '本工作簿中的另外两个名单', blCpi: 'CPI', blOffshore: '离岸中心', blVsFetched: '对比流水线抓取到的数据', blOnlyUpload: '仅你的文件有', blOnlyFetched: '仅抓取数据有', blScoreDiff: '分数不同', blSame: '完全一致', blSheetMissing: '本工作簿中无此 sheet', blOthersNote: '这两个名单提交后同样以法务版本为准。与抓取数据的差异会持续提醒，避免旧版本把数据冻结。', 
         brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', navSources: '公开数据源', navSourcesSub: 'CPI · FATF · 离岸', sourcesEyebrow: '参考数据', sourcesTitle: '公开数据源', sourcesSubtitle: '用于检测的三个公开名单 —— CPI、FATF 黑/灰名单、离岸名单 —— 及各自的最近更新时间。', srcUpdated: '更新时间', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: '离岸', srcRank: '排名', srcCountry: '国家', srcJurisdiction: '司法辖区', srcCode: '代码', srcStatus: '状态', srcRisk: '风险', srcHigh: '高风险', srcOk: '正常', srcBlack: '黑名单', srcGrey: '灰名单', srcOffshore: '离岸', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
         dashboardEyebrow: '合规风险驾驶舱', dashboardTitle: '付款欺诈风险识别', dashboardSubtitle: '通过供应商评分与付款（等级）评分，识别疑似欺诈付款。', lastSync: '最近同步：Ariba 09:14 · LGAP 09:20',
         metrics: [['受监控付款', '演示数据集']],
@@ -1405,6 +1406,28 @@
       blSetMsg('', '');
     }
 
+    function blOthersHtml(o) {
+      if (!o || o.error && !o.cpi && !o.offshore) {
+        return o && o.error ? `<div class="bl-diff-line small-muted">${o.error}</div>` : '';
+      }
+      const block = (label, d) => {
+        if (!d) return `<div class="bl-diff-line">${label}：<span class="small-muted">${t('blSheetMissing')}</span></div>`;
+        if (d.error) return `<div class="bl-diff-line">${label}：<span class="small-muted">${d.error}</span></div>`;
+        if (d.identical) return `<div class="bl-diff-line">${label}（${d.uploadCount}）：<span class="bl-chip add">${t('blSame')}</span></div>`;
+        let h = `<div class="bl-diff-line">${label}：${d.uploadCount} / ${d.fetchedCount} ${t('blVsFetched')}</div>`;
+        h += `<div class="bl-diff-line">　${t('blOnlyUpload')}：${blChips(d.onlyInUpload, 'add')}</div>`;
+        h += `<div class="bl-diff-line">　${t('blOnlyFetched')}：${blChips(d.onlyInFetched, 'del')}</div>`;
+        if (d.scoreDiffersCount) {
+          const sample = d.scoreDiffers.map(x => `${x.country} ${x.upload}→${x.fetched}`);
+          h += `<div class="bl-diff-line">　${t('blScoreDiff')}（${d.scoreDiffersCount}）：${blChips(sample, 'del')}</div>`;
+        }
+        return h;
+      };
+      return `<div class="bl-others"><div class="bl-diff-line"><strong>${t('blOthers')}</strong></div>`
+        + block(t('blCpi'), o.cpi) + block(t('blOffshore'), o.offshore)
+        + `<div class="bl-diff-line small-muted" style="margin-top:6px">${t('blOthersNote')}</div></div>`;
+    }
+
     async function blValidateFile() {
       const token = document.getElementById('blToken').value.trim();
       if (!blFileData) return blSetMsg('err', t('blNoFile'));
@@ -1423,9 +1446,13 @@
           (!df ? `<div class="bl-diff-line small-muted">${d.repoError || ''}</div>` :
             `<div class="bl-diff-line">${t('blListDate')}：${df.dateFrom || '—'} → <strong>${df.dateTo}</strong></div>` +
             `<div class="bl-diff-line">${t('blBlack')} ${t('blAdded')}：${blChips(df.blackAdded, 'add')}　${t('blRemoved')}：${blChips(df.blackRemoved, 'del')}</div>` +
-            `<div class="bl-diff-line">${t('blGrey')} ${t('blAdded')}：${blChips(df.greyAdded, 'add')}　${t('blRemoved')}：${blChips(df.greyRemoved, 'del')}</div>`);
+            `<div class="bl-diff-line">${t('blGrey')} ${t('blAdded')}：${blChips(df.greyAdded, 'add')}　${t('blRemoved')}：${blChips(df.greyRemoved, 'del')}</div>`)
+          + blOthersHtml(d.others);
         p.style.display = '';
-        if (df && df.identical) {
+        const othersSame = !d.others || (!d.others.error
+          && (!d.others.cpi || d.others.cpi.identical || d.others.cpi.error)
+          && (!d.others.offshore || d.others.offshore.identical || d.others.offshore.error));
+        if (df && df.identical && othersSame) {
           blSetMsg('warn', t('blIdentical'));
           document.getElementById('blCommit').disabled = true;
         } else {
