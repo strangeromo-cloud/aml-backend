@@ -12,6 +12,7 @@ mis-uploaded workbook must never replace it silently: /validate parses and retur
 diff, /commit writes only what /validate already approved.
 
 Env:
+  BASELINE_UPLOAD_TOKEN  Shared secret required to upload; unset means uploads are off
   GH_REPO_TOKEN   GitHub token with contents:write on the pipeline repo
   GH_REPO         owner/name, default strangeromo-cloud/aml
   GH_BRANCH       default main
@@ -19,6 +20,7 @@ Env:
 from __future__ import annotations
 
 import base64
+import hmac
 import json
 import logging
 import os
@@ -29,12 +31,16 @@ from io import BytesIO
 from typing import Any, Optional
 
 import httpx
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
 from openpyxl import load_workbook
 from pydantic import BaseModel
 
 logger = logging.getLogger("aml-chat.fatf-baseline")
 router = APIRouter(prefix="/api/aml/fatf-baseline", tags=["fatf-baseline"])
+
+# The baseline is the authority the whole FATF comparison rests on, so the write path
+# is gated. Reads are not: they only expose the FATF lists, which are public.
+UPLOAD_TOKEN = os.getenv("BASELINE_UPLOAD_TOKEN", "").strip()
 
 GH_REPO_TOKEN = os.getenv("GH_REPO_TOKEN", "").strip()
 GH_REPO = os.getenv("GH_REPO", "strangeromo-cloud/aml").strip()
@@ -64,6 +70,18 @@ ALIASES = {
     "united republic of tanzania": "tanzania",
     "viet nam": "vietnam",
 }
+
+
+def require_token(supplied: Optional[str]) -> None:
+    """Fail closed: an unconfigured token means writes are refused, never waved through.
+
+    Compared with compare_digest so a wrong guess cannot be narrowed down by timing.
+    """
+    if not UPLOAD_TOKEN:
+        raise HTTPException(503, "服务器未配置 BASELINE_UPLOAD_TOKEN，基线上传已停用。"
+                                 "请在部署环境变量里设置后重试。")
+    if not supplied or not hmac.compare_digest(supplied.strip(), UPLOAD_TOKEN):
+        raise HTTPException(401, "上传口令不正确。")
 
 
 def norm(name: str) -> str:
@@ -135,8 +153,11 @@ def parse_workbook(data: bytes) -> dict[str, Any]:
 
 async def _gh(method: str, path: str, **kw) -> httpx.Response:
     if not GH_REPO_TOKEN:
-        raise HTTPException(503, "服务器未配置 GH_REPO_TOKEN，无法写入仓库。"
-                                 "请在部署环境变量里设置后重试。")
+        # Say which operation is blocked: the same token gates reads and writes, and
+        # "无法写入" on a history page just looks like a bug.
+        what = "读取" if method.upper() == "GET" else "写入"
+        raise HTTPException(503, f"服务器未配置 GH_REPO_TOKEN，无法{what}仓库。"
+                                 f"请在部署环境变量里设置后重试。")
     headers = {"Authorization": f"Bearer {GH_REPO_TOKEN}",
                "Accept": "application/vnd.github+json",
                "X-GitHub-Api-Version": "2022-11-28"}
@@ -190,9 +211,18 @@ class CommitResp(BaseModel):
     message: str
 
 
+@router.get("/auth")
+async def auth(x_upload_token: Optional[str] = Header(None)) -> dict[str, Any]:
+    """Lets the page check a token before the user picks a file."""
+    require_token(x_upload_token)
+    return {"ok": True}
+
+
 @router.post("/validate")
-async def validate(file: UploadFile = File(...)) -> dict[str, Any]:
+async def validate(file: UploadFile = File(...),
+                   x_upload_token: Optional[str] = Header(None)) -> dict[str, Any]:
     """Parse + validate the upload and show what would change. Writes nothing."""
+    require_token(x_upload_token)
     data = await file.read()
     new = parse_workbook(data)
     try:
@@ -221,12 +251,14 @@ async def validate(file: UploadFile = File(...)) -> dict[str, Any]:
 @router.post("/commit", response_model=CommitResp)
 async def commit(file: UploadFile = File(...),
                  uploader: str = Form(...),
-                 confirmedDate: str = Form(...)) -> CommitResp:
+                 confirmedDate: str = Form(...),
+                 x_upload_token: Optional[str] = Header(None)) -> CommitResp:
     """Commit the workbook, but only if it still matches what was validated.
 
     confirmedDate is the list date the uploader saw in the preview: if the file has
     been swapped between preview and confirm, the dates disagree and this refuses.
     """
+    require_token(x_upload_token)
     data = await file.read()
     new = parse_workbook(data)
     if new["listDate"] != confirmedDate.strip():

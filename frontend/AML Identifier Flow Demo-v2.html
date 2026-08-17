@@ -345,6 +345,36 @@
     .calib-rule-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
     #calibModal .table-wrap { overflow: visible; }
     #calibModal .modal { width: min(860px, 100%); }
+
+    /* ── FATF baseline maintenance ── */
+    .bl-current { display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; font-size:13px; }
+    .bl-kv { display:flex; gap:6px; align-items:baseline; }
+    .bl-kv b { font-size:15px; }
+    .bl-row { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px; }
+    .bl-field { display:flex; flex-direction:column; gap:4px; font-size:12px; color:#666; flex:1 1 220px; }
+    .bl-field input { padding:8px 10px; border:1px solid var(--line); border-radius:7px; font-size:13px; font-family:inherit; }
+    .bl-drop { border:2px dashed var(--line); border-radius:10px; padding:22px; text-align:center; cursor:pointer; transition:.15s; }
+    .bl-drop:hover, .bl-drop.over { border-color:#1F4E5F; background:#F6FAFB; }
+    .bl-drop-icon { font-size:26px; }
+    .bl-drop-main { font-size:13px; font-weight:600; margin-top:6px; }
+    .bl-drop-sub { font-size:11px; color:#888; margin-top:3px; }
+    .bl-msg { margin-top:12px; padding:10px 12px; border-radius:8px; font-size:13px; line-height:1.6; }
+    .bl-msg.ok { background:#EEF7F1; color:#1D7A46; border:1px solid #CDE8D8; }
+    .bl-msg.err { background:#FDECEC; color:#B3261E; border:1px solid #F3D2D2; }
+    .bl-msg.warn { background:#FFF6E5; color:#B26A00; border:1px solid #F0DFC0; }
+    .bl-preview { margin-top:12px; padding:12px 14px; border:1px solid var(--line); border-radius:9px; background:#FAFAFA; }
+    .bl-diff-line { font-size:12px; line-height:1.9; }
+    .bl-chip { display:inline-block; margin:2px 4px 2px 0; padding:2px 7px; border-radius:3px; font-size:12px; }
+    .bl-chip.add { background:#E7F4EC; color:#1D7A46; }
+    .bl-chip.del { background:#FDECEC; color:#B3261E; }
+    .bl-actions { display:flex; gap:10px; margin-top:14px; }
+    .bl-actions .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .bl-ver { border:1px solid var(--line); border-radius:9px; padding:11px 13px; margin-bottom:9px; }
+    .bl-ver-head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; cursor:pointer; }
+    .bl-ver-date { font-weight:700; font-size:14px; }
+    .bl-ver-meta { font-size:11px; color:#888; }
+    .bl-ver-body { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); font-size:12px; }
+    .bl-list { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
     .dir-tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 6px; white-space: nowrap; }
     .calib-verdict { font-size: 11px; padding: 2px 7px; margin-left: 6px; white-space: nowrap; }
     .dir-up { background: #e7f4ec; color: #1d7a46; }
@@ -509,6 +539,7 @@
         <button data-nav="signals"><span class="nav-icon">S</span><span class="nav-text"><span data-i18n="navSignals"></span><span class="nav-sub" data-i18n="navSignalsSub"></span></span></button>
         <button data-nav="config"><span class="nav-icon">M</span><span class="nav-text"><span data-i18n="navConfig"></span><span class="nav-sub" data-i18n="navConfigSub"></span></span></button>
         <button data-nav="sources"><span class="nav-icon">🌐</span><span class="nav-text"><span data-i18n="navSources"></span><span class="nav-sub" data-i18n="navSourcesSub"></span></span></button>
+        <button data-nav="baseline"><span class="nav-icon">📋</span><span class="nav-text"><span data-i18n="navBaseline"></span><span class="nav-sub" data-i18n="navBaselineSub"></span></span></button>
       </nav>
       <div class="sidebar-footer" data-i18n="sidebarFooter"></div>
     </aside>
@@ -636,6 +667,40 @@
         </div>
       </section>
 
+      <section class="screen" id="baseline">
+        <div class="topbar"><div><div class="eyebrow" data-i18n="blEyebrow"></div><h2 class="title" data-i18n="blTitle"></h2><p class="subtitle" data-i18n="blSubtitle"></p></div></div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="section-head"><div><h2 data-i18n="blCurrentTitle"></h2><p data-i18n="blCurrentDesc"></p></div><button class="btn btn-soft" id="blReload" data-i18n="blReload"></button></div>
+          <div id="blCurrent" class="bl-current"><span class="small-muted" data-i18n="blLoading"></span></div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="section-head"><div><h2 data-i18n="blUploadTitle"></h2><p data-i18n="blUploadDesc"></p></div></div>
+          <div class="bl-row">
+            <label class="bl-field"><span data-i18n="blToken"></span><input type="password" id="blToken" autocomplete="off" /></label>
+            <label class="bl-field"><span data-i18n="blUploader"></span><input type="text" id="blUploader" autocomplete="off" /></label>
+          </div>
+          <div id="blDrop" class="bl-drop">
+            <div class="bl-drop-icon">📄</div>
+            <div class="bl-drop-main" data-i18n="blDropMain"></div>
+            <div class="bl-drop-sub" data-i18n="blDropSub"></div>
+            <input type="file" id="blFile" accept=".xlsx" hidden />
+          </div>
+          <div id="blMsg" class="bl-msg" style="display:none"></div>
+          <div id="blPreview" class="bl-preview" style="display:none"></div>
+          <div class="bl-actions">
+            <button class="btn btn-soft" id="blValidate" data-i18n="blValidate"></button>
+            <button class="btn btn-primary" id="blCommit" disabled data-i18n="blCommit"></button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><div><h2 data-i18n="blHistTitle"></h2><p data-i18n="blHistDesc"></p></div></div>
+          <div id="blHistory"><span class="small-muted" data-i18n="blLoading"></span></div>
+        </div>
+      </section>
+
       <section class="screen" id="config">
         <div class="topbar"><div><div class="eyebrow" data-i18n="configEyebrow"></div><h2 class="title" data-i18n="configTitle"></h2><p class="subtitle" data-i18n="configSubtitle"></p></div><button class="btn btn-primary" id="saveConfig" data-i18n="publishConfig"></button></div>
         <div class="config-grid"><div class="card panel"><h3 data-i18n="overallWeights"></h3><div id="overallSliders"></div><div class="notice" id="overallTotal"></div></div><div class="card panel"><h3 data-i18n="vendorWeights"></h3><div id="vendorSliders"></div><div class="notice" id="vendorTotal"></div></div><div class="card panel"><h3 data-i18n="paymentScore"></h3><p class="subtitle" data-i18n="paymentTierDesc" style="margin:0 0 12px"></p><div id="paymentScoreSliders"></div><div class="notice" id="paymentScoreTotal"></div></div></div>
@@ -713,6 +778,7 @@
   <script>
     const i18n = {
       en: {
+        navBaseline: 'FATF Baseline', navBaselineSub: 'Legal-maintained list', blEyebrow: 'Manual Maintenance', blTitle: 'FATF Baseline Maintenance', blSubtitle: 'Upload the workbook Legal maintains. The daily pipeline reads it, so the next run\'s email attachment uses the new list.', blCurrentTitle: 'Currently in use', blCurrentDesc: 'What the pipeline read on its last run.', blReload: 'Refresh', blLoading: 'Loading…', blUploadTitle: 'Upload a new baseline', blUploadDesc: 'Validated and diffed first — nothing is written until you confirm.', blToken: 'Upload password', blUploader: 'Your name (recorded in the commit)', blDropMain: 'Drop the .xlsx here, or click to choose', blDropSub: 'Sheet "FATF 黑灰名单", with the list date in row 1 as YYYY-MM-DD', blValidate: 'Validate & preview', blCommit: 'Confirm & submit', blHistTitle: 'Version history', blHistDesc: 'Every version, newest first. Click one to see the list as it stood then.', blNoFile: 'Choose a file first.', blNotValidated: 'Click “Validate & preview” first — submitting is only allowed for a file that passed validation.', blNoToken: 'Enter the upload password.', blNoUploader: 'Enter your name — the submission is recorded.', blIdentical: 'This file is identical to the baseline in use — nothing to submit.', blBlack: 'Black list', blGrey: 'Grey list', blAdded: 'Added', blRemoved: 'Removed', blListDate: 'List date', blNoChange: 'no change', blVerVia: 'via upload page', blVerGit: 'committed directly', blViewCommit: 'View commit', blDownload: 'Download this version', blChangeInVer: 'Changed in this version', 
         brandSubtitle: 'Fraud Payment Screening', navDashboard: 'Dashboard', navDashboardSub: 'Risk overview', navPaymentList: 'Payment List', navPaymentListSub: 'All payments', navLegal: 'Legal Workbench', navLegalSub: 'Queue + reviewed', navConfig: 'Risk Model Config', navConfigSub: 'Scoring weights', navSources: 'Public Data Sources', navSourcesSub: 'CPI · FATF · Offshore', sourcesEyebrow: 'Reference Data', sourcesTitle: 'Public Data Sources', sourcesSubtitle: 'The three public lists scraped for detection — CPI, FATF black/grey, and the offshore list — each with its last update time.', srcUpdated: 'Last updated', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: 'Offshore', srcRank: 'Rank', srcCountry: 'Country', srcJurisdiction: 'Jurisdiction', srcCode: 'Code', srcStatus: 'Status', srcRisk: 'Risk', srcHigh: 'High-risk', srcOk: 'OK', srcBlack: 'Black list', srcGrey: 'Grey list', srcOffshore: 'Offshore', sidebarFooter: 'Prototype flow: identify risk, explain score, collect legal feedback, and improve the model.',
         dashboardEyebrow: 'Compliance Command Dashboard', dashboardTitle: 'Payment Fraud Risk Screening', dashboardSubtitle: 'Identify suspicious payments through Vendor Score and Payment (tier) Score.', lastSync: 'Last sync: Ariba 09:14 · LGAP 09:20',
         metrics: [['Payments Under Monitoring', 'Demo dataset']],
@@ -774,6 +840,7 @@
         chatBackendError: 'Backend unreachable — falling back to local rule engine.', chatSettingsPrompt: 'Paste the chatbot backend URL (leave empty to disable and use the local engine).', chatBackendSet: 'Backend URL saved.', chatBackendCleared: 'Backend URL cleared — using local engine.', chatThinking: 'Thinking...', chatSourceLlm: 'GPT', chatSourceLocal: 'Local engine', chatNoResults: 'No matching payments in the current dataset.', chatReasoningTitle: '💭 Reasoning'
       },
       zh: {
+        navBaseline: 'FATF 基线', navBaselineSub: '法务人工维护', blEyebrow: '人工维护', blTitle: 'FATF 基线维护', blSubtitle: '上传法务维护的基线工作簿。每日流水线读取它，因此次日邮件附件即使用新名单。', blCurrentTitle: '当前生效的基线', blCurrentDesc: '流水线上次运行时读到的内容。', blReload: '刷新', blLoading: '加载中…', blUploadTitle: '上传新基线', blUploadDesc: '先校验并比对差异 —— 你确认之前不会写入任何内容。', blToken: '上传口令', blUploader: '上传人（会记入提交记录）', blDropMain: '把 .xlsx 拖到这里，或点击选择', blDropSub: '需含工作表「FATF 黑灰名单」，第 1 行写名单日期，格式 YYYY-MM-DD', blValidate: '校验并预览', blCommit: '确认提交', blHistTitle: '版本历史', blHistDesc: '全部版本，新的在前。点击某一条可查看当时的名单。', blNoFile: '请先选择文件。', blNotValidated: '请先点击「校验并预览」—— 只有通过校验的文件才允许提交。', blNoToken: '请输入上传口令。', blNoUploader: '请填写上传人，提交需要留痕。', blIdentical: '该文件与当前生效的基线完全相同 —— 无需提交。', blBlack: '黑名单', blGrey: '灰名单', blAdded: '新增', blRemoved: '移除', blListDate: '名单日期', blNoChange: '无变化', blVerVia: '经上传页提交', blVerGit: '直接 git 提交', blViewCommit: '查看提交', blDownload: '下载该版本文件', blChangeInVer: '本次版本改动', 
         brandSubtitle: '欺诈付款识别', navDashboard: '风险总览', navDashboardSub: 'Dashboard', navPaymentList: '付款列表', navPaymentListSub: '全量付款', navLegal: '法务工作台', navLegalSub: '队列 + 已复核', navConfig: '评分模型配置', navConfigSub: '权重设置', navSources: '公开数据源', navSourcesSub: 'CPI · FATF · 离岸', sourcesEyebrow: '参考数据', sourcesTitle: '公开数据源', sourcesSubtitle: '用于检测的三个公开名单 —— CPI、FATF 黑/灰名单、离岸名单 —— 及各自的最近更新时间。', srcUpdated: '更新时间', srcTabCpi: 'CPI', srcTabFatf: 'FATF', srcTabOffshore: '离岸', srcRank: '排名', srcCountry: '国家', srcJurisdiction: '司法辖区', srcCode: '代码', srcStatus: '状态', srcRisk: '风险', srcHigh: '高风险', srcOk: '正常', srcBlack: '黑名单', srcGrey: '灰名单', srcOffshore: '离岸', sidebarFooter: '原型流程：识别风险、解释分数、收集法务反馈，并反哺模型改进。',
         dashboardEyebrow: '合规风险驾驶舱', dashboardTitle: '付款欺诈风险识别', dashboardSubtitle: '通过供应商评分与付款（等级）评分，识别疑似欺诈付款。', lastSync: '最近同步：Ariba 09:14 · LGAP 09:20',
         metrics: [['受监控付款', '演示数据集']],
@@ -1234,8 +1301,184 @@
     const t = key => i18n[lang][key];
     const screens = document.querySelectorAll('.screen');
 
+
+    // ── FATF baseline maintenance ────────────────────────────────────────
+    // The daily pipeline reads its baseline from the repo, so this page's whole job is
+    // to get Legal's edited workbook there safely: validate, show the diff, and only
+    // write on an explicit confirm. Nothing here touches the pipeline itself.
+    // Lazy: BACKEND_URL is a const declared further down, so reading it at this
+    // point would hit the temporal dead zone and abort the whole script.
+    const blApi = () => BACKEND_URL + '/api/aml/fatf-baseline';
+    let blFileData = null;      // the File the user picked
+    let blValidated = null;     // the /validate response it was approved on
+
+    function blSetMsg(kind, html) {
+      const el = document.getElementById('blMsg');
+      if (!html) { el.style.display = 'none'; return; }
+      el.className = 'bl-msg ' + kind;
+      el.innerHTML = html;
+      el.style.display = '';
+    }
+    function blChips(names, cls) {
+      if (!names || !names.length) return `<span class="small-muted">${t('blNoChange')}</span>`;
+      return names.map(n => `<span class="bl-chip ${cls}">${n}</span>`).join('');
+    }
+    async function blJson(path, opts) {
+      const r = await fetch(blApi() + path, opts);
+      let body = null;
+      try { body = await r.json(); } catch (_) { /* non-JSON error page */ }
+      if (!r.ok) throw new Error((body && (body.detail || body.message)) || `HTTP ${r.status}`);
+      return body;
+    }
+
+    async function blLoadCurrent() {
+      const el = document.getElementById('blCurrent');
+      el.innerHTML = `<span class="small-muted">${t('blLoading')}</span>`;
+      try {
+        const d = await blJson('/current');
+        if (!d.available) { el.innerHTML = `<span class="small-muted">${d.error || '—'}</span>`; return; }
+        el.innerHTML =
+          `<div class="bl-kv"><span>${t('blListDate')}</span><b>${d.listDate}</b></div>` +
+          `<div class="bl-kv"><span>${t('blBlack')}</span><b>${d.counts.black}</b></div>` +
+          `<div class="bl-kv"><span>${t('blGrey')}</span><b>${d.counts.grey}</b></div>` +
+          `<div class="small-muted">${d.repo} · ${d.path}</div>`;
+      } catch (e) { el.innerHTML = `<span class="small-muted">${e.message}</span>`; }
+    }
+
+    async function blLoadHistory() {
+      const el = document.getElementById('blHistory');
+      el.innerHTML = `<span class="small-muted">${t('blLoading')}</span>`;
+      try {
+        const d = await blJson('/history?limit=30');
+        if (!d.versions.length) { el.innerHTML = `<span class="small-muted">—</span>`; return; }
+        el.innerHTML = d.versions.map(v => {
+          const when = (v.committedAt || '').replace('T', ' ').replace('Z', '');
+          const via = v.viaUploadPage
+            ? `<span class="tag tag-green">${t('blVerVia')}</span>`
+            : `<span class="tag tag-gray">${t('blVerGit')}</span>`;
+          const counts = v.counts ? ` · ${t('blBlack')} ${v.counts.black} / ${t('blGrey')} ${v.counts.grey}` : '';
+          return `<div class="bl-ver" data-sha="${v.sha}">
+            <div class="bl-ver-head">
+              <span class="bl-ver-date">${v.listDate || v.shortSha}</span>${via}
+              <span class="bl-ver-meta">${when} · ${v.uploader || v.author || ''}${counts}</span>
+            </div>
+            <div class="bl-ver-body" style="display:none"></div>
+          </div>`;
+        }).join('');
+        el.querySelectorAll('.bl-ver-head').forEach(h => h.addEventListener('click', () => blToggleVer(h.parentElement)));
+      } catch (e) { el.innerHTML = `<span class="small-muted">${e.message}</span>`; }
+    }
+
+    async function blToggleVer(box) {
+      const body = box.querySelector('.bl-ver-body');
+      if (body.style.display !== 'none') { body.style.display = 'none'; return; }
+      body.style.display = '';
+      if (body.dataset.loaded) return;
+      body.innerHTML = `<span class="small-muted">${t('blLoading')}</span>`;
+      try {
+        const d = await blJson('/history/' + box.dataset.sha);
+        const ch = d.changeInThisVersion;
+        const chHtml = !ch ? '' :
+          `<div class="bl-diff-line"><strong>${t('blChangeInVer')}</strong>：${t('blListDate')} ${ch.dateFrom || '—'} → ${ch.dateTo}</div>` +
+          `<div class="bl-diff-line">${t('blBlack')} ${t('blAdded')}：${blChips(ch.blackAdded, 'add')}　${t('blRemoved')}：${blChips(ch.blackRemoved, 'del')}</div>` +
+          `<div class="bl-diff-line">${t('blGrey')} ${t('blAdded')}：${blChips(ch.greyAdded, 'add')}　${t('blRemoved')}：${blChips(ch.greyRemoved, 'del')}</div>`;
+        body.innerHTML = chHtml +
+          `<div class="bl-diff-line" style="margin-top:8px"><strong>${t('blBlack')}</strong>（${d.counts.black}）</div>
+           <div class="bl-list">${d.black.map(n => `<span class="bl-chip">${n}</span>`).join('')}</div>
+           <div class="bl-diff-line" style="margin-top:8px"><strong>${t('blGrey')}</strong>（${d.counts.grey}）</div>
+           <div class="bl-list">${d.grey.map(n => `<span class="bl-chip">${n}</span>`).join('')}</div>
+           <div style="margin-top:10px;font-size:12px">
+             ${d.commit.commitUrl ? `<a href="${d.commit.commitUrl}" target="_blank" rel="noopener">${t('blViewCommit')}</a> · ` : ''}
+             <a href="${d.downloadUrl}" target="_blank" rel="noopener">${t('blDownload')}</a>
+           </div>`;
+        body.dataset.loaded = '1';
+      } catch (e) { body.innerHTML = `<span class="small-muted">${e.message}</span>`; }
+    }
+
+    function blPickFile(f) {
+      blFileData = f || null;
+      blValidated = null;
+      document.getElementById('blCommit').disabled = true;
+      document.getElementById('blPreview').style.display = 'none';
+      const main = document.querySelector('#blDrop .bl-drop-main');
+      if (main) main.textContent = f ? f.name : t('blDropMain');
+      blSetMsg('', '');
+    }
+
+    async function blValidateFile() {
+      const token = document.getElementById('blToken').value.trim();
+      if (!blFileData) return blSetMsg('err', t('blNoFile'));
+      if (!token) return blSetMsg('err', t('blNoToken'));
+      blSetMsg('warn', t('blLoading'));
+      const fd = new FormData();
+      fd.append('file', blFileData);
+      try {
+        const d = await blJson('/validate', { method: 'POST', body: fd, headers: { 'X-Upload-Token': token } });
+        blValidated = d;
+        const p = document.getElementById('blPreview');
+        const df = d.diff;
+        p.innerHTML =
+          `<div class="bl-diff-line"><strong>${d.filename}</strong> · ${t('blListDate')} <strong>${d.listDate}</strong>` +
+          ` · ${t('blBlack')} ${d.counts.black} / ${t('blGrey')} ${d.counts.grey}</div>` +
+          (!df ? `<div class="bl-diff-line small-muted">${d.repoError || ''}</div>` :
+            `<div class="bl-diff-line">${t('blListDate')}：${df.dateFrom || '—'} → <strong>${df.dateTo}</strong></div>` +
+            `<div class="bl-diff-line">${t('blBlack')} ${t('blAdded')}：${blChips(df.blackAdded, 'add')}　${t('blRemoved')}：${blChips(df.blackRemoved, 'del')}</div>` +
+            `<div class="bl-diff-line">${t('blGrey')} ${t('blAdded')}：${blChips(df.greyAdded, 'add')}　${t('blRemoved')}：${blChips(df.greyRemoved, 'del')}</div>`);
+        p.style.display = '';
+        if (df && df.identical) {
+          blSetMsg('warn', t('blIdentical'));
+          document.getElementById('blCommit').disabled = true;
+        } else {
+          blSetMsg('ok', d.note);
+          document.getElementById('blCommit').disabled = false;
+        }
+      } catch (e) {
+        blSetMsg('err', e.message);
+        document.getElementById('blCommit').disabled = true;
+      }
+    }
+
+    async function blCommitFile() {
+      const token = document.getElementById('blToken').value.trim();
+      const uploader = document.getElementById('blUploader').value.trim();
+      if (!blFileData) return blSetMsg('err', t('blNoFile'));
+      if (!blValidated) return blSetMsg('err', t('blNotValidated'));
+      if (!uploader) return blSetMsg('err', t('blNoUploader'));
+      blSetMsg('warn', t('blLoading'));
+      const fd = new FormData();
+      fd.append('file', blFileData);
+      fd.append('uploader', uploader);
+      // The date the user actually saw: the server refuses if the file changed since.
+      fd.append('confirmedDate', blValidated.listDate);
+      try {
+        const d = await blJson('/commit', { method: 'POST', body: fd, headers: { 'X-Upload-Token': token } });
+        blSetMsg('ok', d.message + (d.commitUrl ? ` <a href="${d.commitUrl}" target="_blank" rel="noopener">${t('blViewCommit')}</a>` : ''));
+        document.getElementById('blCommit').disabled = true;
+        blLoadCurrent(); blLoadHistory();
+      } catch (e) { blSetMsg('err', e.message); }
+    }
+
+    (function blInit() {
+      const drop = document.getElementById('blDrop');
+      const input = document.getElementById('blFile');
+      if (!drop) return;
+      drop.addEventListener('click', () => input.click());
+      input.addEventListener('change', e => blPickFile(e.target.files[0]));
+      ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => {
+        e.preventDefault(); drop.classList.add('over');
+      }));
+      ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => {
+        e.preventDefault(); drop.classList.remove('over');
+      }));
+      drop.addEventListener('drop', e => blPickFile(e.dataTransfer.files[0]));
+      document.getElementById('blValidate').addEventListener('click', blValidateFile);
+      document.getElementById('blCommit').addEventListener('click', blCommitFile);
+      document.getElementById('blReload').addEventListener('click', () => { blLoadCurrent(); blLoadHistory(); });
+    })();
+
     function showScreen(id) {
       screens.forEach(s => s.classList.toggle('active', s.id === id));
+      if (id === 'baseline') { blLoadCurrent(); blLoadHistory(); }
       document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.nav === id));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
